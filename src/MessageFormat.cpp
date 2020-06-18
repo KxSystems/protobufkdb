@@ -40,7 +40,7 @@ K MessageFormat::GetMessageField(const gpb::Message& msg, const gpb::FieldDescri
   // Field -> discriminated kdb type
   K element;
   const auto refl = msg.GetReflection();
-  const auto oneof_desc = fd->real_containing_oneof();
+  const auto oneof_desc = fd->containing_oneof();
   if (oneof_desc != nullptr && refl->GetOneofFieldDescriptor(msg, oneof_desc) != fd) {
     // Field is a oneof but not the active oneof - return empty mixed list.
     element = knk(0);
@@ -101,7 +101,7 @@ void MessageFormat::SetMessageField(gpb::Message* msg, const gpb::FieldDescripto
 {
   // Discriminated kdb type -> field
   const auto& refl = msg->GetReflection();
-  const auto oneof_desc = fd->real_containing_oneof();
+  const auto oneof_desc = fd->containing_oneof();
   if (oneof_desc != nullptr && k_field->t == 0 && k_field->n == 0) {
     // Field is a oneof but not the active oneof.  Do not set the field,
     // otherwise it would override the active oneof if it has already been
