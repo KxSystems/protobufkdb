@@ -42,7 +42,7 @@ protoc --version
 
 If not installed or you wish to upgrade please follow Google's C++ installation instructions [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).
 
-There are also numerous packaged versions of protobuf (apt-get, brew, anaconda) which can be used. However, there is a large variation in the versions provided (particularly when using `apt-get` which is highly disto dependent). You should ensure that any packaged installation includes the protoc compiler, headers and libprotobuf.
+There are also numerous packaged versions of protobuf (apt-get, brew, anaconda) which can be used. You should ensure that any packaged installation includes the protoc compiler, headers and libprotobuf and was build with `-fPIC` since we are building a shared object.  There is also a large variation in the versions provided (particularly when using `apt-get` which is highly disto dependent).
 
 
 
