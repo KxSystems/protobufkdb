@@ -42,7 +42,15 @@ protoc --version
 
 If not installed or you wish to upgrade please follow Google's C++ installation instructions [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).
 
-There are also numerous packaged versions of protobuf (apt-get, brew, anaconda) which can be used. You should ensure that any packaged installation includes the protoc compiler, headers and libprotobuf and was build with `-fPIC` since we are building a shared object.  There is also a large variation in the versions provided (particularly when using `apt-get` which is highly disto dependent).
+**Note**: When building from source on Linux/MacOS you must pass `-fPIC` to the autoconf generated `configure` script since protobufkdb builds a shared object:
+
+```
+./configure --prefix=/usr "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
+```
+
+On MacOS a brew packaged version of protobuf can be used as long as it includes the the protoc compiler, headers and libprotobuf.
+
+On Linux, although there are numerous packaged versions of protobuf, it is recommended that you build from source.  There is a large disto dependent variation in the `apt-get` packages and unless the package was build with `-fPIC`, symbol relocation errors will occur during linking of protobufkdb.  Similarly `conda` packages can cause problems for the cmake functionality used by protobufkdb to locate the protobuf installation on the system.
 
 
 
