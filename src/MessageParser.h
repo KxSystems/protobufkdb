@@ -32,11 +32,10 @@ public:
    * @brief Converts the kdb object to a protobuf message then serializes that
    * into a char array.
    *
-   * @param message_type  Name of the message type.  Must be present in the
-   * MessageFactory since it needs to create a protobuf message object of the
-   * correct type using MessageFactory::CreateMessage().
-   * @param k_msg         Kdb object to be converted.  Its reference count
-   * will be automatically decremented when control passes back to q.
+   * @param message_type  Name of the message type.  Must be the same as the
+   * message name in its .proto definition.
+   * @param k_msg         Kdb object to be converted.  Its reference count will
+   * be automatically decremented when control passes back to q.
    * @return              Kdb char array containing the serialized message
   */
   K SerializeArray(const char* message_type, K k_msg) const;
@@ -45,9 +44,8 @@ public:
    * @brief Converts the kdb object to a protobuf message then serializes that
    * into a char array.  Uses a google arena to create the intermediate message.
    *
-   * @param message_type  Name of the message type.  Must be present in the
-   * MessageFactory since it needs to create a protobuf message object of the
-   * correct type using MessageFactory::CreateMessage().
+   * @param message_type  Name of the message type.  Must be the same as the
+   * message name in its .proto definition.
    * @param k_msg         Kdb object to be converted.  Its reference count will
    * be automatically decremented when control passes back to q.
    * @return              Kdb char array containing the serialized message
@@ -58,9 +56,8 @@ public:
    * @brief Parses the proto-serialized char array into a protobuf message then
    * converts that into the corresponding kdb object.
    *
-   * @param message_type  Name of the message type.  Must be present in the
-   * MessageFactory since it needs to create a protobuf message object of the
-   * correct type using MessageFactory::CreateMessage().
+   * @param message_type  Name of the message type.  Must be the same as the
+   * message name in its .proto definition.
    * @param char_array    Kdb char array containing the serialized protobuf
    * message.  Its reference count will be automatically decremented when
    * control passes back to q.
@@ -73,9 +70,8 @@ public:
    * converts that into the corresponding kdb object.  Uses a google arena to
    * create the intermediate message.
    *
-   * @param message_type  Name of the message type.  Must be present in the
-   * MessageFactory since it needs to create a protobuf message object of the
-   * correct type using MessageFactory::CreateMessage().
+   * @param message_type  Name of the message type.  Must be the same as the
+   * message name in its .proto definition.
    * @param char_array    Kdb char array containing the serialized protobuf
    * message.  Its reference count will be automatically decremented when
    * control passes back to q.
@@ -84,15 +80,14 @@ public:
   K ParseArrayArena(const char* message_type, K char_array) const;
 
   /**
-   * @brief Converts the kdb object to a protobuf message, serializes that
-   * then writes the result to the specified file.
+   * @brief Converts the kdb object to a protobuf message, serializes that then
+   * writes the result to the specified file.
    *
-   * @param message_type  Name of the message type.  Must be present in the
-   * MessageFactory since it needs to create a protobuf message object of the
-   * correct type using MessageFactory::CreateMessage().
+   * @param message_type  Name of the message type.  Must be the same as the
+   * message name in its .proto definition.
    * @param filename      Name of the file to write to.
-   * @param k_msg         Kdb object to be converted.  Its reference count
-   * will be automatically decremented when control passes back to q.
+   * @param k_msg         Kdb object to be converted.  Its reference count will
+   * be automatically decremented when control passes back to q.
    * @return              NULL
   */
   K SaveMessage(const char* message_type, const char* filename, K k_msg) const;
@@ -101,9 +96,8 @@ public:
    * @brief Parses the proto-serialized stream from the file specified to a
    * protobuf message then converts that into the corresponding kdb object.
    *
-   * @param message_type  Name of the message type.  Must be present in the
-   * MessageFactory since it needs to create a protobuf message object of the
-   * correct type using MessageFactory::CreateMessage().
+   * @param message_type  Name of the message type.  Must be the same as the
+   * message name in its .proto definition.
    * @param filename      Name of the file to read from.
    * @return              Kdb object corresponding to the protobuf message
   */

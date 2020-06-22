@@ -42,8 +42,7 @@ extern "C"
    * into a char array.
    *
    * @param message_type  String containing the name of the message type.  Must
-   * be present in the MessageFactory since it needs to create a protobuf
-   * message object of the correct type using MessageFactory::CreateMessage().
+   * be the same as the message name in its .proto definition.
    * @param msg_in        Kdb object to be converted.  Its reference count will
    * be automatically decremented when control passes back to q.
    * @return              Kdb char array containing the serialized message
@@ -61,9 +60,8 @@ extern "C"
    * @brief Parses the proto-serialized char array into a protobuf message then
    * converts that into the corresponding kdb object.
    *
-   * @param message_type  String containing the name of the message type.
-   * Must be present in the MessageFactory since it needs to create a protobuf
-   * message object of the correct type using MessageFactory::CreateMessage().
+   * @param message_type  String containing the name of the message type.  Must
+   * be the same as the message name in its .proto definition.
    * @param char_array    Kdb char array containing the serialized protobuf
    * message.  Its reference count will be automatically decremented when
    * control passes back to q.
@@ -83,8 +81,7 @@ extern "C"
    * writes the result to the specified file.
    *
    * @param message_type  String containing the name of the message type.  Must
-   * be present in the MessageFactory since it needs to create a protobuf
-   * message object of the correct type using MessageFactory::CreateMessage().
+   * be the same as the message name in its .proto definition.
    * @param filename      String containing the name of the file to write to.
    * @param msg_in        Kdb object to be converted.  Its reference count will
    * be automatically decremented when control passes back to q.
@@ -97,8 +94,7 @@ extern "C"
    * protobuf message then converts that into the corresponding kdb object.
    *
    * @param message_type  String containing the name of the message type.  Must
-   * be present in the MessageFactory since it needs to create a protobuf
-   * message object of the correct type using MessageFactory::CreateMessage().
+   * be the same as the message name in its .proto definition.
    * @param filename      String containing the name of the file to read from.
    * @return              Kdb object corresponding to the protobuf message
   */
@@ -112,8 +108,7 @@ extern "C"
    * display.
    *
    * @param message_type  String containing the name of the message type.  Must
-   * be present in the MessageFactory since it needs to create a protobuf
-   * message object of the correct type using MessageFactory::CreateMessage().
+   * be the same as the message name in its .proto definition.
    * @return              NULL
   */
   EXP K GetMessageSchema(K message_type);

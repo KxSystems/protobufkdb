@@ -1,3 +1,4 @@
+#include <google/protobuf/descriptor.h>
 #include "MessageFactory.h"
 
 
@@ -14,9 +15,9 @@ const MessageFactory* MessageFactory::Instance()
 
 gpb::Message* MessageFactory::CreateMessage(const char* message_type, gpb::Arena* arena) const
 {
-  auto iter = message_lookup.find(message_type);
-  if (iter == message_lookup.end())
+  auto msg_desc = gpb::DescriptorPool::generated_pool()->FindMessageTypeByName(message_type);
+  if (msg_desc == nullptr)
     return NULL;
-  return iter->second->New(arena);
+  else
+    return gpb::MessageFactory::generated_factory()->GetPrototype(msg_desc)->New(arena);
 }
-
