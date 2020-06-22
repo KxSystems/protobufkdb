@@ -48,9 +48,11 @@ If not installed or you wish to upgrade please follow Google's C++ installation 
 ./configure --prefix=/usr "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
 ```
 
-On MacOS a brew packaged version of protobuf can be used as long as it includes the the protoc compiler, headers and libprotobuf.
+On MacOS, a brew packaged version of protobuf can be used as long as it includes the the protoc compiler, headers and libprotobuf.
 
 On Linux, although there are numerous packaged versions of protobuf, it is recommended that you build from source.  There is a large disto dependent variation in the `apt-get` packages and unless the package was build with `-fPIC`, symbol relocation errors will occur during linking of protobufkdb.  Similarly `conda` packages can cause problems for the cmake functionality used by protobufkdb to locate the protobuf installation on the system.
+
+On Windows, it is also recommended that you build from source using the cmake instructions [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md).  The vcpkg installation of protobuf currently builds a DLL rather than a static library (open [issue](https://github.com/microsoft/vcpkg/issues/7936)) which is [not recommended](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#dlls-vs-static-linking) by Google and will cause problems since protobufkdb builds a DLL.
 
 
 
