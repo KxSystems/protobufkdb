@@ -1,6 +1,5 @@
 #include "KdbTypes.h"
 #include "TypeCheck.h"
-#include "ProtoHeaders.h"
 
 
 // Singleton instance

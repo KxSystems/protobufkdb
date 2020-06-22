@@ -48,13 +48,17 @@ If not installed or you wish to upgrade please follow Google's C++ installation 
 ./configure --prefix=/usr "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
 ```
 
-On MacOS a brew packaged version of protobuf can be used as long as it includes the the protoc compiler, headers and libprotobuf.
+On MacOS, a brew packaged version of protobuf can be used as long as it includes the the protoc compiler, headers and libprotobuf.
 
 On Linux, although there are numerous packaged versions of protobuf, it is recommended that you build from source.  There is a large disto dependent variation in the `apt-get` packages and unless the package was build with `-fPIC`, symbol relocation errors will occur during linking of protobufkdb.  Similarly `conda` packages can cause problems for the cmake functionality used by protobufkdb to locate the protobuf installation on the system.
+
+On Windows, it is also recommended that you build from source using the cmake instructions [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md).  The vcpkg installation of protobuf currently builds a DLL rather than a static library (open [issue](https://github.com/microsoft/vcpkg/issues/7936)) which is [not recommended](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#dlls-vs-static-linking) by Google and will cause problems since protobufkdb builds a DLL.
 
 
 
 ## Integration
+
+### 1. Protobuf schema files
 
 protoc compiles your message definitions based on a file defined as:
 
@@ -71,15 +75,14 @@ producing both a C++ source and header file defined as:
 
 These files contain the classes and metadata which describe the schema and the functionality required to serialise to and parse from this schema.
 
-For any new schema, a few simple changes are required to protobufkdb to facilitate the creation of these messages and inspection of their structure.
+### 2. Add the \<schema\>.proto file to the build procedure
 
-### 1. Add the \<schema\>.proto file to the build procedure
+protobufkdb uses a factory to create a message class object of the correct type from the message type string passed from kdb.  The lookup requires that the message type string passed from kdb is the same as the message name in its .proto definition.
 
-The addition of a new schema can be broken down into the following steps:
+In order to populate the factory, the .proto files for all messages to be serialised/parsed must be incorporated into the build as follows:
 
-i. Place the new `<schema>.proto` file into the `src/` subdirectory 
-
-ii. Edit `src/CMakeLists.txt` file, adding the new .proto file to the line below the following comment:
+1. Place the new `<schema>.proto` file into the `src/` subdirectory
+2. Edit `src/CMakeLists.txt` file, adding the new .proto file to the line below the following comment:
 
   ```cmake
   # ### GENERATE PROTO FILES ###
@@ -99,76 +102,6 @@ ii. Edit `src/CMakeLists.txt` file, adding the new .proto file to the line below
 
 **Note:** `MY_PROTO_FILES` is a CMake space separated list, do not wrap the list of .proto files in a string.
 
-### 2. Include the generated header file from the source
-
-Edit `src/ProtoHeaders.h` and `#include` the generated header file below the comment:
-
-```c++
-// ### PROTOC GENERATED HEADERS ###
-```
-
-For example, `examples.proto` will generate a `examples.pb.h` file, which mush be added as follows:
-
-```c++
-#include "examples.pb.h"
-```
-
-### 3. Add a lookup string to the factory for each message type
-
-protobufkdb uses a factory to create a message class object of the correct type from the message type string passed from kdb.  This requires a corresponding lookup string in the factory relating to each message type which is to be serialised/parsed.
-
-Edit `src/MessageFactory.h` and add a lookup string for each message in the new .proto into the `MessageTypes` namespace below the comment:
-
-```c++
-// ### MESSAGE TYPE LOOKUP NAMES ###
-```
-
-`examples.proto` defines the messages `ScalarExample`, `RepeatedExample`, `SubMessageExample`, `MapExample`, `SpecifierExample`, `OneoffExample` and as such the following must be added:
-
-```c++
-  const std::string ScalarExample = "ScalarExample";
-  const std::string RepeatedExample = "RepeatedExample";
-  const std::string SubMessageExample = "SubMessageExample";
-  const std::string MapExample = "MapExample";
-  const std::string SpecifierExample = "SpecifierExample";
-  const std::string OneoffExample = "OneoffExample";
-```
-
-### 4. Populate the factory lookup map
-
-For each required message type, there must be a static message defined which is inserted into a lookup map. Note that these static messages are only used as a template to create new messages of the correct type - they are not populated directly by the interface.
-
-To assist with this the following helper macro has been provided:
-
-```c++
-// Helper macro to populate the lookup map
-//
-// @param type        The typename of the message class, must be the same as the
-//                    corresponding string declaration in the MessageTypes namespace
-//
-// @param static_var  Static variable to create for the message
-//
-#define INSERT_MESSAGE_TYPE(type, static_var)                 \
-  static type static_var;                                     \
-  message_lookup.insert({ MessageTypes::type, &static_var });
-```
-
-Edit `src/MessageFactory.h` and call the macro for each message in the new .proto below the comment:
-
-```c++
-// ### POPULATE FACTORY LOOKUP MAP ###
-```
-
-`examples.proto` defines the messages `ScalarExample`, `RepeatedExample`, `SubMessageExample`, `MapExample`, `SpecifierExample`, `OneoffExample` and as such the following must be added:
-
-```c++
-INSERT_MESSAGE_TYPE(ScalarExample, scalar_example);
-INSERT_MESSAGE_TYPE(RepeatedExample, repeated_example);
-INSERT_MESSAGE_TYPE(SubMessageExample, submessage_example);
-INSERT_MESSAGE_TYPE(MapExample, map_example);
-INSERT_MESSAGE_TYPE(SpecifierExample, specifier_example);
-INSERT_MESSAGE_TYPE(OneoffExample, oneoff_example);
-```
 
 
 ## Building protobufkdb
@@ -481,7 +414,7 @@ Syntax: `.protobufkdb.displayMessageSchema[message_type]`
 
 Where: 
 
-- `message_type` is a string containing the name of the message type. Must be present in the MessageFactory since it needs to create a protobuf message object of the correct type using MessageFactory::CreateMessage().
+- `message_type` is a string containing the name of the message type.  Must be the same as the message name in its .proto definition.
 
 **Note:** This function is intended for debugging use only. The schema is generated by the libprotobuf DebugString() functionality and displayed on stdout to preserve the formatting and indentation.
 
@@ -493,7 +426,7 @@ Syntax: `.protobufkdb.saveMessage[message_type; file_name; msg_in]`
 
 Where:
 
-- `message_type` is a string containing the name of the message type.  Must be present in the MessageFactory since it needs to create a protobuf message object of the correct type using MessageFactory::CreateMessage().
+- `message_type` is a string containing the name of the message type.  Must be the same as the message name in its .proto definition.
 - `file_name` is a string containing the name of the file to write to.
 - `msg_in` is the kdb object to be converted.
 
@@ -505,7 +438,7 @@ Syntax: `.protobufkdb.loadMessage[message_type; file_name]`
 
 Where:
 
-- `message_type` is a string containing the name of the message type.  This must be present in the MessageFactory since it needs to create a protobuf message object of the correct type using MessageFactory::CreateMessage().
+- `message_type` is a string containing the name of the message type.  Must be the same as the message name in its .proto definition.
 - `file_name` is a string containing the name of the file to read from.
 
 returns a kdb object corresponding to the protobuf message.
@@ -518,7 +451,7 @@ Syntax: `.protobufkdb.serializeArray[message_type; msg_in]`
 
 Where:
 
-- `message_type` is a string containing the name of the message type.  This must be present in the MessageFactory since it needs to create a protobuf message object of the correct type using MessageFactory::CreateMessage().
+- `message_type` is a string containing the name of the message type.  Must be the same as the message name in its .proto definition.
 - `msg_in` is the kdb object to be converted.
 
 returns Kdb char array containing the serialized message.
@@ -531,7 +464,7 @@ Syntax: `.protobufkdb.parseArray[message_type; char_array]`
 
 Where:
 
-- `message_type` is a string containing the name of the message type. This must be present in the MessageFactory since it needs to create a protobuf message object of the correct type using MessageFactory::CreateMessage().
+- `message_type` is a string containing the name of the message type.  Must be the same as the message name in its .proto definition.
 - `char_array` is a kdb char array containing the serialized protobuf message.
 
 returns Kdb object corresponding to the protobuf message.
