@@ -1,6 +1,8 @@
 #ifndef __MESSAGE_FACTORY_H__
 #define __MESSAGE_FACTORY_H__
 
+#include <string>
+
 #include <google/protobuf/message.h>
 #include <google/protobuf/arena.h>
 
@@ -32,7 +34,7 @@ public:
    * @param arena         Optional google arena in which to create the message
    * @return              New protobuf message        
   */
-  gpb::Message* CreateMessage(const char* message_type, gpb::Arena* arena = NULL) const;
+  gpb::Message* CreateMessage(const std::string& message_type, gpb::Arena* arena = NULL) const;
 };
 
 #endif // __MESSAGE_FACTORY_H__

@@ -31,9 +31,9 @@ inline bool IsKdbString(K str)
   return str != NULL && (str->t == -KS || str->t == KC);
 }
 
-inline const char* GetKdbString(K str)
+inline const std::string GetKdbString(K str)
 {
-  return str->t == -KS ? str->s : (S)kG(str);
+  return str->t == -KS ? str->s : std::string((S)kG(str), str->n);
 }
 
 K Init(K unused)

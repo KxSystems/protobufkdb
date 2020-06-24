@@ -19,7 +19,7 @@ const MessageParser* MessageParser::Instance()
   return instance;
 }
 
-K MessageParser::SerializeArray(const char* message_type, K k_msg) const
+K MessageParser::SerializeArray(const std::string& message_type, K k_msg) const
 {
   // Create the intermediate message in a unique_ptr so we don't have to worry
   // about explicitly freeing it if there is an error
@@ -43,7 +43,7 @@ K MessageParser::SerializeArray(const char* message_type, K k_msg) const
   return kpn((S)serialized.c_str(), serialized.length());
 }
 
-K MessageParser::SerializeArrayArena(const char* message_type, K k_msg) const
+K MessageParser::SerializeArrayArena(const std::string& message_type, K k_msg) const
 {
   gpb::Arena arena;
 
@@ -70,7 +70,7 @@ K MessageParser::SerializeArrayArena(const char* message_type, K k_msg) const
   return kpn((S)serialized.c_str(), serialized.length());
 }
 
-K MessageParser::ParseArray(const char* message_type, K char_array) const
+K MessageParser::ParseArray(const std::string& message_type, K char_array) const
 {
   // Create the intermediate message in a unique_ptr so we don't have to worry
   // about explicitly freeing it if there is an error
@@ -84,7 +84,7 @@ K MessageParser::ParseArray(const char* message_type, K char_array) const
   return MessageFormat::Instance()->GetMessage(*msg);
 }
 
-K MessageParser::ParseArrayArena(const char* message_type, K char_array) const
+K MessageParser::ParseArrayArena(const std::string& message_type, K char_array) const
 {
   gpb::Arena arena;
 
@@ -101,7 +101,7 @@ K MessageParser::ParseArrayArena(const char* message_type, K char_array) const
   return MessageFormat::Instance()->GetMessage(*msg);
 }
 
-K MessageParser::SaveMessage(const char* message_type, const char* filename, K k_msg) const
+K MessageParser::SaveMessage(const std::string& message_type, const std::string& filename, K k_msg) const
 {
   // Create the intermediate message in a unique_ptr so we don't have to worry
   // about explicitly freeing it if there is an error
@@ -128,7 +128,7 @@ K MessageParser::SaveMessage(const char* message_type, const char* filename, K k
   return (K)0;
 }
 
-K MessageParser::LoadMessage(const char* message_type, const char* filename) const
+K MessageParser::LoadMessage(const std::string& message_type, const std::string& filename) const
 {
   // Create the intermediate message in a unique_ptr so we don't have to worry
   // about explicitly freeing it if there is an error
