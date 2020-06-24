@@ -1,6 +1,8 @@
 #ifndef __MESSAGE_PARSER_H__
 #define __MESSAGE_PARSER_H__
 
+#include <string>
+
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/arena.h>
@@ -38,7 +40,7 @@ public:
    * be automatically decremented when control passes back to q.
    * @return              Kdb char array containing the serialized message
   */
-  K SerializeArray(const char* message_type, K k_msg) const;
+  K SerializeArray(const std::string& message_type, K k_msg) const;
 
   /**
    * @brief Converts the kdb object to a protobuf message then serializes that
@@ -50,7 +52,7 @@ public:
    * be automatically decremented when control passes back to q.
    * @return              Kdb char array containing the serialized message
   */
-  K SerializeArrayArena(const char* message_type, K k_msg) const;
+  K SerializeArrayArena(const std::string& message_type, K k_msg) const;
 
   /**
    * @brief Parses the proto-serialized char array into a protobuf message then
@@ -63,7 +65,7 @@ public:
    * control passes back to q.
    * @return              Kdb object corresponding to the protobuf message
   */
-  K ParseArray(const char* message_type, K char_array) const;
+  K ParseArray(const std::string& message_type, K char_array) const;
 
   /**
    * @brief Parses the proto-serialized char array into a protobuf message then
@@ -77,7 +79,7 @@ public:
    * control passes back to q.
    * @return              Kdb object corresponding to the protobuf message
   */
-  K ParseArrayArena(const char* message_type, K char_array) const;
+  K ParseArrayArena(const std::string& message_type, K char_array) const;
 
   /**
    * @brief Converts the kdb object to a protobuf message, serializes that then
@@ -90,7 +92,7 @@ public:
    * be automatically decremented when control passes back to q.
    * @return              NULL
   */
-  K SaveMessage(const char* message_type, const char* filename, K k_msg) const;
+  K SaveMessage(const std::string& message_type, const std::string& filename, K k_msg) const;
 
   /**
    * @brief Parses the proto-serialized stream from the file specified to a
@@ -101,7 +103,7 @@ public:
    * @param filename      Name of the file to read from.
    * @return              Kdb object corresponding to the protobuf message
   */
-  K LoadMessage(const char* message_type, const char* filename) const;
+  K LoadMessage(const std::string& message_type, const std::string& filename) const;
 };
 
 #endif // __MESSAGE_PARSER_H__
