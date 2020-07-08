@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option cc_enable_arenas = true;
+
+//import "kdb_type_specifier.proto";
+
+
+message ImportExample {
+    int32   scalar_int32    = 1;
+    double  scalar_double   = 2;
+    string  scalar_string   = 3;  
+}

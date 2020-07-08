@@ -80,20 +80,22 @@ void MessageFormat::SetMessage(gpb::Message* msg, K k_msg) const
   // Mixed list -> message
   const auto desc = msg->GetDescriptor();
 
-  // Check the the kdb structure is a mixed list and the list length equals the
-  // number of fields in the schema.
-  //
-  // Note: This check will fail for a single field message where q has removed
-  // the surrounding mixed list.  However, such usage would be a edge case
-  // caused by a bizarre and hard to justify proto schema.  Handling it would
-  // make a mess of the proto <-> kdb mapping, the iteration/recursion
-  // strategies and type checking for minimal practical benefit.
-  TYPE_CHECK_MESSAGE(k_msg->t != 0, desc->full_name(), 0, k_msg->t);
-  TYPE_CHECK_FIELD_NUM(desc->field_count() != k_msg->n, desc->full_name(), desc->field_count(), k_msg->n);
+  if (desc->field_count() == 1 && k_msg->t != 0) {
+    // This is a single field message where the kdb structure isn't a mixed
+    // list.  We'll assume that q has removed the surrounding mixed list and
+    // bypass the type checking below.  Though not ideal, such usage would be a
+    // edge case caused by a strange and unsual proto schema.
+    SetMessageField(msg, desc->field(0), k_msg);
+  } else {
+    // Check the the kdb structure is a mixed list and the list length equals the
+    // number of fields in the schema.
+    TYPE_CHECK_MESSAGE(k_msg->t != 0, desc->full_name(), 0, k_msg->t);
+    TYPE_CHECK_FIELD_NUM(desc->field_count() != k_msg->n, desc->full_name(), desc->field_count(), k_msg->n);
 
-  // Set each field using its mixed list item
-  for (int i = 0; i < k_msg->n; ++i)
-    SetMessageField(msg, desc->field(i), kK(k_msg)[i]);
+    // Set each field using its mixed list item
+    for (int i = 0; i < k_msg->n; ++i)
+      SetMessageField(msg, desc->field(i), kK(k_msg)[i]);
+  }
 }
 
 

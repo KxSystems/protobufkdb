@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+option cc_enable_arenas = true;
+
+import "kdb_type_specifier.proto";
+
+message ScalarTestDynamic {
+    int32   scalar_int32    = 1;
+    uint32  scalar_uint32   = 2;
+    int64   scalar_int64    = 3;
+    uint64  scalar_uint64   = 4;
+    double  scalar_double   = 5;
+    float   scalar_float    = 6;
+    bool    scalar_bool     = 7;
+    
+    enum EnumType {
+        ZERO    = 0;
+        ONE     = 1;
+        TWO     = 2;
+    }
+    EnumType scalar_enum    = 8;
+    
+    string  scalar_string   = 9;  
+}
+
+message RepeatedTestDynamic {
+    repeated int32      rep_int32   = 1;
+    repeated uint32     rep_uint32  = 2;
+    repeated int64      rep_int64   = 3;
+    repeated uint64     rep_uint64  = 4;
+    repeated double     rep_double  = 5;
+    repeated float      rep_float   = 6;
+    repeated bool       rep_bool    = 7;
+    
+    enum EnumType {
+        ZERO    = 0;
+        ONE     = 1;
+        TWO     = 2;
+    }
+    repeated EnumType   rep_enum    = 8;
+    
+    repeated string     rep_string  = 9;
+}
+
+message SubMessageTestDynamic {
+    ScalarTestDynamic              sub_scalar  = 1;
+    repeated RepeatedTestDynamic   sub_rep     = 2;
+}
+
+message MapTestDynamic {
+    // Map keys can only be integral types or string
+    map<uint32, uint64>         map_uint        = 1;
+    map<int32,  int64>          map_int         = 2;
+    map<uint64, double>         map_double      = 3;
+    map<int64,  float>          map_float       = 4;
+
+    enum EnumType {
+        ZERO    = 0;
+        ONE     = 1;
+        TWO     = 2;
+    }
+    map<bool, EnumType>         map_bool_enum   = 5;
+
+    map<string, ScalarTestDynamic>     map_message     = 6;
+    map<string, SubMessageTestDynamic> map_depth       = 7;
+}
+
+message ScalarSpecifiersTestDynamic {
+    int64   timestamp   = 1 [(kdb_type) = TIMESTAMP];
+    uint32  month       = 2 [(kdb_type) = MONTH];
+    int32   date        = 3 [(kdb_type) = DATE];
+    double  datetime    = 4 [(kdb_type) = DATETIME];
+    uint64  timespan    = 5 [(kdb_type) = TIMESPAN];
+    int32   minute      = 6 [(kdb_type) = MINUTE];
+    uint32  second      = 7 [(kdb_type) = SECOND];
+    int32   time        = 8 [(kdb_type) = TIME];
+    string  guid        = 9 [(kdb_type) = GUID];
+}
+
+message RepeatedSpecifiersTestDynamic {
+    repeated int64  timestamp   = 1 [(kdb_type) = TIMESTAMP];
+    repeated uint32 month       = 2 [(kdb_type) = MONTH];
+    repeated int32  date        = 3 [(kdb_type) = DATE];
+    repeated double datetime    = 4 [(kdb_type) = DATETIME];
+    repeated uint64 timespan    = 5 [(kdb_type) = TIMESPAN];
+    repeated int32  minute      = 6 [(kdb_type) = MINUTE];
+    repeated uint32 second      = 7 [(kdb_type) = SECOND];
+    repeated int32  time        = 8 [(kdb_type) = TIME];
+    repeated string guid        = 9 [(kdb_type) = GUID];
+}
+
+message MapSpecifiersTestDynamic {
+    map<uint64, int32>  timestamp_month = 1 [(map_kdb_type).key_type = TIMESTAMP, (map_kdb_type).value_type = MONTH];
+    map<uint32, double> date_datetime   = 2 [(map_kdb_type).key_type = DATE, (map_kdb_type).value_type = DATETIME];
+    map<int64,  uint32> timespan_minute = 3 [(map_kdb_type).key_type = TIMESPAN, (map_kdb_type).value_type = MINUTE];
+    map<int32,  uint32> second_time     = 4 [(map_kdb_type).key_type = SECOND, (map_kdb_type).value_type = TIME];
+    map<string, bytes>  guids_guidb     = 5 [(map_kdb_type).key_type = GUID, (map_kdb_type).value_type = GUID];
+}
+
+message OneofTestDynamic {
+    message OneofMsg {
+        int64           scalar_int64    = 1;
+        repeated double rep_double      = 2;
+    }
+    oneof test_oneof {
+        double      oneof_scalar    = 1;
+        int32       oneof_specifier = 2 [(kdb_type) = SECOND];
+        OneofMsg    oneof_msg       = 3;
+    }
+    string non_oneoff_str           = 4;
+}
