@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option cc_enable_arenas = true;
+
+import "kdb_type_specifier.proto";
+
+
+message ScalarExampleDynamic {
+    int32   scalar_int32    = 1;
+    double  scalar_double   = 2;
+    string  scalar_string   = 3;  
+}
+
+message RepeatedExampleDynamic {
+    repeated int32      rep_int32   = 1;
+    repeated double     rep_double  = 2;
+    repeated string     rep_string  = 3;
+}
+
+message SubMessageExampleDynamic {
+    ScalarExampleDynamic            sub_scalar  = 1;
+    repeated RepeatedExampleDynamic sub_rep     = 2;
+}
+
+message MapExampleDynamic {
+    // Map keys can only be integral types or string
+    map<int64, double>          map_scalar  = 1;
+    map<string, ScalarExampleDynamic>  map_msg     = 2;
+}
+
+message SpecifierExampleDynamic {
+    int32           date        = 1 [(kdb_type) = DATE];
+    repeated int32  time        = 2 [(kdb_type) = TIME];
+    map<string, int64>  guid_timespan  = 3 [(map_kdb_type).key_type = GUID,
+                                            (map_kdb_type).value_type = TIMESPAN];
+}
+
+message OneofExampleDynamic {
+    oneof test_oneof {
+        double  oneof_double    = 1;
+        int32   oneof_specifier = 2 [(kdb_type) = SECOND];
+    }
+    string non_oneoff           = 3;
+}
