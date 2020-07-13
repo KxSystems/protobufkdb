@@ -63,7 +63,8 @@ If only dynamically imported message definitions are required then the packaged 
 - C++11 or later [^2] 
 - CMake ≥ 3.1 [^2]
 
-[^1]: Protocol Buffers language version 3 [(proto3)](https://developers.google.com/protocol-buffers/docs/proto3) simplifies the protocol buffer language, both for ease of use and to make it available in a  wider range of programming languages.  However, schemas defined in [proto2](https://developers.google.com/protocol-buffers/docs/cpptutorial) should also be supported.
+[^1]: Protocol Buffers language version 3 ([proto3](https://developers.google.com/protocol-buffers/docs/proto3)) simplifies the protocol buffer language, both for ease of use and to make it available in a  wider range of programming languages.  However, schemas defined in [proto2](https://developers.google.com/protocol-buffers/docs/cpptutorial) should also be supported.
+
 [^2]: Required when building from source
 
 ### Installing a release
