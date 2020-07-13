@@ -423,6 +423,8 @@ q)array:.protobufkdb.serializeArray[`ScalarExample;(enlist 12i;55f;`str)]
 
 ## Function Reference
 
+Where a function takes a `message_type` parameter to specify the name of the message to be be processed, the interface first looks for that message type in the compiled in messages.  If that fails it then searches the imported message definitions.  Only if the message type is not found in either is an error returned.
+
 #### .protobufkdb.init
 
 Checks that the version of the library that we linked against is compatible with the version of the headers we compiled against.
