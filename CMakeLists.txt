@@ -5,18 +5,21 @@ project(protobufkdb CXX)
 # the same directory as the CMakeLists.txt which builds them
 add_subdirectory(src)
 
-# Check if 32-bit/64-bit machine
-set(BITNESS 32)
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(BITNESS 64)
+set(MY_LIBRARY_NAME protobufkdb)
+
+if (MSVC)
+    set(INSTALL_SCRIPT "install.bat")
+else()
+    set(INSTALL_SCRIPT "install.sh")
 endif()
 
 # Minimum build/install move q-script to $QHOME
 file(TO_CMAKE_PATH "$ENV{QHOME}" QHOME_PATH)
 install(DIRECTORY "q/" DESTINATION "${QHOME_PATH}" CONFIGURATIONS MinSizeRel Release FILES_MATCHING PATTERN "*.q")
 
-# Don't really need an install package...
-install(FILES README.md install.bat install.sh LICENSE ${INSTALL_SCRIPT} DESTINATION ${PROJECT_BINARY_DIR}/install/ CONFIGURATIONS Release)
-install(DIRECTORY examples DESTINATION ${PROJECT_BINARY_DIR}/install CONFIGURATIONS Release)
-install(DIRECTORY q DESTINATION ${PROJECT_BINARY_DIR}/install CONFIGURATIONS Release)
-install(DIRECTORY proto DESTINATION ${PROJECT_BINARY_DIR}/install CONFIGURATIONS Release)
+# Add the copied files to the install package
+install(FILES README.md LICENSE ${INSTALL_SCRIPT} DESTINATION ${PROJECT_BINARY_DIR}/${MY_LIBRARY_NAME}/ CONFIGURATIONS Release)
+install(DIRECTORY examples DESTINATION ${PROJECT_BINARY_DIR}/${MY_LIBRARY_NAME} CONFIGURATIONS Release)
+install(DIRECTORY q DESTINATION ${PROJECT_BINARY_DIR}/${MY_LIBRARY_NAME} CONFIGURATIONS Release)
+install(DIRECTORY proto DESTINATION ${PROJECT_BINARY_DIR}/${MY_LIBRARY_NAME} CONFIGURATIONS Release)
+
