@@ -68,7 +68,6 @@ before_install:
     else
       export FILE_TAIL="tgz";
     fi
-  - ls -R cbuild
   - export FILE_NAME=$FILE_ROOT-$TRAVIS_OS_NAME-$TRAVIS_BRANCH.$FILE_TAIL
 
   # Make binaries for the library as appropriate

@@ -48,7 +48,7 @@ bool MessageFactory::ImportProtoFile(const std::string& filename, std::string& e
   return true;
 }
 
-void MessageFactory::ListImportedMessageTypes(std::vector<std::string>* output)
+void MessageFactory::ListImportedMessageTypes(std::vector<std::string>* output) const
 {
   // DescriptorPoolDatabase inherits from DescriptorDatabase but doesn't
   // implement the FindAllMessageNames() method.  

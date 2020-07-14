@@ -568,7 +568,7 @@ message ScalarExample {
 q)a:(12i;55f;`str)
 ```
 
-Serialise a kdb structure to a protobuf encoded char array:
+Serialise the kdb structure to a protobuf encoded char array:
 
 ```
 q)array:.protobufkdb.serializeArray[`ScalarExample;a]

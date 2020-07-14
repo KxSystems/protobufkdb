@@ -118,7 +118,7 @@ public:
    *
    * @param output  The list of imported message types.
   */
-  void ListImportedMessageTypes(std::vector<std::string>* output);
+  void ListImportedMessageTypes(std::vector<std::string>* output) const;
 };
 
 #endif // __MESSAGE_FACTORY_H__
