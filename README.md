@@ -37,7 +37,7 @@ protoc compiles your message definitions based on a file defined as:
 
 producing both a C++ source and header file defined as:
 
-```
+```bash
 <schema>.pb.cc
 <schema>.pb.h
 ```
@@ -621,7 +621,7 @@ q).protobufkdb.addProtoImportPath["../proto"]
 
 Note that `examples_dynamic.proto` imports `kdb_type_specifier.proto` but that is also present in the `proto` subdirectory so no further import locations are required.  However, if the required `.proto` files are spread across different locations then multiple import paths can be specified.
 
-The the message definitions contained in `examples_dynamic.proto` are imported into the interface:
+The message definitions contained in `examples_dynamic.proto` are imported into the interface:
 
 ```
 q).protobufkdb.importProtoFile["examples_dynamic.proto"]
