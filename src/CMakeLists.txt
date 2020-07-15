@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(MY_LIBRARY_NAME protobufkdb)
 file(GLOB SRC_FILES *.cpp)
@@ -28,11 +28,24 @@ message(STATUS "Generator : ${CMAKE_GENERATOR}")
 message(STATUS "Build Tool : ${CMAKE_BUILD_TOOL}")
 message(STATUS "Proto files: ${MY_PROTO_FILES}")
 
+# When building protobuf from source using cmake it statically links against the MSVC runtime.
+# Since we are statically linking againat libprotobuf.lib, we must use the same runtime.
+if(MSVC)
+  foreach(flag_var
+      CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+      CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+    if(${flag_var} MATCHES "/MD")
+      string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+    endif(${flag_var} MATCHES "/MD")
+  endforeach()
+endif()
+
 include_directories (
     $ENV{BUILD_HOME}/include 
     ${CMAKE_BINARY_DIR} # For 'k.h', downloaded below
 )
 
+#set(Protobuf_DEBUG ON)
 set(Protobuf_USE_STATIC_LIBS ON)
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
@@ -51,12 +64,10 @@ set(PROTO_HDRS "${PROTO_HDRS};${PROTO_KDB_HDRS}")
 file(DOWNLOAD "https://github.com/KxSystems/kdb/raw/master/c/c/k.h" "${CMAKE_BINARY_DIR}/k.h" )
 
 if (MSVC)
-    set(INSTALL_SCRIPT "install.bat")
     file(DOWNLOAD "https://github.com/KxSystems/kdb/raw/master/w64/q.lib" "${CMAKE_BINARY_DIR}/q.lib" )
     set(LINK_LIBS "${CMAKE_BINARY_DIR}/q.lib")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /D WIN32_LEAN_AND_MEAN /D _CRT_SECURE_NO_WARNINGS /D QPROTOBUF_EXPORTS") 
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /D WIN32_LEAN_AND_MEAN /D _CRT_SECURE_NO_WARNINGS") 
 else()
-    set(INSTALL_SCRIPT "install.sh")
     set(LINK_LIBS "")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wno-strict-aliasing")
 endif()
@@ -86,5 +97,5 @@ endif()
 file(TO_CMAKE_PATH "$ENV{QHOME}" QHOME_PATH)
 install(TARGETS ${MY_LIBRARY_NAME} DESTINATION "${QHOME_PATH}/${OSFLAG}${BITNESS}/" CONFIGURATIONS MinSizeRel Release)
 
-# Don't really need an install package...
-install(TARGETS ${MY_LIBRARY_NAME} DESTINATION ${PROJECT_BINARY_DIR}/install/lib CONFIGURATIONS Release)
+# Add the shared object to the install package
+install(TARGETS ${MY_LIBRARY_NAME} DESTINATION ${PROJECT_BINARY_DIR}/${MY_LIBRARY_NAME}/lib CONFIGURATIONS Release)

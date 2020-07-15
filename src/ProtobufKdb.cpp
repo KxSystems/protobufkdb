@@ -121,6 +121,44 @@ K GetMessageSchema(K message_type)
   return kpn((S)debug_str.c_str(), debug_str.length());
 }
 
+K AddProtoImportPath(K import_path)
+{
+  if (!IsKdbString(import_path))
+    return krr((S)"Specify import path");
+  
+  MessageFactory::Instance()->AddProtoImportPath(GetKdbString(import_path));
+
+  return (K)0;
+}
+
+K ImportProtoFile(K filename)
+{
+  if (!IsKdbString(filename))
+    return krr((S)"Specify filename");
+
+  std::string error;
+  if (!MessageFactory::Instance()->ImportProtoFile(GetKdbString(filename), error)) {
+    static char error_msg[1024];
+    strncpy(error_msg, error.c_str(), sizeof(error_msg));
+    return krr(error_msg);
+  }
+
+  return (K)0;
+}
+
+K ListImportedMessageTypes(K unused)
+{
+  std::vector<std::string> output;
+  MessageFactory::Instance()->ListImportedMessageTypes(&output);
+
+  const size_t num_messages = output.size();
+  K message_list = ktn(KS, num_messages);
+  for (auto i = 0; i < num_messages; ++i)
+    kS(message_list)[i] = ss((S)output[i].c_str());
+
+  return message_list;
+}
+
 int main(int argc, char* argv[])
 {
   Init((K)0);

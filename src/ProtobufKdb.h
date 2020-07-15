@@ -112,6 +112,40 @@ extern "C"
    * @return              NULL
   */
   EXP K GetMessageSchema(K message_type);
+
+  /**
+   * @brief Adds a path to be searched when dynamically importing .proto file
+   * definitions.  Can be called more than once to specify multiple import
+   * locations.
+   *
+   * @param import_path String containing the path to be searched for proto file
+   * definitions.  Can be absolute or relative.
+  */
+  EXP K AddProtoImportPath(K import_path);
+
+  /**
+   * @brief Dynamically imports a .proto file definition into the interface,
+   * allowing the messages types defined in that file to be parsed and
+   * serialised by the interface.
+   *
+   * @param filename  The name of the .proto file to be imported.  Must not
+   * contain any directory specifiers - directory search locations should be
+   * setup up beforehand using AddProtoImportPath().
+   * @return          If the file fails to parse, returns an error containing
+   * information on the errors and warnings which occurred.
+  */
+  EXP K ImportProtoFile(K filename);
+
+  /**
+   * @brief Returns a list of the message types which have been successfully
+   * imported.
+   *
+   * Note: The list does not contain message types which have been compiled into
+   * the interface.
+   *
+   * @return Symbol list of the successfully imported message types.
+*/
+  EXP K ListImportedMessageTypes(K unused);
 }
 
 #endif // __PROTOBUF_KDB_H__

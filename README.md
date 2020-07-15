@@ -21,18 +21,77 @@ Protocol Buffers (Protobuf) is a language-neutral, platform-neutral, extensible 
 
 
 
+## Importing protobuf schema files
+
+Protobuf messages are defined in a `.proto` schema file and these message definitions must be imported into the interface in order for it to be able to create messages of those types.  The interface supports two ways to do this (or a combination of both) but the method used will impact how protobufkdb should be installed.
+
+### 1.  Compiling in the generated message definitions
+
+Normally the protocol buffers compiler is used to generate source code from the `.proto` schema files which is then compiled in to the binary:
+
+protoc compiles your message definitions based on a file defined as:
+
+```bash
+<schema>.proto
+```
+
+producing both a C++ source and header file defined as:
+
+```bash
+<schema>.pb.cc
+<schema>.pb.h
+```
+
+These files contain the classes and metadata which describe the schema and the functionality required to serialise to and parse from this schema.
+
+This mechanism is more performant but does require that protobufkdb be built from source since the binary needs to be rebuilt to change the statically available messages.
+
+### 2.  Dynamically importing the message definitions at runtime
+
+In order to provide greater flexibility and usability it is also possible to dynamically import a `.proto` schema file at runtime from within the q session.  Imported message definitions can then be used subsequently by the interface and behave similarly to compiled in ones (the import procedure leverages the same functionality as used by the protobuf compiler).
+
+If only dynamically imported message definitions are required then the packaged installation of protobufkdb can be used.  However, importing message definitions is less performant - in addition to the one off import cost there is also an overhead from the subsequent use of these dynamically created messages (approx. 10% for parsing, 20% for serialising).  Alternatively a hybrid approach can be employed where dynamic messages are used during development until the schemas are finalised at which point they are compiled into the interface.
+
+
+
 ## Installation
 
 ### Requirements
 
 - kdb+ ≥ 3.5 64-bit (Linux/MacOS/Windows)
 - protobuf ≥ 3.0 (recommended [^1])
-- C++11 or later
-- CMake ≥ 3.1
+- C++11 or later [^2] 
+- CMake ≥ 3.1 [^2]
 
-[^1]: Protocol Buffers language version 3 [(proto3)](https://developers.google.com/protocol-buffers/docs/proto3) simplifies the protocol buffer language, both for ease of use and to make it available in a  wider range of programming languages.  However, schemas defined in [proto2](https://developers.google.com/protocol-buffers/docs/cpptutorial) should also be supported.
+[^1]: Protocol Buffers language version 3 ([proto3](https://developers.google.com/protocol-buffers/docs/proto3)) simplifies the protocol buffer language, both for ease of use and to make it available in a  wider range of programming languages.  However, schemas defined in [proto2](https://developers.google.com/protocol-buffers/docs/cpptutorial) should also be supported.
 
-### Third-Party Library Installation
+[^2]: Required when building from source
+
+### Installing a release
+
+The protobufkdb releases are linked statically against libprotobuf to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf.  Therefore it is not necessary to install protobuf separately when used a packaged release.
+
+1. Download a release from [here](https://github.com/KxSystems/protobufkdb/releases)
+
+2. Install required q executable script `q/protobufkdb.q` and binary file `lib/protobufkdb.(so|dll)` to `$QHOME` and `$QHOME/[mlw](64)`, by executing the following from the Release directory
+
+   ```bash
+   ## Linux/MacOS
+   chmod +x install.sh && ./install.sh
+   
+   ## Windows
+   install.bat
+   ```
+
+3. If you wish to use the KdbTypeSpecifier field option (described below) with dynamic messages then the directory containing `kdb_type_specifier.proto` must be specified to the interface as an import search location.  In the release package `kdb_type_specifier.proto` (and its dependencies) are found in the `proto` subdirectory.  Import paths can be relative or absolute.  For example, if the q session is started from the root of the release package run:
+
+   ```
+   q).protobufkdb.addProtoImportPath["proto"]
+   ```
+
+### Building and installing from source
+
+#### Third-Party Library Installation
 
 You can check whether protocol buffers is already installed and its version by running:
 
@@ -54,28 +113,7 @@ On Linux, although there are numerous packaged versions of protobuf, it is recom
 
 On Windows, it is also recommended that you build from source using the cmake instructions [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md).  The vcpkg installation of protobuf currently builds a DLL rather than a static library (open [issue](https://github.com/microsoft/vcpkg/issues/7936)) which is [not recommended](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#dlls-vs-static-linking) by Google and will cause problems since protobufkdb builds a DLL.
 
-
-
-## Integration
-
-### 1. Protobuf schema files
-
-protoc compiles your message definitions based on a file defined as:
-
-```bash
-<schema>.proto
-```
-
-producing both a C++ source and header file defined as:
-
-```
-<schema>.pb.cc
-<schema>.pb.h
-```
-
-These files contain the classes and metadata which describe the schema and the functionality required to serialise to and parse from this schema.
-
-### 2. Add the \<schema\>.proto file to the build procedure
+#### Add the protobuf schema files to the build procedure
 
 protobufkdb uses a factory to create a message class object of the correct type from the message type string passed from kdb.  The lookup requires that the message type string passed from kdb is the same as the message name in its .proto definition.
 
@@ -102,9 +140,7 @@ In order to populate the factory, the .proto files for all messages to be serial
 
 **Note:** `MY_PROTO_FILES` is a CMake space separated list, do not wrap the list of .proto files in a string.
 
-
-
-## Building protobufkdb
+#### Building protobufkdb
 
 A cmake script is provided to build protobufkdb. This uses the cmake functionality to locate the protobuf installation on your system. From the root of this repository create and move into a directory in which to perform the build:
 
@@ -251,7 +287,7 @@ Oneof fields can only be scalars or sub-messages.
 
 ### KdbTypeSpecifier field option
 
-To support the use of the kdb temporal types and GUIDs, a field option extension is provided in `src/kdb_type_specifier.proto` which can be applied to fields, map-keys and map-values:
+To support the use of the kdb temporal types and GUIDs, a field option extension is provided in `src/kdb_type_specifier.proto` (for compiled in message definitions) and `proto/kdb_type_specified.proto` (for dynamically imported message definitions).  This allows kdb+ specific context to be applied to fields, map-keys and map-values:
 
 ```protobuf
 syntax = "proto2";
@@ -388,6 +424,8 @@ q)array:.protobufkdb.serializeArray[`ScalarExample;(enlist 12i;55f;`str)]
 
 ## Function Reference
 
+Where a function takes a `message_type` parameter to specify the name of the message to be be processed, the interface first looks for that message type in the compiled in messages.  If that fails it then searches the imported message definitions.  Only if the message type is not found in either is an error returned.
+
 #### .protobufkdb.init
 
 Checks that the version of the library that we linked against is compatible with the version of the headers we compiled against.
@@ -417,6 +455,38 @@ Where:
 - `message_type` is a string containing the name of the message type.  Must be the same as the message name in its .proto definition.
 
 **Note:** This function is intended for debugging use only. The schema is generated by the libprotobuf DebugString() functionality and displayed on stdout to preserve the formatting and indentation.
+
+#### .protobufkdb.addProtoImportPath
+
+Adds a path to be searched when dynamically importing `.proto` file definitions.  Can be called more than once to specify multiple import locations.
+
+Syntax: `.protobufkdb.addProtoImportPath[import_path]`
+
+Where:
+
+- `import_path` is a string containing the path to be searched for `.proto` file definitions.  Can be absolute or relative.
+
+#### .protobufkdb.importProtoFile
+
+Dynamically imports a `.proto` file definition into the interface, allowing the messages types defined in that file to be parsed and serialised by the interface.
+
+Syntax: `.protobufkdb.importProtoFile[filename]`
+
+Where:
+
+- `filename` is a string containing the name of the `.proto` file to be imported.  Must not contain any directory specifiers - directory search locations should be setup up beforehand using `.protobufkdb.addProtoImportPath`
+
+returns an error containing information on the errors and warnings which occurred if the file fails to parse.
+
+#### .protobufkdb.listImportedMessageTypes
+
+Returns a list of the message types which have been successfully imported.
+
+Syntax: `.protobufkdb.listImportedMessageTypes[]`
+
+returns symbol list of the successfully imported message types.
+
+**Note:** The list does not contain message types which have been compiled into the interface.
 
 #### .protobufkdb.saveMessage
 
@@ -481,7 +551,9 @@ Identical to `.protobufkdb.parseArray[]` except the intermediate protobuf messag
 
 ## Examples
 
-`src/examples.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from kdb: `ScalarExample`, `RepeatedExample`, `SubMessageExample`, `MapExample` and `SpecifierExample`
+### Compiled in messages
+
+`src/examples.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from kdb: `ScalarExample`, `RepeatedExample`, `SubMessageExample`, `MapExample`, `SpecifierExample` and `OneofExample`.
 
 Starting with `ScalarExample`, create a kdb mixed list which conforms to the message definition:
 
@@ -533,15 +605,51 @@ q)array:.protobufkdb.serializeArray[`ScalarExample;(enlist 12i;55f;`str)]
              ^
 ```
 
-This example and similar ones for the other message definitions in `src/examples.proto` can be found in `examples/examples.q`.
+This example and similar ones for the other message definitions in `src/examples.proto` can be found in `examples/examples.q`
 
-More exhaustive examples can be found in `src/tests.proto` and `examples/runtests.q`.
+More exhaustive examples can be found in `src/tests.proto` and `examples/runtests.q`
+
+### Dynamically imported messages
+
+Equivalent to the compiled in message examples, `proto/examples_dynamic.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from kdb: `ScalarExampleDynamic`, `RepeatedExampleDynamic`, `SubMessageExampleDynamic`, `MapExampleDynamic`, `SpecifierExampleDynamic` and `OneofExampleDynamic`.
+
+First the directory containing `examples_dynamic.proto`  must be specified as an import seach path.  So if the q session is started in the `examples` subdirectory then the path to the `proto` subdirectory is specified as:
+
+```
+q).protobufkdb.addProtoImportPath["../proto"]
+```
+
+Note that `examples_dynamic.proto` imports `kdb_type_specifier.proto` but that is also present in the `proto` subdirectory so no further import locations are required.  However, if the required `.proto` files are spread across different locations then multiple import paths can be specified.
+
+The message definitions contained in `examples_dynamic.proto` are imported into the interface:
+
+```
+q).protobufkdb.importProtoFile["examples_dynamic.proto"]
+```
+
+The examples then proceed as per the compiled in messages (using the corresponding dynamic message type names):
+
+```
+q).protobufkdb.displayMessageSchema[`ScalarExampleDynamic]
+message ScalarExampleDynamic {
+  int32 scalar_int32 = 1;
+  double scalar_double = 2;
+  string scalar_string = 3;
+}
+
+```
+
+This example and similar ones for the other message definitions in `proto/examples_dynamic.proto` can be found in `examples/examples_dynamic.q`
+
+More exhaustive examples can be found in `proto/tests_dynamic.proto` and `examples/runtests_dynamic.q`
 
 
 
 ## Status
 
 The protobufkdb interface is provided here under an Apache 2.0 license.
+
+Protocol Buffers is used under the terms of [Google's license](https://github.com/protocolbuffers/protobuf/blob/master/LICENSE).
 
 If you find issues with the interface or have feature requests, please consider raising an issue [here](https://github.com/KxSystems/protobufkdb/issues).
 
