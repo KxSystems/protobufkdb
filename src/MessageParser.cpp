@@ -34,6 +34,7 @@ K MessageParser::SerializeArray(const std::string& message_type, K k_msg) const
     *error_msg = '\0';
   } catch (TypeCheck& e) {
     strncpy(error_msg, e.what(), sizeof(error_msg));
+    error_msg[sizeof(error_msg) - 1] = '\0';
     return krr(error_msg);
   }
 
@@ -61,6 +62,7 @@ K MessageParser::SerializeArrayArena(const std::string& message_type, K k_msg) c
     *error_msg = '\0';
   } catch (TypeCheck& e) {
     strncpy(error_msg, e.what(), sizeof(error_msg));
+    error_msg[sizeof(error_msg) - 1] = '\0';
     return krr(error_msg);
   }
 
@@ -121,6 +123,7 @@ K MessageParser::SaveMessage(const std::string& message_type, const std::string&
     *error_msg = '\0';
   } catch (TypeCheck& e) {
     strncpy(error_msg, e.what(), sizeof(error_msg));
+    error_msg[sizeof(error_msg) - 1] = '\0';
     return krr(error_msg);
   }
 
