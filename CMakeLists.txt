@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.1.3)
 project(protobufkdb CXX)
 
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE Release)
+endif()
+
 # A limitation of cmake protobuf support is that the .proto files must be in 
 # the same directory as the CMakeLists.txt which builds them
 add_subdirectory(src)
