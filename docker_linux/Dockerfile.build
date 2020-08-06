@@ -1,27 +1,26 @@
-FROM centos:7
+FROM ubuntu:18.04
 
 # Basic build tools
-RUN yum update
-RUN yum -y install gcc
-RUN yum -y install g++
-RUN yum -y install cmake
-RUN yum -y install make
-RUN yum -y install vim
-RUN yum -y install wget
-RUN yum -y install dos2unix
+RUN apt-get -y update
+RUN apt-get -y install gcc
+RUN apt-get -y install g++
+RUN apt-get -y install cmake
+RUN apt-get -y install make
+RUN apt-get -y install vim
+RUN apt-get -y install wget
+RUN apt-get -y install dos2unix
 
 # Required to build protobuf
-RUN yum -y install git
-RUN yum -y install autoconf
-RUN yum -y install automake
-RUN yum -y install libtool
+RUN apt-get -y install git
+RUN apt-get -y install autoconf
+RUN apt-get -y install automake
+RUN apt-get -y install libtool
 
-RUN yum clean all
+RUN apt-get clean all
 
 RUN mkdir -p /q
 RUN mkdir -p /source
 RUN mkdir -p /source/protobufkdb
-RUN mkdir -p /source/protobufkdb/build
 
 WORKDIR /source
 
@@ -39,6 +38,7 @@ ENV PATH /q/l64:$PATH
 
 COPY protobufkdb_build.sh /source
 RUN dos2unix /source/protobufkdb_build.sh
+RUN chmod a+x /source/protobufkdb_build.sh
 
 WORKDIR /source
 

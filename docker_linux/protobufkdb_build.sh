@@ -1,5 +1,6 @@
 #/bin/bash
 
+mkdir /source/protobufkdb/build
 cd /source/protobufkdb/build
 cmake ..
 cmake --build . --config Release

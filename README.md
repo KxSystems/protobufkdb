@@ -224,9 +224,9 @@ indicates it found protoc version 3.11.4 at `/home/protobuf/install/bin/protoc` 
 
 #### Docker - Linux
 
-A sample docker file is provided in the `docker_linux` directory to create a CentOS 7 environment (including downloading and building the protocol buffers runtime from source) before building and installing the kdb+ `protobufkdb` interface.
+A sample docker file is provided in the `docker_linux` directory to create a Ubuntu 18.04 LTS environment (including downloading and building the protocol buffers runtime from source) before building and installing the kdb+ `protobufkdb` interface.
 
-The `PROTOBUFKDB_SOURCE` and `QHOME_LINUX` directories are specified at the top of `protobufkdb_build.bat`, which sets up the environment specified in `Dockerfile.build` and invokes `protobufkdb_build.sh` to build the interface.
+For Docker Windows, the `PROTOBUFKDB_SOURCE` and `QHOME_LINUX` directories are specified at the top of `protobufkdb_build.bat`, which sets up the environment specified in `Dockerfile.build` and invokes `protobufkdb_build.sh` to build the interface.
 
 ## Protobuf / Kdb Mappings
 
