@@ -222,6 +222,12 @@ Because the protobufkdb interface uses both the protoc compiler and the protocol
 
 indicates it found protoc version 3.11.4 at `/home/protobuf/install/bin/protoc` but version 3.7.1 of `libprotobuf.a` (and the headers) installed on the system under `/usr/local/`.  This can occur if there was a conflicting packaged version of protobuf already on the system and will likely cause the protobufkdb build to fail.  The solution is to remove one of the installed versions (ensuring that on Linux/MacOS the remaining version was built with `-fPIC`).  If in doubt or the problem remains, remove all installed versions of protobuf then build and install the protocol buffers runtime from source as described above.
 
+#### Docker - Linux
+
+A sample docker file is provided in the `docker_linux` directory to create a CentOS 7 environment (including downloading and building the protocol buffers runtime from source) before building and installing the kdb+ `protobufkdb` interface.
+
+The `PROTOBUFKDB_SOURCE` and `QHOME_LINUX` directories are specified at the top of `protobufkdb_build.bat`, which sets up the environment specified in `Dockerfile.build` and invokes `protobufkdb_build.sh` to build the interface.
+
 ## Protobuf / Kdb Mappings
 
 ### Overview

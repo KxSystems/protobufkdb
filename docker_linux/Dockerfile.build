@@ -1,0 +1,46 @@
+FROM centos:7
+
+# Basic build tools
+RUN yum update
+RUN yum -y install gcc
+RUN yum -y install g++
+RUN yum -y install cmake
+RUN yum -y install make
+RUN yum -y install vim
+RUN yum -y install wget
+RUN yum -y install dos2unix
+
+# Required to build protobuf
+RUN yum -y install git
+RUN yum -y install autoconf
+RUN yum -y install automake
+RUN yum -y install libtool
+
+RUN yum clean all
+
+RUN mkdir -p /q
+RUN mkdir -p /source
+RUN mkdir -p /source/protobufkdb
+RUN mkdir -p /source/protobufkdb/build
+
+WORKDIR /source
+
+# Build protobuf from source
+RUN git clone https://github.com/protocolbuffers/protobuf.git
+WORKDIR /source/protobuf
+# RUN git submodule update --init --recursive
+RUN ./autogen.sh
+RUN ./configure --prefix=/usr "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
+RUN make
+RUN make install
+
+ENV QHOME /q
+ENV PATH /q/l64:$PATH
+
+COPY protobufkdb_build.sh /source
+RUN dos2unix /source/protobufkdb_build.sh
+
+WORKDIR /source
+
+CMD ["/bin/bash"]
+
