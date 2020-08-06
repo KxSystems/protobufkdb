@@ -93,25 +93,50 @@ The protobufkdb releases are linked statically against libprotobuf to avoid pote
 
 #### Third-Party Library Installation
 
-You can check whether protocol buffers is already installed and its version by running:
+Protobufkdb requires the full protocol buffers runtime (protoc compiler, libprotobuf and its header files) to be installed on your system.  Many packaged installations only contain a subset of the required functionality or use an incompatible build.  Furthermore, version mismatches can occur between protoc and libprotobuf if a new installation is applied on top of an existing one.  
+
+It is therefore recommend that any existing protocol buffer installations are first removed.
+
+You can check whether protocol buffers is already installed by running:
 
 ```bash
 protoc --version
 ```
 
-If not installed or you wish to upgrade please follow Google's C++ installation instructions [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).
+If this completes successfully and returns the protoc version, locate this installation and remove it.  On Linux/MacOS be sure to check in both `/usr` and `/usr/local`.  For example (substituting the correct paths as appropriate):
 
-**Note**: When building from source on Linux/MacOS you must pass `-fPIC` to the autoconf generated `configure` script since protobufkdb builds a shared object:
+```bash
+$ which protoc
+/usr/bin/protoc
+$ rm /usr/bin/protoc
+$ ls /usr/lib/libproto*
+/usr/lib/libprotobuf-lite.a          /usr/lib/libprotobuf.so.22
+/usr/lib/libprotobuf-lite.la         /usr/lib/libprotobuf.so.22.0.4
+/usr/lib/libprotobuf-lite.so         /usr/lib/libprotoc.a
+/usr/lib/libprotobuf-lite.so.22      /usr/lib/libprotoc.la
+/usr/lib/libprotobuf-lite.so.22.0.4  /usr/lib/libprotoc.so
+/usr/lib/libprotobuf.a               /usr/lib/libprotoc.so.22
+/usr/lib/libprotobuf.la              /usr/lib/libprotoc.so.22.0.4
+/usr/lib/libprotobuf.so
+$ rm /usr/lib/libproto*
+$ ls /usr/include/google/
+protobuf
+$ rm -rf /usr/include/google/protobuf
+```
+
+Then follow [Google's C++ installation instructions here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md) to build and install the new version.
+
+**Note**: When [building the protocol buffers runtime from source](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md#c-installation---unix) on Linux/MacOS you must pass `-fPIC` to the autoconf generated `configure` script:
 
 ```
 ./configure --prefix=/usr "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
 ```
 
-On MacOS, a brew packaged version of protobuf can be used as long as it includes the the protoc compiler, headers and libprotobuf.
+On MacOS, a brew packaged version of protobuf can be used as long as it includes the the protoc compiler, libprotobuf and its headers.
 
 On Linux, although there are numerous packaged versions of protobuf, it is recommended that you build from source.  There is a large disto dependent variation in the `apt-get` packages and unless the package was build with `-fPIC`, symbol relocation errors will occur during linking of protobufkdb.  Similarly `conda` packages can cause problems for the cmake functionality used by protobufkdb to locate the protobuf installation on the system.
 
-On Windows, it is also recommended that you build from source using the cmake instructions [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md).  The vcpkg installation of protobuf currently builds a DLL rather than a static library (open [issue](https://github.com/microsoft/vcpkg/issues/7936)) which is [not recommended](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#dlls-vs-static-linking) by Google and will cause problems since protobufkdb builds a DLL.
+On Windows, it is also recommended that you build from source using the [cmake instructions here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md).  The vcpkg installation of protobuf currently builds a DLL rather than a static library (open [issue](https://github.com/microsoft/vcpkg/issues/7936)) which is [not recommended](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#dlls-vs-static-linking) by Google and will cause problems since protobufkdb builds a DLL.
 
 #### Add the protobuf schema files to the build procedure
 
@@ -168,7 +193,34 @@ cmake --build . --config Release --target install
 
 **Note:**  By default `src/CMakeLists.txt` is configured to link statically against libprotobuf to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf.  This is a particular issue on [Windows](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#dlls-vs-static-linking).
 
+#### Build Issues
 
+Because the protobufkdb interface uses both the protoc compiler and the protocol buffer's runtime, the versions of protoc, libprotobuf and its header files must be consistent and installed from the same build.  Otherwise build errors can occur when compiling any of the proto-generated `.pb.h` or `.pb.cc` files.  To help identify these problems the protobufkdb cmake scripts will log the locations of the protocol buffers installation it has found.  For example:
+
+```bash
+[build]$ cmake ..
+ -- The CXX compiler identification is GNU 4.8.5
+ -- Check for working CXX compiler: /usr/bin/c++
+ -- Check for working CXX compiler: /usr/bin/c++ - works
+ -- Detecting CXX compiler ABI info
+ -- Detecting CXX compiler ABI info - done
+ -- Detecting CXX compile features
+ -- Detecting CXX compile features - done
+ -- Generator : Unix Makefiles
+ -- Build Tool : /usr/bin/gmake
+ -- Proto files: tests.proto;examples.proto
+ -- [ /usr/share/cmake3/Modules/FindProtobuf.cmake:321 ] Protobuf_USE_STATIC_LIBS = ON
+ -- [ /usr/share/cmake3/Modules/FindProtobuf.cmake:455 ] requested version of Google Protobuf is
+ -- [ /usr/share/cmake3/Modules/FindProtobuf.cmake:463 ] location of common.h: /usr/local/include/google/protobuf/stubs/common.h
+ -- [ /usr/share/cmake3/Modules/FindProtobuf.cmake:481 ] /usr/local/include/google/protobuf/stubs/common.h reveals protobuf 3.7.1
+ -- [ /usr/share/cmake3/Modules/FindProtobuf.cmake:495 ] /home/protobuf/install/bin/protoc reveals version 3.11.4
+ -- Found Protobuf: /usr/local/lib/libprotobuf.a;-lpthread (found version "3.7.1")
+ -- Configuring done
+ -- Generating done
+ -- Build files have been written to: /home/protobufkdb/build
+```
+
+indicates it found protoc version 3.11.4 at `/home/protobuf/install/bin/protoc` but version 3.7.1 of `libprotobuf.a` (and the headers) installed on the system under `/usr/local/`.  This can occur if there was a conflicting packaged version of protobuf already on the system and will likely cause the protobufkdb build to fail.  The solution is to remove one of the installed versions (ensuring that on Linux/MacOS the remaining version was built with `-fPIC`).  If in doubt or the problem remains, remove all installed versions of protobuf then build and install the protocol buffers runtime from source as described above.
 
 ## Protobuf / Kdb Mappings
 

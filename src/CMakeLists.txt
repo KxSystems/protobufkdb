@@ -45,7 +45,7 @@ include_directories (
     ${CMAKE_BINARY_DIR} # For 'k.h', downloaded below
 )
 
-#set(Protobuf_DEBUG ON)
+set(Protobuf_DEBUG ON)
 set(Protobuf_USE_STATIC_LIBS ON)
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
