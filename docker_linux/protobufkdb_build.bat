@@ -1,6 +1,6 @@
 SETLOCAL
 
-SET PROTOBUFKDB_SOURCE="C:\Git\protobufkdb"
+SET PROTOBUFKDB_SOURCE="C:\Git\protobufkdb\nmcdonnell-kx"
 SET QHOME_LINUX="C:\q"
 
 docker build -f Dockerfile.build -t protobufkdb-dev .

@@ -95,7 +95,43 @@ The protobufkdb releases are linked statically against libprotobuf to avoid pote
 
 Protobufkdb requires the full protocol buffers runtime (protoc compiler, libprotobuf and its header files) to be installed on your system.  Many packaged installations only contain a subset of the required functionality or use an incompatible build.  Furthermore, version mismatches can occur between protoc and libprotobuf if a new installation is applied on top of an existing one.  
 
-It is therefore recommend that any existing protocol buffer installations are first removed.
+It is therefore recommend that the protocol buffer runtime is built from source and installed to a non-system directory.  This directory can then be specified to the protobufkdb build so it will use that protocol buffers installation in preference to any existing system installs.
+
+#### Building protocol buffers runtime - Linux/MacOS
+
+The tools required to build protocol buffers from source on Linux/MacOS are described [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).  Then follow the below instructions to build protocol buffers with the correct compiler options and install it to a non-system directory.
+
+Clone the protocol buffers source from github:
+
+```bash
+$ git clone https://github.com/protocolbuffers/protobuf.git
+$ cd protobuf
+$ ./autogen.sh
+```
+
+Create an install directory and set an environment variable to this directory (this is used again later when building protobufkdb):
+
+```bash
+$ mkdir install
+$ export PROTOBUF_INSTALL=$(pwd)/install
+```
+
+Configure protocol buffers to build with C/C++ flag `-fPIC` (otherwise symbol relocation errors will occur during linking of protobufkdb) and to install to the directory created above:
+
+```bash
+$ ./configure --prefix=$PROTOBUF_INSTALL "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
+```
+
+Finally build and install protocol buffers:
+
+```bash
+$ make
+$ make install
+```
+
+#### Building protocol buffers runtime - Windows
+
+The tools required to build protocol buffers from source on Windows are described [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md).  Then follow the below instructions to build protocol buffers with the correct compiler options and install it to a non-system directory.
 
 You can check whether protocol buffers is already installed by running:
 

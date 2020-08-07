@@ -24,21 +24,27 @@ RUN mkdir -p /source/protobufkdb
 
 WORKDIR /source
 
-# Build protobuf from source
+# Clone protobuf from github
 RUN git clone https://github.com/protocolbuffers/protobuf.git
 WORKDIR /source/protobuf
-# RUN git submodule update --init --recursive
+
+# Clean a non-system directory to install protobuf
+RUN mkdir install
+ENV PROTOBUF_INSTALL /source/protobuf/install
+
+# Build protobuf from source with -fPIC flags, installing to $PROTOBUF_INSTALL
 RUN ./autogen.sh
-RUN ./configure --prefix=/usr "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
+RUN ./configure --prefix=$PROTOBUF_INSTALL "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
 RUN make
 RUN make install
 
-ENV QHOME /q
-ENV PATH /q/l64:$PATH
-
+# Copy the protobufkdb build script which is used when starting the container
 COPY protobufkdb_build.sh /source
 RUN dos2unix /source/protobufkdb_build.sh
 RUN chmod a+x /source/protobufkdb_build.sh
+
+ENV QHOME /q
+ENV PATH /q/l64:$PATH
 
 WORKDIR /source
 
