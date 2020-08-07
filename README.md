@@ -97,7 +97,7 @@ Protobufkdb requires the full protocol buffers runtime (protoc compiler, libprot
 
 It is therefore recommend that the protocol buffer runtime is built from source and installed to a non-system directory.  This directory can then be specified to the protobufkdb build so it will use that protocol buffers installation in preference to any existing system installs.
 
-#### Building protocol buffers runtime - Linux/MacOS
+#### Building protocol buffers - Linux/MacOS
 
 The tools required to build protocol buffers from source on Linux/MacOS are described [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).  Then follow the below instructions to build protocol buffers with the correct compiler options and install it to a non-system directory.
 
@@ -116,7 +116,7 @@ $ mkdir install
 $ export PROTOBUF_INSTALL=$(pwd)/install
 ```
 
-Configure protocol buffers to build with C/C++ flag `-fPIC` (otherwise symbol relocation errors will occur during linking of protobufkdb) and to install to the directory created above:
+Configure protocol buffers to build with C/C++ flag `-fPIC` (otherwise symbol relocation errors will occur during linking of protobufkdb) and to install it to the directory created above:
 
 ```bash
 $ ./configure --prefix=$PROTOBUF_INSTALL "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
@@ -129,50 +129,43 @@ $ make
 $ make install
 ```
 
-#### Building protocol buffers runtime - Windows
+#### Building protocol buffers - Windows
 
-The tools required to build protocol buffers from source on Windows are described [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md).  Then follow the below instructions to build protocol buffers with the correct compiler options and install it to a non-system directory.
+The tools required to build protocol buffers from source on Windows are described [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md) and details on how to setup your environment to build with VS2019 are [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#environment-setup). Then follow the below instructions to build a Release version protocol buffers and install it to a non-system directory.
 
-You can check whether protocol buffers is already installed by running:
-
-```bash
-protoc --version
-```
-
-If this completes successfully and returns the protoc version, locate this installation and remove it.  On Linux/MacOS be sure to check in both `/usr` and `/usr/local`.  For example (substituting the correct paths as appropriate):
+From a Visual Studio command prompt, clone the protocol buffers source from github:
 
 ```bash
-$ which protoc
-/usr/bin/protoc
-$ rm /usr/bin/protoc
-$ ls /usr/lib/libproto*
-/usr/lib/libprotobuf-lite.a          /usr/lib/libprotobuf.so.22
-/usr/lib/libprotobuf-lite.la         /usr/lib/libprotobuf.so.22.0.4
-/usr/lib/libprotobuf-lite.so         /usr/lib/libprotoc.a
-/usr/lib/libprotobuf-lite.so.22      /usr/lib/libprotoc.la
-/usr/lib/libprotobuf-lite.so.22.0.4  /usr/lib/libprotoc.so
-/usr/lib/libprotobuf.a               /usr/lib/libprotoc.so.22
-/usr/lib/libprotobuf.la              /usr/lib/libprotoc.so.22.0.4
-/usr/lib/libprotobuf.so
-$ rm /usr/lib/libproto*
-$ ls /usr/include/google/
-protobuf
-$ rm -rf /usr/include/google/protobuf
+C:\Git> git clone https://github.com/protocolbuffers/protobuf.git
+C:\Git> cd protobuf
 ```
 
-Then follow [Google's C++ installation instructions here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md) to build and install the new version.
+Create an install directory and set an environment variable to this directory (substituting the correct absolute path as appropriate).  This environment variable is used again later when building protobufkdb:
 
-**Note**: When [building the protocol buffers runtime from source](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md#c-installation---unix) on Linux/MacOS you must pass `-fPIC` to the autoconf generated `configure` script:
-
+```bash
+C:\Git\protobuf> mkdir install
+C:\Git\protobuf> set PROTOBUF_INSTALL=C:\Git\protobuf\install
 ```
-./configure --prefix=/usr "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
+
+Create the CMake build directory (note that if you also wish to build a Debug version of protocol buffers then a second CMake build directory is required):
+
+```bash
+C:\Git\protobuf> mkdir cmake\release_build
+C:\Git\protobuf> cd cmake\release_build
 ```
 
-On MacOS, a brew packaged version of protobuf can be used as long as it includes the the protoc compiler, libprotobuf and its headers.
+Generate the build files (this will default to using the Visual Studio CMake generator when run from a VS command prompt):
 
-On Linux, although there are numerous packaged versions of protobuf, it is recommended that you build from source.  There is a large disto dependent variation in the `apt-get` packages and unless the package was build with `-fPIC`, symbol relocation errors will occur during linking of protobufkdb.  Similarly `conda` packages can cause problems for the cmake functionality used by protobufkdb to locate the protobuf installation on the system.
+```bash
+C:\Git\protobuf\cmake\release_build> cmake -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=%PROTOBUF_INSTALL% ..
+```
 
-On Windows, it is also recommended that you build from source using the [cmake instructions here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md).  The vcpkg installation of protobuf currently builds a DLL rather than a static library (open [issue](https://github.com/microsoft/vcpkg/issues/7936)) which is [not recommended](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#dlls-vs-static-linking) by Google and will cause problems since protobufkdb builds a DLL.
+Finally build and install protocol buffers:
+
+```bash
+C:\Git\protobuf\cmake\release_build> cmake --build . --config Release
+C:\Git\protobuf\cmake\release_build> cmake --build . --config Release --target install
+```
 
 #### Add the protobuf schema files to the build procedure
 
@@ -203,16 +196,22 @@ In order to populate the factory, the .proto files for all messages to be serial
 
 #### Building protobufkdb
 
-A cmake script is provided to build protobufkdb. This uses the cmake functionality to locate the protobuf installation on your system. From the root of this repository create and move into a directory in which to perform the build:
+A CMake script is provided to build protobufkdb. This uses the CMake functionality to locate the protobuf installation on your system.  By setting the CMake environment variable `CMAKE_PREFIX_PATH` to the protocol buffers installation directory created above when building protobuf from source, CMake will use this installation in preference to any existing system installs.  This avoids issues with existing incompatible or mismatched protobuf installs.
+
+From the root of this repository create and move into a directory in which to perform the build:
 
 ```bash
 mkdir build && cd build
 ```
 
-Generate the scripts for your system's default build tools:
+Generate the build scripts,  specifying the protobuf buffers installation created above when building protobuf from source (referenced by the environment variable `$PROTOBUF_INSTALL` which should have been set during that procedure):
 
 ```bash
-cmake ..
+## Linux/MacOS
+cmake -DCMAKE_PREFIX_PATH=$PROTOBUF_INSTALL ..
+
+## Windows
+cmake -DCMAKE_PREFIX_PATH=%PROTOBUF_INSTALL% ..
 ```
 
 Start the build:
@@ -231,7 +230,7 @@ cmake --build . --config Release --target install
 
 #### Build Issues
 
-Because the protobufkdb interface uses both the protoc compiler and the protocol buffer's runtime, the versions of protoc, libprotobuf and its header files must be consistent and installed from the same build.  Otherwise build errors can occur when compiling any of the proto-generated `.pb.h` or `.pb.cc` files.  To help identify these problems the protobufkdb cmake scripts will log the locations of the protocol buffers installation it has found.  For example:
+Because the protobufkdb interface uses both the protoc compiler and the protocol buffer's runtime, the versions of protoc, libprotobuf and its header files must be consistent and installed from the same build.  Otherwise build errors can occur when compiling any of the proto-generated `.pb.h` or `.pb.cc` files.  To help identify these problems the protobufkdb CMake scripts will log the locations of the protocol buffers installation it has found.  For example:
 
 ```bash
 [build]$ cmake ..
@@ -256,7 +255,9 @@ Because the protobufkdb interface uses both the protoc compiler and the protocol
  -- Build files have been written to: /home/protobufkdb/build
 ```
 
-indicates it found protoc version 3.11.4 at `/home/protobuf/install/bin/protoc` but version 3.7.1 of `libprotobuf.a` (and the headers) installed on the system under `/usr/local/`.  This can occur if there was a conflicting packaged version of protobuf already on the system and will likely cause the protobufkdb build to fail.  The solution is to remove one of the installed versions (ensuring that on Linux/MacOS the remaining version was built with `-fPIC`).  If in doubt or the problem remains, remove all installed versions of protobuf then build and install the protocol buffers runtime from source as described above.
+indicates it found protoc version 3.11.4 at `/home/protobuf/install/bin/protoc` but version 3.7.1 of `libprotobuf.a` (and the headers) installed on the system under `/usr/local/`.  This can occur if there was a conflicting packaged version of protobuf already on the system and will likely cause the protobufkdb build to fail.  
+
+The solution, as described above, is to build the protocol buffers runtime from source, install it to non-system directory then specify that directory when building protobufkdb.
 
 #### Docker - Linux
 
