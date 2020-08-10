@@ -140,6 +140,7 @@ K ImportProtoFile(K filename)
   if (!MessageFactory::Instance()->ImportProtoFile(GetKdbString(filename), error)) {
     static char error_msg[1024];
     strncpy(error_msg, error.c_str(), sizeof(error_msg));
+    error_msg[sizeof(error_msg) - 1] = '\0';
     return krr(error_msg);
   }
 
@@ -153,7 +154,7 @@ K ListImportedMessageTypes(K unused)
 
   const size_t num_messages = output.size();
   K message_list = ktn(KS, num_messages);
-  for (auto i = 0; i < num_messages; ++i)
+  for (size_t i = 0; i < num_messages; ++i)
     kS(message_list)[i] = ss((S)output[i].c_str());
 
   return message_list;

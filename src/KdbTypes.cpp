@@ -103,7 +103,7 @@ const std::string KdbTypes::GuidToString(const U* guid) const
   // ASCII offset for alpha hex chars
   static const char char_a_base = 'a' - 10;
   std::string result;
-  for (auto i = 0; i < sizeof(U); ++i) {
+  for (size_t i = 0; i < sizeof(U); ++i) {
     auto higher = guid->g[i] / 16;
     result += higher + (higher > 9 ? char_a_base : '0');
     auto lower = guid->g[i] % 16;
@@ -118,7 +118,7 @@ const U KdbTypes::GuidFromString(const std::string& guid) const
   static const char char_a_base = 'a' - 10;
   static const char char_A_base = 'A' - 10;
   U result;
-  for (auto i = 0; i < sizeof(U); ++i) {
+  for (size_t i = 0; i < sizeof(U); ++i) {
     auto higher = guid[i * 2];
     higher -= (higher >= 'a' ? char_a_base : (higher >= 'A' ? char_A_base : '0'));
     auto lower = guid[i * 2 + 1];

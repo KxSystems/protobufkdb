@@ -1,0 +1,52 @@
+FROM ubuntu:18.04
+
+# Basic build tools
+RUN apt-get -y update
+RUN apt-get -y install gcc
+RUN apt-get -y install g++
+RUN apt-get -y install cmake
+RUN apt-get -y install make
+RUN apt-get -y install vim
+RUN apt-get -y install wget
+RUN apt-get -y install dos2unix
+
+# Required to build protobuf
+RUN apt-get -y install git
+RUN apt-get -y install autoconf
+RUN apt-get -y install automake
+RUN apt-get -y install libtool
+
+RUN apt-get clean all
+
+RUN mkdir -p /q
+RUN mkdir -p /source
+RUN mkdir -p /source/protobufkdb
+
+WORKDIR /source
+
+# Clone protobuf from github
+RUN git clone https://github.com/protocolbuffers/protobuf.git
+WORKDIR /source/protobuf
+
+# Clean a non-system directory to install protobuf
+RUN mkdir install
+ENV PROTOBUF_INSTALL /source/protobuf/install
+
+# Build protobuf from source with -fPIC flags, installing to $PROTOBUF_INSTALL
+RUN ./autogen.sh
+RUN ./configure --prefix=$PROTOBUF_INSTALL "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
+RUN make
+RUN make install
+
+# Copy the protobufkdb build script which is used when starting the container
+COPY protobufkdb_build.sh /source
+RUN dos2unix /source/protobufkdb_build.sh
+RUN chmod a+x /source/protobufkdb_build.sh
+
+ENV QHOME /q
+ENV PATH /q/l64:$PATH
+
+WORKDIR /source
+
+CMD ["/bin/bash"]
+
