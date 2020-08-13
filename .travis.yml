@@ -82,6 +82,7 @@ before_install:
 
 script:
   - if [[ $TESTS == "True" && "x$OD" != "x" && "x$QLIC_KC" != "x" ]]; then
+      curl -o test.q -L https://github.com/KxSystems/hdf5/raw/master/test.q;
       q test.q tests/ -q;
     fi
   - if [[ $TRAVIS_OS_NAME == "windows" && $BUILD == "True" ]]; then
