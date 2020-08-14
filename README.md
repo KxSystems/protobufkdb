@@ -702,7 +702,7 @@ q)array:.protobufkdb.serializeArray[`ScalarExample;(enlist 12i;55f;`str)]
 
 This example and similar ones for the other message definitions in `src/examples.proto` can be found in `examples/examples.q`
 
-More exhaustive examples can be found in `src/tests.proto` and `examples/runtests.q`
+More exhaustive examples can be found in `src/tests.proto` and `tests/runtests.t`
 
 ### Dynamically imported messages
 
@@ -736,7 +736,7 @@ message ScalarExampleDynamic {
 
 This example and similar ones for the other message definitions in `proto/examples_dynamic.proto` can be found in `examples/examples_dynamic.q`
 
-More exhaustive examples can be found in `proto/tests_dynamic.proto` and `examples/runtests_dynamic.q`
+More exhaustive examples can be found in `proto/tests_dynamic.proto` and `tests/runtests_dynamic.t`
 
 
 

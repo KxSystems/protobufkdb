@@ -81,7 +81,7 @@ saveMessage[`MapSpecifiersTestDynamic;`map_specifiers_file;map_specifiers]
 m:loadMessage[`MapSpecifiersTestDynamic;`map_specifiers_file]
 m~map_specifiers
 
--1 "Test scalar specifiers with array";
+-1 "Test map specifiers with array";
 array:serializeArray[`MapSpecifiersTestDynamic;map_specifiers]
 n:parseArray[`MapSpecifiersTestDynamic;array]
 n~map_specifiers

@@ -6,18 +6,18 @@
 scalars:(1i;2i;3j;4j;5f;6e;1b;2i;`string)
 saveMessage[`ScalarTest;`scalar_file;scalars]
 a:loadMessage[`ScalarTest;`scalar_file]
-a ~ scalars
+a~scalars
 
 -1 "Test scalars with array";
 array:serializeArray[`ScalarTest;scalars]
 b:parseArray[`ScalarTest;array]
-b ~ scalars
+b~scalars
 
 -1! "Test repeated with file";
 repeated:scalars,'scalars
 saveMessage[`RepeatedTest;`repeated_file;repeated]
 c:loadMessage[`RepeatedTest;`repeated_file]
-c ~ repeated
+c~repeated
 
 -1 "Test repeated with array";
 array:serializeArray[`RepeatedTest;repeated]
@@ -77,7 +77,7 @@ saveMessage[`MapSpecifiersTest;`map_specifiers_file;map_specifiers]
 m:loadMessage[`MapSpecifiersTest;`map_specifiers_file]
 m~map_specifiers
 
--1 "Test scalar specifiers with array";
+-1 "Test map specifiers with array";
 array:serializeArray[`MapSpecifiersTest;map_specifiers]
 n:parseArray[`MapSpecifiersTest;array]
 n~map_specifiers
