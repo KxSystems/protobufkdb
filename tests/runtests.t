@@ -24,6 +24,10 @@ scalars_wrong_type:(1i;2i;3j;4f;5f;6e;1b;0i;`string);
 scalars_short:(2i;3j;4j;5f;6e;1b;0i;`string);
 .test.ASSERT_ERROR[saveMessage; (`ScalarTest; `scalar_file; scalars_short)]
 
+// Pass atom data
+scalar_atom:1i;
+.test.ASSERT_ERROR[saveMessage; (`ScalarTest; `scalar_file; scalar_atom)]
+
 -1 "Test scalars with array";
 
 // Pass correct data
@@ -41,6 +45,9 @@ scalars_wrong_type:(1i;2i;3j;4j;5f;6f;1b;0i;`string);
 // Pass insufficient data
 scalars_short:(1i;2i;3j;4j;5f;6e;1b;`string);
 .test.ASSERT_ERROR[serializeArray; (`ScalarTest; scalars_short)]
+
+// Pass atom data
+.test.ASSERT_ERROR[serializeArray; (`ScalarTest; scalar_atom)]
 
 -1! "Test repeated with file";
 
@@ -60,6 +67,10 @@ repeated_wrong_type:scalars_wrong_type ,' scalars_wrong_type;
 repeated_short:(-1 _ scalars_expected), -1 _ scalars_expected;
 .test.ASSERT_ERROR[saveMessage; (`RepeatedTest; `repeated_file; repeated_short)]
 
+// Pass simple list data
+repeated_simple:1 2 3i;
+.test.ASSERT_ERROR[saveMessage; (`RepeatedTest; `repeated_file; repeated_simple)]
+
 -1 "Test repeated with array";
 
 // Pass correct data
@@ -74,6 +85,9 @@ array:serializeArray[`RepeatedTest; repeated_expected];
 
 // Pass insufficient data
 .test.ASSERT_ERROR[serializeArray; (`RepeatedTest; repeated_short)]
+
+// Pass simple list data
+.test.ASSERT_ERROR[serializeArray; (`RepeatedTest; repeated_simple)]
 
 -1 "Test submessage with file";
 
@@ -141,7 +155,7 @@ scalar_specifiers:(2020.01.01D12:34:56.123456789; 2020.01m; 2020.01.01; 2020.01.
 saveMessage[`ScalarSpecifiersTest; `scalar_specifiers_file; scalar_specifiers];
 .test.ASSERT_TRUE[loadMessage; (`ScalarSpecifiersTest; `scalar_specifiers_file); scalar_specifiers]
 
-// Pass compatible type
+// Pass wrong type (compatible in q context but not in protobuf)
 scalar_specifiers_compatible:(631197296123456789; 240i; 73051; 7305.524; 45296123456789; 754; 45296; 45296123i; (1?0Ng)0);
 .test.ASSERT_ERROR[saveMessage; (`ScalarSpecifiersTest; `scalar_specifiers_file; scalar_specifiers_compatible)]
 
@@ -151,7 +165,7 @@ scalar_specifiers_compatible:(631197296123456789; 240i; 73051; 7305.524; 4529612
 array:serializeArray[`ScalarSpecifiersTest;scalar_specifiers];
 .test.ASSERT_TRUE[parseArray; (`ScalarSpecifiersTest; array); scalar_specifiers]
 
-// Pass compatible type
+// Pass wrong type (compatible in q context but not in protobuf)
 .test.ASSERT_ERROR[saveMessage; (`ScalarSpecifiersTest; `scalar_specifiers_file; scalar_specifiers_compatible)]
 
 -1 "Test repeated specifiers with file";
@@ -161,7 +175,7 @@ repeated_specifiers:scalar_specifiers,'scalar_specifiers;
 saveMessage[`RepeatedSpecifiersTest;`repeated_specifiers_file;repeated_specifiers];
 .test.ASSERT_TRUE[loadMessage; (`RepeatedSpecifiersTest; `repeated_specifiers_file); repeated_specifiers]
 
-// Pass compatible type and speciiers
+// Pass wrong type and correct type (compatible in q context but not in protobuf)
 repeated_specifiers_mixture:scalar_specifiers ,' scalar_specifiers_compatible;
 .test.ASSERT_ERROR[saveMessage; (`RepeatedSpecifiersTest; `repeated_specifiers_file; repeated_specifiers_mixture)]
 
@@ -171,7 +185,7 @@ repeated_specifiers_mixture:scalar_specifiers ,' scalar_specifiers_compatible;
 array:serializeArray[`RepeatedSpecifiersTest;repeated_specifiers];
 .test.ASSERT_TRUE[parseArray; (`RepeatedSpecifiersTest; array); repeated_specifiers]
 
-// Pass compatible type and speciiers
+// Pass wrong type and speciiers
 .test.ASSERT_ERROR[serializeArray; (`RepeatedSpecifiersTest; repeated_specifiers_mixture)]
 
 -1 "Test map specifiers with file";
@@ -181,7 +195,7 @@ map_specifiers:((enlist 2020.01.01D12:34:56.123456789)!(enlist 2020.01m);(enlist
 saveMessage[`MapSpecifiersTest;`map_specifiers_file;map_specifiers];
 .test.ASSERT_TRUE[loadMessage; (`MapSpecifiersTest; `map_specifiers_file); map_specifiers]
 
-// Pass compatible type
+// Pass wrong type (compatible in q context but not in protobuf)
 map_specifiers_compatible:((enlist 631197296123456789)!(enlist 240i);(enlist 7305i)!(enlist 7305.524);(enlist 45296123456789)!(enlist 754);(enlist 45296)!(enlist 45296123i);(1?0Ng)!(1?0Ng));
 .test.ASSERT_ERROR[saveMessage; (`MapSpecifiersTest; `map_specifiers_file; map_specifiers_compatible)]
 
@@ -191,7 +205,7 @@ map_specifiers_compatible:((enlist 631197296123456789)!(enlist 240i);(enlist 730
 array:serializeArray[`MapSpecifiersTest; map_specifiers];
 .test.ASSERT_TRUE[parseArray; (`MapSpecifiersTest; array); map_specifiers]
 
-// Pass compatible type
+// Pass wrong type (compatible in q context but not in protobuf)
 .test.ASSERT_ERROR[serializeArray; (`MapSpecifiersTest; map_specifiers_compatible)]
 
 -1! "Test oneof permutations";
@@ -200,11 +214,13 @@ oneof1:(1.1f;();();`str);
 oneof2:(();12:34:56;();`str);
 oneof3:(();();(1j; 2.1 2.2f);`str);
 oneofnone:(();();();`str);
+oneofwrong:(42i; (); (); `str);
 
 .test.ASSERT_TRUE[parseArray; (`OneofTest; serializeArray[`OneofTest;oneof1]); oneof1]
 .test.ASSERT_TRUE[parseArray; (`OneofTest; serializeArray[`OneofTest;oneof2]); oneof2]
 .test.ASSERT_TRUE[parseArray; (`OneofTest; serializeArray[`OneofTest;oneof3]); oneof3]
 .test.ASSERT_TRUE[parseArray; (`OneofTest; serializeArray[`OneofTest;oneofnone]); oneofnone]
+.test.ASSERT_ERROR[serializeArray; (`OneofTest; oneofwrong)]
 
 // If mulitple oneofs are set, only the last is populated
 oneofall:(1.1f;12:34:56;(1j; 2.1 2.2f);`str);
