@@ -15,7 +15,7 @@ dist: xenial
 
 before_install:
   - export FILE_ROOT="protobufkdb"
-  - export TESTS="False"
+  - export TESTS="True"
   - export BUILD="True"
 
   # Run instructions to install the C/C++ requirements (BUILD_HOME) set in place of PAHO_HOME/HDF5_HOME etc.
