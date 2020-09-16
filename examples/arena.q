@@ -3,7 +3,7 @@
 //
 // Note:
 // The performance of Google Arenas with Protocol Buffers is highly architecture dependent.
-// Typically on Windows a significant improvement is observed in both serialization and parsing times.
+// Typically on Windows and Mac a significant improvement is observed in both serialization and parsing times.
 // However, on Linux an improvement is only observed with parsing, changes to the serialization performance
 // is negligible or slightly worse.
 // There can also be a noticeable variation in timings from one run to the next depending on the stability of
