@@ -22,7 +22,7 @@ huge:submessage:((0i;0f;`str); (10000#enlist (`int$til 100; `float$til 100; 100#
 
 -1 "Time for serialiation without arena"
 // Serialize data into char array
-serialized:.protobufkdb.serializeArray[`SubMessageExample; huge];
+\t serialized:.protobufkdb.serializeArray[`SubMessageExample; huge];
 show serialized;
 
 -1 "Time for serialiation with arena"
@@ -32,7 +32,7 @@ show serialized;
 
 -1 "Time for deserialiation without arena"
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`SubMessageExample; serialized];
+\t deserialized:.protobufkdb.parseArray[`SubMessageExample; serialized];
 show deserialized;
 
 -1 "Time for deserialiation with arena"

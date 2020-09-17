@@ -1,11 +1,14 @@
 // test_helper_function.q
 
+// Open namespace test
+\d .test
+
 // --------------- TEST GLOBALS --------------- //
 
 // Define enum representing status of executing a function
-.test.EXECUTION_STATUS__:`Ok`Error;
-.test.EXECUTION_ERROR__:`.test.EXECUTION_STATUS__$`Error;
-.test.EXECUTION_OK__:`.test.EXECUTION_STATUS__$`Ok;
+EXECUTION_STATUS__:`Ok`Error;
+EXECUTION_ERROR__:`.test.EXECUTION_STATUS__$`Error;
+EXECUTION_OK__:`.test.EXECUTION_STATUS__$`Ok;
 
 /
 * @brief Check if execution fails and teh returned error matches a specified message
@@ -14,9 +17,9 @@
 * @param errkind: string error kind message to expect. ex.) "Invalid scalar type"
 * @return boolean
 \
-.test.ASSERT_ERROR:{[func; args; errkind]
-  res:.[func; args; {[err] (.test.EXECUTION_ERROR__; err)}];
-  $[.test.EXECUTION_ERROR__ ~ first res; 
+ASSERT_ERROR:{[func; args; errkind]
+  res:.[func; args; {[err] (EXECUTION_ERROR__; err)}];
+  $[EXECUTION_ERROR__ ~ first res; 
     res[1] like errkind,"*";
     0b
   ]
@@ -29,7 +32,7 @@
 * @param target: target to compare
 * @return boolean
 \
-.test.ASSERT_TRUE:{[func; args; target]
+ASSERT_TRUE:{[func; args; target]
   .[func; args] ~ target
  }
 
@@ -40,8 +43,11 @@
 * @param target: target to compare
 * @return boolean
 \
-.test.ASSERT_FALSE:{[func; args; target]
-  not .test.ASSERT_TRUE[func; args; target]
+ASSERT_FALSE:{[func; args; target]
+  not ASSERT_TRUE[func; args; target]
  }
 
 // ------------------- END -------------------- //
+
+// Close namespace
+\d .
