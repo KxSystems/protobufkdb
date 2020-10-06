@@ -32,7 +32,7 @@ q)serialized
 // Parse the char array back to kdb and check the result is the same as the original mixed list
 q)deserialized:.protobufkdb.parseArray[`ScalarExample;serialized]
 
-q)serialized~deserialized
+q)scalars~deserialized
 1b
 ```
 
