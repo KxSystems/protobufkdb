@@ -1,0 +1,79 @@
+# Examples
+
+Each script contained within this folder deals with a different aspect of the interface and aims to showcases a particular section of the protobufkdb library. The use cases highlighted below are:
+
+1. Messages added to a session at compile time
+2. Messages dynamically loaded into the session
+
+More basic example workflows are highlighted in the documentation for this interface [here](https://code.kx.com/q/interfaces/protobuf/examples).
+
+## Compiled in messages
+
+`src/examples.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from kdb: `ScalarExample`, `RepeatedExample`, `SubMessageExample`, `MapExample`, `SpecifierExample` and `OneofExample`.
+
+The following is a line by line execution of the first section of the example contained in `examples.q`:
+
+```
+q).protobufkdb.displayMessageSchema[`ScalarExample]
+message ScalarExample {
+  int32 scalar_int32 = 1;
+  double scalar_double = 2;
+  string scalar_string = 3;
+}
+
+q)a:(12i;55f;`str)
+
+// Serialise the kdb structure to a protobuf encoded char array:
+q)array:.protobufkdb.serializeArray[`ScalarExample;a]
+
+q)array
+"\010\014\021\000\000\000\000\000\200K@\032\003str"
+
+// Parse the char array back to kdb and check the result is the same as the original mixed list
+q)b:.protobufkdb.parseArray[`ScalarExample;array]
+
+q)a~b
+1b
+```
+
+Modify the structure of the kdb+ list to make it non-conformant in order to observe potential type checking errors:
+
+```
+q)array:.protobufkdb.serializeArray[`ScalarExample;(12i;55f;`str;1)]
+'Incorrect number of fields, message: 'ScalarExample', expected: 3, received: 4
+  [0]  array:.protobufkdb.serializeArray[`ScalarExample;(12i;55f;`str;1)]
+             ^
+
+q)array:.protobufkdb.serializeArray[`ScalarExample;(12j;55f;`str)]
+'Invalid scalar type, field: 'ScalarExample.scalar_int32', expected: -6, received: -7
+```
+
+## Dynamically imported messages
+
+Equivalent to the compiled in message examples, `proto/examples_dynamic.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from kdb: `ScalarExampleDynamic`, `RepeatedExampleDynamic`, `SubMessageExampleDynamic`, `MapExampleDynamic`, `SpecifierExampleDynamic` and `OneofExampleDynamic`.
+
+The following example is taken from `examples/examples_dynamic.q` and outlines the retrieval of a schema from a `.proto` file based specified on a specified import search path. So if the q session is started in the `examples` subdirectory then the path to the `proto` subdirectory is specified as follows:
+
+```
+q).protobufkdb.addProtoImportPath["../proto"]
+```
+
+**Note:** `examples_dynamic.proto` imports `kdb_type_specifier.proto` as this is also present in the `proto` subdirectory as such no further import locations must be defined.  However, if the required `.proto` files are spread across different locations on the OS then multiple import paths can be specified.
+
+Import the message definitions contained in `examples_dynamic.proto` into the q session:
+
+```
+q).protobufkdb.importProtoFile["examples_dynamic.proto"]
+```
+
+The examples then proceed as per the compiled in messages (using the corresponding dynamic message type names):
+
+```
+q).protobufkdb.displayMessageSchema[`ScalarExampleDynamic]
+message ScalarExampleDynamic {
+  int32 scalar_int32 = 1;
+  double scalar_double = 2;
+  string scalar_string = 3;
+}
+
+```
