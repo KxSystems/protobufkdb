@@ -28,6 +28,9 @@ show serialized;
 deserialized:.protobufkdb.parseArray[`OneofExample; serialized];
 show deserialized;
 
+// Compare the kdb+ objects
+show oneof~deserialized
+
 // Serialize into char array and then deserialize char array into kdb+ data
 deserialized:.protobufkdb.parseArray[`OneofExample;.protobufkdb.serializeArray[`OneofExample;(();12:34:56;`str)]];
 show deserialized;
@@ -56,6 +59,9 @@ show serialized;
 // Deserialize char array into kdb+ data
 deserialized:.protobufkdb.parseArray[`OneofExampleDynamic; serialized];
 show deserialized;
+
+// Compare the kdb+ objects
+show oneof~deserialized
 
 // Serialize into char array and then deserialize char array into kdb+ data
 deserialized:.protobufkdb.parseArray[`OneofExampleDynamic;.protobufkdb.serializeArray[`OneofExampleDynamic;(();00:01:02;`foo)]];

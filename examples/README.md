@@ -11,7 +11,7 @@ More basic example workflows are highlighted in the documentation for this inter
 
 `src/examples.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from kdb: `ScalarExample`, `RepeatedExample`, `SubMessageExample`, `MapExample`, `SpecifierExample` and `OneofExample`.
 
-The following is a line by line execution of the first section of the example contained in `examples.q`:
+The following example is taken from the first section in `examples/scalar.q`:
 
 ```
 q).protobufkdb.displayMessageSchema[`ScalarExample]
@@ -21,18 +21,18 @@ message ScalarExample {
   string scalar_string = 3;
 }
 
-q)a:(12i;55f;`str)
+q)scalars:(12i;55f;`str)
 
-// Serialise the kdb structure to a protobuf encoded char array:
-q)array:.protobufkdb.serializeArray[`ScalarExample;a]
+// Serialize the kdb structure to a protobuf encoded char array:
+q)serialized:.protobufkdb.serializeArray[`ScalarExample;a]
 
-q)array
+q)serialized
 "\010\014\021\000\000\000\000\000\200K@\032\003str"
 
 // Parse the char array back to kdb and check the result is the same as the original mixed list
-q)b:.protobufkdb.parseArray[`ScalarExample;array]
+q)deserialized:.protobufkdb.parseArray[`ScalarExample;serialized]
 
-q)a~b
+q)serialized~deserialized
 1b
 ```
 
@@ -52,7 +52,7 @@ q)array:.protobufkdb.serializeArray[`ScalarExample;(12j;55f;`str)]
 
 Equivalent to the compiled in message examples, `proto/examples_dynamic.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from kdb: `ScalarExampleDynamic`, `RepeatedExampleDynamic`, `SubMessageExampleDynamic`, `MapExampleDynamic`, `SpecifierExampleDynamic` and `OneofExampleDynamic`.
 
-The following example is taken from `examples/examples_dynamic.q` and outlines the retrieval of a schema from a `.proto` file based specified on a specified import search path. So if the q session is started in the `examples` subdirectory then the path to the `proto` subdirectory is specified as follows:
+The following example is taken from the second section of `examples/scalar.q` and outlines the retrieval of a schema from a `.proto` file based specified on a specified import search path. So if the q session is started in the `examples` subdirectory then the path to the `proto` subdirectory is specified as follows:
 
 ```
 q).protobufkdb.addProtoImportPath["../proto"]
