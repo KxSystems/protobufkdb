@@ -58,6 +58,13 @@ show serialized;
 deserialized:.protobufkdb.parseArray[`MapExampleDynamic; serialized];
 show deserialized;
 
+// Ordering of protobuf maps is undefined so compare using key lookups
+show (count map)~(count deserialized);
+show map[0][0]~deserialized[0][0];
+show map[1][`s1]~deserialized[1][`s1];
+show map[1][`s2]~deserialized[1][`s2];
+show map[1][`s3]~deserialized[1][`s3];
+
 -1 "\n+----------------------------------------+\n";
 
 // Process off

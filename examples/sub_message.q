@@ -27,6 +27,9 @@ show serialized;
 deserialized:.protobufkdb.parseArray[`SubMessageExample; serialized];
 show deserialized;
 
+// Compare the kdb+ objects
+show submessage~deserialized
+
 //-------------------------------------------------//
 // Example-2. Use dynamically imported schema file //
 //-------------------------------------------------//
@@ -50,6 +53,9 @@ show serialized;
 // Deserialize char array into kdb+ data
 deserialized:.protobufkdb.parseArray[`SubMessageExampleDynamic; serialized];
 show deserialized;
+
+// Compare the kdb+ objects
+show submessage~deserialized
 
 -1 "\n+----------------------------------------+\n";
 

@@ -20,6 +20,9 @@ saveMessage[`ScalarExample; `sample_scalars_file; scalars];
 loaded:loadMessage[`ScalarExample; `sample_scalars_file];
 show loaded;
 
+// Compare the kdb+ objects
+show scalars~loaded
+
 -1 "\n+----------------------------------------+\n";
 
 // Process off
