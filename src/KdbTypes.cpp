@@ -1,8 +1,6 @@
 #include "KdbTypes.h"
 #include "TypeCheck.h"
 
-#include <iostream>
-
 
 namespace kx {
 namespace protobufkdb {
