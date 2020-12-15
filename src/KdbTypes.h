@@ -8,11 +8,14 @@
 // after all the protobuf headers to avoid conflicts.
 #include <k.h>
 
-namespace gpb = ::google::protobuf;
 
+namespace kx {
+namespace protobufkdb {
+namespace gpb = ::google::protobuf;
 
 class KdbTypes
 {
+public:
   // Typename of k->t
   typedef decltype(k0::t) KType;
 
@@ -21,33 +24,31 @@ private:
 
   // Maps the protobuf cpp type to the corresponding kdb type
   const KType cpp_ktype[gpb::FieldDescriptor::MAX_CPPTYPE + 1] =
-    { 0, KI, KJ, KI, KJ, KF, KE, KB, KI, KS, 0 };
+  { 0, KI, KJ, KI, KJ, KF, KE, KB, KI, KS, 0 };
 
   // Maps the KdbTypeSpecifier enum to the corresponding kdb type
   const KType specifier_ktype[KdbTypeSpecifier::KDBTYPE_LEN] =
-    { 0, KP, KM, KD, KZ, KN, KU, KV, KT, UU };
+  { 0, KP, KM, KD, KZ, KN, KU, KV, KT, UU };
 
   // Maps the KdbTypeSpecifier enum to a 'compatible' kdb type.  Used to
   // check the KdbTypeSpecifier is compatible with protobuf cpp type (mapped to
   // its kdb type).
   const KType compatible_ktype[KdbTypeSpecifier::KDBTYPE_LEN] =
-    { 0, KJ, KI, KI, KF, KJ, KI, KI, KI, KS };
+  { 0, KJ, KI, KI, KF, KJ, KI, KI, KI, KS };
+
+  // Default mappings for string, bytes and string map key fields
+  KType string_kdb_type = KC;
+  KType bytes_kdb_type = KG;
+  KType string_map_key_kdb_type = -KS;
 
 private:
-  KdbTypes() {};
+  KdbTypes()
+  {};
 
   // Lookup functions into the above mapping arrays
   inline const KType Cpp2KdbType(const gpb::FieldDescriptor::CppType type) const;
   inline const KType Specifier2KdbType(const KdbTypeSpecifier type) const;
   inline const KType CompatibleKdbType(const KdbTypeSpecifier type) const;
-
-public:
-  /**
-   * @brief Returns the singleton instance.
-   *
-   * @return KdbTypes object
-  */
-  static const KdbTypes* Instance();
 
   /**
    * @brief Returns the kdb type of the specified (non-map) field.
@@ -61,11 +62,42 @@ public:
   */
   const KType GetKdbType(const gpb::FieldDescriptor* field) const;
 
+public:
+  /**
+   * @brief Returns the singleton instance.
+   *
+   * @return KdbTypes object
+  */
+  static KdbTypes* Instance();
+
+  /**
+   * @brief Returns the kdb type of the specified scalar field.
+   *
+   * Similar to GetKdbType() but maps string and bytes proto fields according to
+   * the configured setting.
+   *
+   * @param field FieldDescriptor of the field to be mapped
+   * @return      Corresponding kdb type
+  */
+  const KType GetScalarKdbType(const gpb::FieldDescriptor* field) const;
+
+  /**
+   * @brief Returns the kdb type of the specified repeated field.
+   *
+   * Similar to GetKdbType() but maps string and bytes proto fields according to
+   * the configured setting.
+   *
+   * @param field FieldDescriptor of the field to be mapped
+   * @return      Corresponding kdb type
+  */
+  const KType GetRepeatedKdbType(const gpb::FieldDescriptor* field) const;
+
   /**
    * @brief Returns the kdb type of the specified map-key field
    *
    * Similar to GetKdbType() but checks KdbTypeSpecifier from the field option
-   * MapKdbTypeSpecifier->key_type
+   * MapKdbTypeSpecifier->key_type.  Also maps string proto fields according to
+   * the configured setting.
    *
    * @param map_field FieldDescriptor of the parent map field
    * @param key_field FieldDescriptor of the map-key field
@@ -77,7 +109,8 @@ public:
    * @brief Returns the kdb type of the specified map-value field
    *
    * Similar to GetKdbType() but checks KdbTypeSpecifier from the field option
-   * MapKdbTypeSpecifier->value_type
+   * MapKdbTypeSpecifier->value_type.  Also maps string and bytes proto fields
+   * according to the configured setting.
    *
    * @param map_field FieldDescriptor of the parent map field
    * @param key_field FieldDescriptor of the map-value field
@@ -118,10 +151,63 @@ public:
   /**
    * @brief Converts a ascii hexidecimal formatted string of a GUID kdb object.
    *
+   * @param field FieldDescriptor of the string field
    * @param guid  32 character ascii string GUID
    * @return      16 character binary GUID
   */
-  const U GuidFromString(const std::string& guid) const;
+  const U GuidFromString(const gpb::FieldDescriptor* field, const std::string& guid) const;
+
+  /**
+   * @brief Sets the kdb type (symbol, char array, byte array) which proto
+   * string fields should be mapped to.  Default is char array.
+   *
+   * @param kdb_type -11|4|10
+  */
+  void SetStringKdbType(KType kdb_type);
+
+  /**
+   * @brief Return the currently configured kdb type mapping (symbol, char
+   * array, byte array) for proto string fields.
+   *
+   * @return -11|4|10
+  */
+  KType GetStringKdbType(void) const;
+
+  /**
+   * @brief Sets the kdb type (symbol, char array, byte array) which proto
+   * bytes fields should be mapped to.  Default is byte array.
+   *
+   * @param kdb_type -11|4|10
+  */
+  void SetBytesKdbType(KType kdb_type);
+
+  /**
+   * @brief Return the currently configured kdb type mapping (symbol, char
+   * array, byte array) for proto bytes fields.
+   *
+   * @return -11|4|10
+  */
+  KType GetBytesKdbType(void) const;
+
+  /**
+   * @brief Sets the kdb type (symbol, char array, byte array) which proto
+   * string map key fields should be mapped to.  Default is symbol.
+   *
+   * @param kdb_type -11|4|10
+  */
+  void SetStringMapKeyKdbType(KType kdb_type);
+
+  /**
+   * @brief Return the currently configured kdb type mapping (symbol, char
+   * array, byte array) for proto string map key fields.
+   *
+   * @return -11|4|10
+  */
+  KType GetStringMapKeyKdbType(void) const;
 };
+
+} // namespace protobufkdb
+} // namespace kx
+
 
 #endif // __KDB_TYPES_H__

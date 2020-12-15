@@ -21,16 +21,16 @@ message ScalarExample {
   string scalar_string = 3;
 }
 
-q)scalars:(12i;55f;`str)
+q)scalars:(12i;55f;"str")
 
 // Serialize the kdb structure to a protobuf encoded char array:
-q)serialized:.protobufkdb.serializeArray[`ScalarExample;a]
+q)serialized:.protobufkdb.serializeArrayFromList[`ScalarExample;a]
 
 q)serialized
 "\010\014\021\000\000\000\000\000\200K@\032\003str"
 
 // Parse the char array back to kdb and check the result is the same as the original mixed list
-q)deserialized:.protobufkdb.parseArray[`ScalarExample;serialized]
+q)deserialized:.protobufkdb.parseArrayToList[`ScalarExample;serialized]
 
 q)scalars~deserialized
 1b
@@ -39,12 +39,12 @@ q)scalars~deserialized
 Modify the structure of the kdb+ list to make it non-conformant in order to observe potential type checking errors:
 
 ```
-q)array:.protobufkdb.serializeArray[`ScalarExample;(12i;55f;`str;1)]
-'Incorrect number of fields, message: 'ScalarExample', expected: 3, received: 4
-  [0]  array:.protobufkdb.serializeArray[`ScalarExample;(12i;55f;`str;1)]
+q)array:.protobufkdb.serializeArrayFromList[`ScalarExample;(12i;55f)]
+'Incorrect number of fields, message: 'ScalarExample', expected: 3, received: 2
+  [0]  array:.protobufkdb.serializeArray[`ScalarExample;(12i;55f)]
              ^
 
-q)array:.protobufkdb.serializeArray[`ScalarExample;(12j;55f;`str)]
+q)array:.protobufkdb.serializeArray[`ScalarExample;(12j;55f;"str")]
 'Invalid scalar type, field: 'ScalarExample.scalar_int32', expected: -6, received: -7
 ```
 
