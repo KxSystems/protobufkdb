@@ -24,17 +24,17 @@ private:
 
   // Maps the protobuf cpp type to the corresponding kdb type
   const KType cpp_ktype[gpb::FieldDescriptor::MAX_CPPTYPE + 1] =
-  { 0, KI, KJ, KI, KJ, KF, KE, KB, KI, KS, 0 };
+    { 0, KI, KJ, KI, KJ, KF, KE, KB, KI, KS, 0 };
 
   // Maps the KdbTypeSpecifier enum to the corresponding kdb type
   const KType specifier_ktype[KdbTypeSpecifier::KDBTYPE_LEN] =
-  { 0, KP, KM, KD, KZ, KN, KU, KV, KT, UU };
+    { 0, KP, KM, KD, KZ, KN, KU, KV, KT, UU };
 
   // Maps the KdbTypeSpecifier enum to a 'compatible' kdb type.  Used to
   // check the KdbTypeSpecifier is compatible with protobuf cpp type (mapped to
   // its kdb type).
   const KType compatible_ktype[KdbTypeSpecifier::KDBTYPE_LEN] =
-  { 0, KJ, KI, KI, KF, KJ, KI, KI, KI, KS };
+    { 0, KJ, KI, KI, KF, KJ, KI, KI, KI, KS };
 
   // Default mappings for string, bytes and string map key fields
   KType string_kdb_type = KC;
