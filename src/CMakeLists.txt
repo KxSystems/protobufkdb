@@ -27,8 +27,6 @@ set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CXX)
 message(STATUS "Generator : ${CMAKE_GENERATOR}")
 message(STATUS "Build Tool : ${CMAKE_BUILD_TOOL}")
 message(STATUS "Proto files: ${MY_PROTO_FILES}")
-message(STATUS "Cmake bin dir: ${CMAKE_BINARY_DIR}")
-message(STATUS "Output dir: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 # When building protobuf from source using cmake it statically links against the MSVC runtime.
 # Since we are statically linking againat libprotobuf.lib, we must use the same runtime.

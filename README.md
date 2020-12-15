@@ -1,5 +1,6 @@
 # protobufkdb
 
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/kxsystems/protobufkdb?include_prereleases)](https://github.com/kxsystems/protobufkdb/releases) [![Travis (.org) branch](https://img.shields.io/travis/kxsystems/protobufkdb/master?label=travis%20build)](https://travis-ci.org/kxsystems/protobufkdb/branches)
 
 ## Introduction
 

@@ -55,7 +55,7 @@ before_install:
       export LD_LIBRARY_PATH=$BUILD_HOME/lib:$LD_LIBRARY_PATH;
       export DYLD_LIBRARY_PATH=$BUILD_HOME/lib:$LD_LIBRARY_PATH;
       export PATH=$BUILD_HOME/lib:$PATH;
-      curl -o qhome/q.zip -L $OD;
+      curl -u $NEXUS_USER:$NEXUS_PASS -o qhome/q.zip -L $OD;
       unzip -d qhome qhome/q.zip;
       rm qhome/q.zip;
       echo -n $QLIC_KC |base64 --decode > qhome/kc.lic;
