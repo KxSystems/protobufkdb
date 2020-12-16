@@ -23,16 +23,11 @@ before_install:
   - if [[ $BUILD == "True" ]]; then
       chmod +x travis_setup.sh; 
       ./travis_setup.sh;
+      export BUILD_HOME=$TRAVIS_BUILD_DIR/cbuild/install;
       export LIB="cmake/$FILE_ROOT/lib";
       mkdir cmake;
     else
       export LIB="";
-    fi
-    
-  # On Windows, make sure protoc.exe is on the path so the cmake functionality to locate the protobuf installation works    
-  - if [[ $BUILD == "True" && $TRAVIS_OS_NAME == "windows" ]]; then
-      export BUILD_HOME=$TRAVIS_BUILD_DIR/cbuild/install;
-      export PATH=$BUILD_HOME/bin:$PATH;
     fi
 
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
