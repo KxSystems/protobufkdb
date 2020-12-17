@@ -73,7 +73,8 @@ public:
    *  float               KE
    *  bool                KB
    *  enum                KI
-   *  string              KS|0
+   *  string              0 (of KC)
+   *  bytes               0 (of KG)
    *
    * Note that a repeated sub-message field is handled by
    * MessageFormat::GetMessageField().

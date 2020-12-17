@@ -6,9 +6,6 @@
 // import the Protobuf library
 \l ../q/protobufkdb.q
 
-// Move into the protobufkdb namespace
-\d .protobufkdb
-
 //------------------------------------------------------//
 // Example-1. Trivial message without submessage fields //
 //------------------------------------------------------//

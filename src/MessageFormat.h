@@ -36,7 +36,7 @@ public:
    *
    * @return MessageFormat object
   */
-  static MessageFormat* Instance();
+  static const MessageFormat* Instance();
 
   /**
    * @brief Converts a protobuf message to kdb.

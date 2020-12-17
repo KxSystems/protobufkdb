@@ -8,7 +8,7 @@ namespace protobufkdb {
 // Singleton instance
 KdbTypes* KdbTypes::instance = nullptr;
 
-KdbTypes* KdbTypes::Instance()
+const KdbTypes* KdbTypes::Instance()
 {
   if (instance == nullptr)
     instance = new KdbTypes();
@@ -189,29 +189,14 @@ const U KdbTypes::GuidFromString(const gpb::FieldDescriptor* field, const std::s
   }
 }
 
-void KdbTypes::SetStringKdbType(KType kdb_type)
-{
-  string_kdb_type = kdb_type;
-}
-
 KdbTypes::KType KdbTypes::GetStringKdbType(void) const
 {
   return string_kdb_type;
 }
 
-void KdbTypes::SetBytesKdbType(KType kdb_type)
-{
-  bytes_kdb_type = kdb_type;
-}
-
 KdbTypes::KType KdbTypes::GetBytesKdbType(void) const
 {
   return bytes_kdb_type;
-}
-
-void KdbTypes::SetStringMapKeyKdbType(KType kdb_type)
-{
-  string_map_key_kdb_type = kdb_type;
 }
 
 KdbTypes::KType KdbTypes::GetStringMapKeyKdbType(void) const

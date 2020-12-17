@@ -198,54 +198,6 @@ extern "C"
   */
   EXP K ListImportedMessageTypes(K unused);
 
-  /**
-   * @brief Sets the kdb type (symbol, char array, byte array) which proto
-   * string fields should be mapped to.  Default is char array.
-   *
-   * @param kdb_type -11|4|10h
-  */
-  EXP K SetStringKdbType(K kdb_type);
-
-  /**
-   * @brief Return the currently configured kdb type mapping (symbol, char
-   * array, byte array) for proto string fields.
-   *
-   * @return -11|4|10h
-  */
-  EXP K GetStringKdbType(K unused);
-
-  /**
-   * @brief Sets the kdb type (symbol, char array, byte array) which proto
-   * bytes fields should be mapped to.  Default is byte array.
-   *
-   * @param kdb_type -11|4|10h
-  */
-  EXP K SetBytesKdbType(K type);
-
-  /**
-   * @brief Return the currently configured kdb type mapping (symbol, char
-   * array, byte array) for proto bytes fields.
-   *
-   * @return -11|4|10
-  */
-  EXP K GetBytesKdbType(K unused);
-
-  /**
-   * @brief Sets the kdb type (symbol, char array, byte array) which proto
-   * string map key fields should be mapped to.  Default is symbol.
-   *
-   * @param kdb_type -11|4|10
-  */
-  EXP K SetStringMapKeyKdbType(K type);
-
-  /**
-   * @brief Return the currently configured kdb type mapping (symbol, char
-   * array, byte array) for proto string map key fields.
-   *
-   * @return -11|4|10
-  */
-  EXP K GetStringMapKeyKdbType(K unused);
-
 }
 
 #endif // __PROTOBUF_KDB_H__

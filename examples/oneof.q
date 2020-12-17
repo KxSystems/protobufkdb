@@ -1,13 +1,10 @@
-// one_of.q
+// oneof.q
 // Examples of serializing from and deserializing to oneof kdb+ data
 
--1"\n+----------|| one_of.q ||----------+\n";
+-1"\n+----------|| oneof.q ||----------+\n";
 
 // import the Protobuf library
 \l ../q/protobufkdb.q
-
-// Move into the protobufkdb namespace
-\d .protobufkdb
 
 //-------------------------------------//
 // Example-1. Use compiled schema file //

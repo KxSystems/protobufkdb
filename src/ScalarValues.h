@@ -73,7 +73,8 @@ public:
    *  float             -KE
    *  bool              -KB
    *  enum              -KI
-   *  string            -KS|KC|KG
+   *  string             KC
+   *  bytes              KG
    *
    * Note that a sub-message field is handled by
    * MessageFormat::GetMessageField().

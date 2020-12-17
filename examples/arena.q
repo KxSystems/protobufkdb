@@ -14,9 +14,6 @@
 // import the Protobuf library
 \l ../q/protobufkdb.q
 
-// Move into the protobufkdb namespace
-\d .protobufkdb
-
 // Prepare huge submessage data
 huge:submessage:((0i;0f;`str); (10000#enlist (`int$til 100; `float$til 100; 100#enlist "str")));
 

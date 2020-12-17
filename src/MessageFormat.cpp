@@ -15,7 +15,7 @@ namespace protobufkdb {
 // Singleton instance
 MessageFormat* MessageFormat::instance = nullptr;
 
-MessageFormat* MessageFormat::Instance()
+const MessageFormat* MessageFormat::Instance()
 {
   if (instance == nullptr)
     instance = new MessageFormat();
@@ -31,7 +31,7 @@ K MessageFormat::GetMessage(const gpb::Message& msg, bool use_field_names) const
   // of that size and populate each list item. 
   const auto desc = msg.GetDescriptor();
 
-  K field_values = knk(desc->field_count());
+  K field_values = ktn(0, desc->field_count());
   for (int i = 0; i < desc->field_count(); ++i)
     kK(field_values)[i] = GetMessageField(msg, desc->field(i), use_field_names);
 
@@ -56,7 +56,7 @@ K MessageFormat::GetMessageField(const gpb::Message& msg, const gpb::FieldDescri
   const auto oneof_desc = fd->containing_oneof();
   if (oneof_desc != nullptr && refl->GetOneofFieldDescriptor(msg, oneof_desc) != fd) {
     // Field is a oneof but not the active oneof - return empty mixed list.
-    element = knk(0);
+    element = ktn(0, 0);
   }
   // Add the below functionality once proto3 presence and synthetic oneofs are
   // properly supported (as of protobuf v3.14.0 it's still experimental):
@@ -78,7 +78,7 @@ K MessageFormat::GetMessageField(const gpb::Message& msg, const gpb::FieldDescri
       //
       // Determine the number of repeated sub-messages in this message and
       // create a mixed list of that size
-      element = knk(refl->FieldSize(msg, fd));
+      element = ktn(0, refl->FieldSize(msg, fd));
       for (auto i = 0; i < refl->FieldSize(msg, fd); ++i) {
         // Recurse into each sub-message to populate the list
         kK(element)[i] = GetMessage(refl->GetRepeatedMessage(msg, fd, i), use_field_names);

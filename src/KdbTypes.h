@@ -36,10 +36,16 @@ private:
   const KType compatible_ktype[KdbTypeSpecifier::KDBTYPE_LEN] =
     { 0, KJ, KI, KI, KF, KJ, KI, KI, KI, KS };
 
-  // Default mappings for string, bytes and string map key fields
-  KType string_kdb_type = KC;
-  KType bytes_kdb_type = KG;
-  KType string_map_key_kdb_type = -KS;
+  // Mappings for string, bytes and string-map-key fields
+  enum KdbStringEncodings
+  {
+    SYMBOL = -KS,
+    BYTE_ARRAY = KG,
+    CHAR_ARRAY = KC
+  };
+  const KdbStringEncodings string_kdb_type = KdbStringEncodings::CHAR_ARRAY;
+  const KdbStringEncodings bytes_kdb_type = KdbStringEncodings::BYTE_ARRAY;
+  const KdbStringEncodings string_map_key_kdb_type = KdbStringEncodings::SYMBOL;
 
 private:
   KdbTypes()
@@ -68,7 +74,7 @@ public:
    *
    * @return KdbTypes object
   */
-  static KdbTypes* Instance();
+  static const KdbTypes* Instance();
 
   /**
    * @brief Returns the kdb type of the specified scalar field.
@@ -158,14 +164,6 @@ public:
   const U GuidFromString(const gpb::FieldDescriptor* field, const std::string& guid) const;
 
   /**
-   * @brief Sets the kdb type (symbol, char array, byte array) which proto
-   * string fields should be mapped to.  Default is char array.
-   *
-   * @param kdb_type -11|4|10
-  */
-  void SetStringKdbType(KType kdb_type);
-
-  /**
    * @brief Return the currently configured kdb type mapping (symbol, char
    * array, byte array) for proto string fields.
    *
@@ -174,28 +172,12 @@ public:
   KType GetStringKdbType(void) const;
 
   /**
-   * @brief Sets the kdb type (symbol, char array, byte array) which proto
-   * bytes fields should be mapped to.  Default is byte array.
-   *
-   * @param kdb_type -11|4|10
-  */
-  void SetBytesKdbType(KType kdb_type);
-
-  /**
    * @brief Return the currently configured kdb type mapping (symbol, char
    * array, byte array) for proto bytes fields.
    *
    * @return -11|4|10
   */
   KType GetBytesKdbType(void) const;
-
-  /**
-   * @brief Sets the kdb type (symbol, char array, byte array) which proto
-   * string map key fields should be mapped to.  Default is symbol.
-   *
-   * @param kdb_type -11|4|10
-  */
-  void SetStringMapKeyKdbType(KType kdb_type);
 
   /**
    * @brief Return the currently configured kdb type mapping (symbol, char

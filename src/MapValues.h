@@ -78,7 +78,7 @@ public:
    *  int32, uint32     KI
    *  int64, uint64     KJ
    *  bool              KB
-   *  string            KS|0
+   *  string            KS
    *
    * Protobuf map values can be any scalar type or a message and therefore
    * produce a value list of type:
@@ -89,7 +89,8 @@ public:
    *  float               KE
    *  bool                KB
    *  enum                KI
-   *  string              KS|0
+   *  string              0 (of KC)
+   *  bytes               0 (of KG)
    *  message             0 (mixed list of mixed lists)
    *
    * Note that the protobuf wire format and map iteration ordering of map items
