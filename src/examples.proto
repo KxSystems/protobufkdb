@@ -42,3 +42,15 @@ message OneofExample {
     }
     string non_oneoff           = 3;
 }
+
+message SametypeExampleDynamic {
+    double triple_one           = 1;
+    double triple_two           = 2;
+    double triple_three         = 3;
+}
+
+message SametypeExampleDynamic2 {
+    string triple_one           = 1;
+    string triple_two           = 2;
+    string triple_three         = 3;
+}

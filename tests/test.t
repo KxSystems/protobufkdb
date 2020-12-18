@@ -19,7 +19,7 @@ importProtoFile["tests_dynamic.proto"];
 
 -1 "<--- Pass correct data --->";
 
-scalars_expected:(1i;2i;3j;4j;5f;6e;1b;2i;"string");
+scalars_expected:(1i;2i;3j;4j;5f;6e;1b;2i;"string";0x3ca57b);
 
 saveMessageFromList[`ScalarTest;`scalar_file;scalars_expected];
 .test.ASSERT_TRUE[loadMessageToList; (`ScalarTest; `scalar_file); scalars_expected]
@@ -29,7 +29,7 @@ saveMessageFromList[`ScalarTestDynamic;`scalar_file;scalars_expected];
 
 -1 "<--- Pass enlist for scalar --->";
 
-scalars_enlist:(1i;enlist 2i;3j;4j;5f;6e;1b;1i;"string");
+scalars_enlist:(1i;enlist 2i;3j;4j;5f;6e;1b;1i;"string";0x3ca57b);
 
 .test.ASSERT_ERROR[saveMessageFromList; (`ScalarTest; `scalar_file; scalars_enlist); "Invalid scalar type"]
 
@@ -37,7 +37,7 @@ scalars_enlist:(1i;enlist 2i;3j;4j;5f;6e;1b;1i;"string");
 
 -1 "<--- Pass different type scalar --->";
 
-scalars_wrong_type:(1i;2i;3j;4f;5f;6e;1b;0i;"string");
+scalars_wrong_type:(1i;2i;3j;4f;5f;6e;1b;0i;"string";"0x3ca57b");
 
 .test.ASSERT_ERROR[saveMessageFromList; (`ScalarTest; `scalar_file; scalars_wrong_type); "Invalid scalar type"]
 
@@ -45,7 +45,7 @@ scalars_wrong_type:(1i;2i;3j;4f;5f;6e;1b;0i;"string");
 
 -1 "<--- Pass insufficient data --->";
 
-scalars_short:(2i;3j;4j;5f;6e;1b;0i;"string");
+scalars_short:(2i;3j;4j;5f;6e;1b;0i;"string";0x3ca57b);
 
 .test.ASSERT_ERROR[saveMessageFromList; (`ScalarTest; `scalar_file; scalars_short); "Incorrect number of fields"]
 
@@ -181,9 +181,12 @@ array:serializeArrayFromDict[`ScalarTest; scalars_expected_dict];
 
 -1 "<--- Pass correct data --->";
 
-repeated_from_scalars:{@[x;where 10h=type each x;enlist]}
+repeated_from_scalars:{@[x;where any each 4 10h=\:/: type each x;enlist]}
 repeated_scalars:repeated_from_scalars scalars_expected;
 repeated_expected:repeated_scalars,'repeated_scalars;
+
+show scalars_expected;
+show repeated_expected;
 
 saveMessageFromList[`RepeatedTest; `repeated_file; repeated_expected];
 .test.ASSERT_TRUE[loadMessageToList; (`RepeatedTest; `repeated_file); repeated_expected]
@@ -859,6 +862,36 @@ oneofall_dict:oneof_fields!(1.1f;12:34:56;oneofmsg_fields!(1j; 2.1 2.2f);"str");
 .test.ASSERT_TRUE[parseArrayToDict; (`OneofTest; serializeArrayFromDict[`OneofTest; oneofall_dict]); oneof3_dict]
 
 .test.ASSERT_TRUE[parseArrayToDict; (`OneofTest; serializeArrayFromDict[`OneofTestDynamic; oneofall_dict]); oneof3_dict]
+
+-1 "\n+----------|| Test same type ||----------+\n";
+
+-1 "<--- Pass correct data --->";
+
+sames:(36.25; 48.8697; 74.47747; 17.759; ::);
+
+array:serializeArrayFromList[`SametypeTest;sames];
+.test.ASSERT_TRUE[{[schema;array_] `float$parseArrayToList[schema; array_]}; (`SametypeTest; array); -1 _ sames]
+
+array:serializeArrayFromList[`SametypeTestDynamic; sames];
+// Deseriaized ist does not have (::) at the tail and its type is float list
+.test.ASSERT_TRUE[{[schema;array_] `float$parseArrayToList[schema; array_]}; (`SametypeTestDynamic; array); -1 _ sames]
+
+-1 "<--- Pass non-null terminated data --->";
+
+sames:36.25 48.8697 74.47747 17.759;
+
+.test.ASSERT_ERROR[serializeArrayFromList; (`SametypeTest; sames); "Invalid message type"]
+
+.test.ASSERT_ERROR[serializeArrayFromList; (`SametypeTestDynamic; sames); "Invalid message type"]
+
+-1 "<--- Pass wrong type data --->";
+
+wrong_sames:("single"; "double"; "triple"; "quadraple");
+
+.test.ASSERT_ERROR[serializeArrayFromList; (`SametypeTest; wrong_sames); "Invalid scalar type"]
+
+.test.ASSERT_ERROR[serializeArrayFromList; (`SametypeTestDynamic; wrong_sames); "Invalid scalar type"]
+
 
 
 -1 "\n+----------|| Finished testing ||----------+\n";

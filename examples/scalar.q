@@ -48,7 +48,7 @@ serialized:.protobufkdb.serializeArrayFromList[`ScalarExampleDynamic; scalars];
 show serialized;
 
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArrayToList[`ScalarExampleDynamic; serialized]
+deserialized:.protobufkdb.parseArrayToList[`ScalarExampleDynamic; serialized];
 show deserialized;
 
 // Compare the kdb+ objects
