@@ -76,13 +76,12 @@ before_install:
     fi
 
 script:
+  # The tests neeed to be run from the package directory since they need to dynamically import Google's .proto files
   - if [[ $TESTS == "True" && "x$OD" != "x" && "x$QLIC_KC" != "x" ]]; then
-      # The tests neeed to be run from the package directory since they
-      # need to dynamically import Google's .proto files
       cd ./cmake/$FILE_ROOT;
       curl -o test.q -L https://github.com/KxSystems/hdf5/raw/master/test.q;
       q test.q tests/ -q;
-      cd ~;
+      cd -;
     fi
   - if [[ $TRAVIS_OS_NAME == "windows" && $BUILD == "True" ]]; then
       7z a -tzip -r $FILE_NAME ./cmake/$FILE_ROOT/*;
