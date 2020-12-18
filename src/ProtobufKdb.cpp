@@ -59,9 +59,9 @@ K VersionStr(K unused)
 K SerializeArray(K message_type, K msg_in, K use_field_names)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
   if (use_field_names->t != -KB)
-    return krr((S)"use_field_names not -KB");
+    return krr((S)"use_field_names not -1h");
 
   return kx::protobufkdb::MessageParser::Instance()->SerializeArray(GetKdbString(message_type), msg_in, use_field_names->g);
 }
@@ -69,9 +69,9 @@ K SerializeArray(K message_type, K msg_in, K use_field_names)
 K SerializeArrayArena(K message_type, K msg_in, K use_field_names)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
   if (use_field_names->t != -KB)
-    return krr((S)"use_field_names not -KB");
+    return krr((S)"use_field_names not -1h");
 
   return kx::protobufkdb::MessageParser::Instance()->SerializeArrayArena(GetKdbString(message_type), msg_in, use_field_names->g);
 }
@@ -79,11 +79,11 @@ K SerializeArrayArena(K message_type, K msg_in, K use_field_names)
 K ParseArray(K message_type, K char_array, K use_field_names)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
   if (char_array->t != KG && char_array->t != KC)
-    return krr((S)"char_array not KG|KC");
+    return krr((S)"char_array not 4|10h");
   if (use_field_names->t != -KB)
-    return krr((S)"use_field_names not -KB");
+    return krr((S)"use_field_names not -1h");
 
   return kx::protobufkdb::MessageParser::Instance()->ParseArray(GetKdbString(message_type), char_array, use_field_names->g);
 }
@@ -91,11 +91,11 @@ K ParseArray(K message_type, K char_array, K use_field_names)
 K ParseArrayArena(K message_type, K char_array, K use_field_names)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
   if (char_array->t != KG && char_array->t != KC)
-    return krr((S)"char_array not KG|KC");
+    return krr((S)"char_array not 4|10h");
   if (use_field_names->t != -KB)
-    return krr((S)"use_field_names not -KB");
+    return krr((S)"use_field_names not -1h");
 
   return kx::protobufkdb::MessageParser::Instance()->ParseArrayArena(GetKdbString(message_type), char_array, use_field_names->g);
 }
@@ -103,9 +103,9 @@ K ParseArrayArena(K message_type, K char_array, K use_field_names)
 K ParseArrayDebug(K message_type, K char_array)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
   if (char_array->t != KG && char_array->t != KC)
-    return krr((S)"char_array not KG|KC");
+    return krr((S)"char_array not 4|10h");
 
   return kx::protobufkdb::MessageParser::Instance()->ParseArrayDebug(GetKdbString(message_type), char_array);
 }
@@ -113,11 +113,11 @@ K ParseArrayDebug(K message_type, K char_array)
 K SaveMessage(K message_type, K filename, K msg_in, K use_field_names)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
   if (!IsKdbString(filename))
-    return krr((S)"Specify filename");
+    return krr((S)"filename not -11|4|10h");
   if (use_field_names->t != -KB)
-    return krr((S)"use_field_names not -KB");
+    return krr((S)"use_field_names not -1h");
 
   return kx::protobufkdb::MessageParser::Instance()->SaveMessage(GetKdbString(message_type), GetKdbString(filename), msg_in, use_field_names->g);
 }
@@ -125,11 +125,11 @@ K SaveMessage(K message_type, K filename, K msg_in, K use_field_names)
 K LoadMessage(K message_type, K filename, K use_field_names)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
   if (!IsKdbString(filename))
-    return krr((S)"Specify filename");
+    return krr((S)"filename not -11|4|10h");
   if (use_field_names->t != -KB)
-    return krr((S)"use_field_names not -KB");
+    return krr((S)"use_field_names not -1h");
 
   return kx::protobufkdb::MessageParser::Instance()->LoadMessage(GetKdbString(message_type), GetKdbString(filename), use_field_names->g);
 }
@@ -137,9 +137,9 @@ K LoadMessage(K message_type, K filename, K use_field_names)
 K LoadMessageDebug(K message_type, K filename)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
   if (!IsKdbString(filename))
-    return krr((S)"Specify filename");
+    return krr((S)"filename not -11|4|10h");
 
   return kx::protobufkdb::MessageParser::Instance()->LoadMessageDebug(GetKdbString(message_type), GetKdbString(filename));
 }
@@ -147,13 +147,13 @@ K LoadMessageDebug(K message_type, K filename)
 K GetMessageSchema(K message_type)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
 
   // Create the intermediate message in a unique_ptr so we don't have to worry
   // about explicitly freeing it if there is an error
   std::unique_ptr<google::protobuf::Message> msg(kx::protobufkdb::MessageFactory::Instance()->CreateMessage(GetKdbString(message_type)));
   if (!msg)
-    return krr((S)"Invalid message type");
+    return krr((S)"Unknown message type");
 
   const auto& debug_str = msg->GetDescriptor()->DebugString();
   return kpn((S)debug_str.c_str(), debug_str.length());
@@ -162,13 +162,13 @@ K GetMessageSchema(K message_type)
 K GetMessageFields(K message_type)
 {
   if (!IsKdbString(message_type))
-    return krr((S)"Specify message type");
+    return krr((S)"message_type not -11|4|10h");
 
   // Create the intermediate message in a unique_ptr so we don't have to worry
   // about explicitly freeing it if there is an error
   std::unique_ptr<google::protobuf::Message> msg(kx::protobufkdb::MessageFactory::Instance()->CreateMessage(GetKdbString(message_type)));
   if (!msg)
-    return krr((S)"Invalid message type");
+    return krr((S)"Unknown message type");
 
   const auto desc = msg->GetDescriptor();
   K fields = ktn(KS, desc->field_count());
@@ -181,7 +181,7 @@ K GetMessageFields(K message_type)
 K AddProtoImportPath(K import_path)
 {
   if (!IsKdbString(import_path))
-    return krr((S)"Specify import path");
+    return krr((S)"import_path not -11|4|10h");
   
   kx::protobufkdb::MessageFactory::Instance()->AddProtoImportPath(GetKdbString(import_path));
 
@@ -191,7 +191,7 @@ K AddProtoImportPath(K import_path)
 K ImportProtoFile(K filename)
 {
   if (!IsKdbString(filename))
-    return krr((S)"Specify filename");
+    return krr((S)"filename not -11|4|10h");
 
   std::string error;
   if (!kx::protobufkdb::MessageFactory::Instance()->ImportProtoFile(GetKdbString(filename), error)) {
