@@ -36,3 +36,4 @@ file(COPY proto/ DESTINATION ${PROJECT_BINARY_DIR}/${MY_LIBRARY_NAME}/proto/)
 # Copy the .proto files from the protobuf include directory to the install package
 file(GLOB PROTO_FILES ${CMAKE_PREFIX_PATH}/include/google/protobuf/*.proto)
 file(COPY ${PROTO_FILES} DESTINATION ${PROJECT_BINARY_DIR}/${MY_LIBRARY_NAME}/proto/google/protobuf/)
+file(COPY ${PROTO_FILES} DESTINATION ${CMAKE_SOURCE_DIR}/proto/google/protobuf/)
