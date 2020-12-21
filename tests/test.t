@@ -185,9 +185,6 @@ repeated_from_scalars:{@[x;where any each 4 10h=\:/: type each x;enlist]}
 repeated_scalars:repeated_from_scalars scalars_expected;
 repeated_expected:repeated_scalars,'repeated_scalars;
 
-show scalars_expected;
-show repeated_expected;
-
 saveMessageFromList[`RepeatedTest; `repeated_file; repeated_expected];
 .test.ASSERT_TRUE[loadMessageToList; (`RepeatedTest; `repeated_file); repeated_expected]
 
@@ -873,7 +870,7 @@ array:serializeArrayFromList[`SametypeTest;sames];
 .test.ASSERT_TRUE[{[schema;array_] `float$parseArrayToList[schema; array_]}; (`SametypeTest; array); -1 _ sames]
 
 array:serializeArrayFromList[`SametypeTestDynamic; sames];
-// Deseriaized ist does not have (::) at the tail and its type is float list
+// Deseriaized list does not have (::) at the tail and its type is float list
 .test.ASSERT_TRUE[{[schema;array_] `float$parseArrayToList[schema; array_]}; (`SametypeTestDynamic; array); -1 _ sames]
 
 -1 "<--- Pass non-null terminated data --->";
