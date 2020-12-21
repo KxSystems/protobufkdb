@@ -1,4 +1,4 @@
-// handling_files.q
+// same_type.q
 // Examples of serializing from and deserializing to general list kdb+ data each element of which has the same type.
 
 -1"\n+----------|| same_type.q ||----------+\n";
