@@ -3,6 +3,9 @@
 #include "KdbTypes.h"
 
 
+namespace kx {
+namespace protobufkdb {
+
 // Singleton instance
 RepeatedValues* RepeatedValues::instance = nullptr;
 
@@ -50,7 +53,7 @@ K RepeatedValues::GetRepeated(const gpb::Message& msg, const gpb::Reflection* re
   // Determine the list type from the KdbFieldSpecifier (if present) or cpp_type
   const auto cpp_type = field->cpp_type();
   assert(cpp_type >= 0 && cpp_type < gpb::FieldDescriptor::CPPTYPE_MESSAGE);
-  const auto k_type = KdbTypes::Instance()->GetKdbType(field);
+  const auto k_type = KdbTypes::Instance()->GetRepeatedKdbType(field);
 
   // Create the simple list using this type and of length equal to the number of
   // repeated items
@@ -111,10 +114,29 @@ void RepeatedValues::GetRepeatedString(REPEATED_VALUES_GET_ARGS)
 {
   if (KdbTypes::Instance()->IsKdbTypeGuid(field)) {
     for (auto i = 0; i < refl->FieldSize(msg, field); ++i)
-      kU(out_list)[i] = KdbTypes::Instance()->GuidFromString(refl->GetRepeatedString(msg, field, i));
+      kU(out_list)[i] = KdbTypes::Instance()->GuidFromString(field, refl->GetRepeatedString(msg, field, i));
   } else {
-    for (auto i = 0; i < refl->FieldSize(msg, field); ++i)
-      kS(out_list)[i] = ss((S)refl->GetRepeatedString(msg, field, i).c_str());
+    // Get the string or bytes field mapping: -KS|KC|KG
+    KdbTypes::KType k_type = -KS;
+    if (field->type() == gpb::FieldDescriptor::TYPE_STRING)
+      k_type = KdbTypes::Instance()->GetStringKdbType();
+    else if (field->type() == gpb::FieldDescriptor::TYPE_BYTES)
+      k_type = KdbTypes::Instance()->GetBytesKdbType();
+
+    if (k_type == -KS) {
+      // Populate symbol list
+      for (auto i = 0; i < refl->FieldSize(msg, field); ++i)
+        kS(out_list)[i] = ss((S)refl->GetRepeatedString(msg, field, i).c_str());
+    } else {
+      // Populate mixed list of strings
+      for (auto i = 0; i < refl->FieldSize(msg, field); ++i) {
+        K k_str = kpn((S)refl->GetRepeatedString(msg, field, i).c_str(), refl->GetRepeatedString(msg, field, i).length());
+
+        // Update char list kdb type in case mapping to KG (kpn creates a KC list)
+        k_str->t = k_type;
+        kK(out_list)[i] = k_str;
+      }
+    }
   }
 }
 
@@ -128,10 +150,15 @@ void RepeatedValues::SetRepeated(gpb::Message* msg, const gpb::Reflection* refl,
   // cpp_type
   const auto cpp_type = field->cpp_type();
   assert(cpp_type >= 0 && cpp_type < gpb::FieldDescriptor::CPPTYPE_MESSAGE);
-  const auto k_type = KdbTypes::Instance()->GetKdbType(field);
+  const auto k_type = KdbTypes::Instance()->GetRepeatedKdbType(field);
 
-  // Check the list has the same type as we expected
-  TYPE_CHECK_REPEATED(k_type != k_repeated->t, field->full_name(), k_type, k_repeated->t);
+  // Check the list has the same type as we expected. For string or bytes proto
+  // fields (other than GUID encoded into string), allow KS|0 to be used
+  // interchangeably.
+  if (k_type == UU || cpp_type != gpb::FieldDescriptor::CPPTYPE_STRING ||
+      (k_repeated->t != KS && k_repeated->t != 0))
+    TYPE_CHECK_REPEATED(k_type != k_repeated->t, field->full_name(), k_type, k_repeated->t);
+
   set_repeated_fns[cpp_type](msg, refl, field, k_repeated);
 }
 
@@ -189,8 +216,37 @@ void RepeatedValues::SetRepeatedString(REPEATED_VALUES_SET_ARGS)
     for (auto i = 0; i < in_list->n; ++i)
       refl->AddString(msg, field, KdbTypes::Instance()->GuidToString(&kU(in_list)[i]));
   } else {
-    for (auto i = 0; i < in_list->n; ++i)
-      refl->AddString(msg, field, kS(in_list)[i]);
-  }
+    if (in_list->t == KS) {
+      // Deference in_list as symbol list
+      for (auto i = 0; i < in_list->n; ++i)
+        refl->AddString(msg, field, kS(in_list)[i]);
+    } else {
+      // Deference in_list as mixed list of strings
+      for (auto i = 0; i < in_list->n; ++i) {
+        auto k_str = kK(in_list)[i];
 
+        // Check each mixed list item is the correct string type, allowing
+        // -KS|KC|KG to be used interchangeably
+        if (k_str->t != -KS && k_str->t != KC && k_str->t != KG) {
+          // Get the correct string or bytes field mapping for the TypeCheck
+          // error
+          KdbTypes::KType k_type = -KS;
+          if (field->type() == gpb::FieldDescriptor::TYPE_STRING)
+            k_type = KdbTypes::Instance()->GetStringKdbType();
+          else if (field->type() == gpb::FieldDescriptor::TYPE_BYTES)
+            k_type = KdbTypes::Instance()->GetBytesKdbType();
+
+          TYPE_CHECK_REPEATED_STRING(k_type != k_str->t, field->full_name(), k_type, k_str->t);
+        }
+
+        if (k_str->t == -KS)
+          refl->AddString(msg, field, k_str->s);
+        else
+          refl->AddString(msg, field, std::string((S)kG(k_str), k_str->n));
+      }
+    }
+  }
 }
+
+} // namespace protobufkdb
+} // namespace kx

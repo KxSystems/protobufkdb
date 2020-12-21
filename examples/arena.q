@@ -14,30 +14,27 @@
 // import the Protobuf library
 \l ../q/protobufkdb.q
 
-// Move into the protobufkdb namespace
-\d .protobufkdb
-
 // Prepare huge submessage data
-huge:submessage:((0i;0f;`str); (10000#enlist (`int$til 100; `float$til 100; 100#`str)));
+huge:submessage:((0i;0f;`str); (10000#enlist (`int$til 100; `float$til 100; 100#enlist "str")));
 
--1 "Time for serialiation without arena"
+-1 "Time for serialiation without arena";
 // Serialize data into char array
-\t serialized:.protobufkdb.serializeArray[`SubMessageExample; huge];
+\t serialized:.protobufkdb.serializeArrayFromList[`SubMessageExample; huge];
 show serialized;
 
--1 "Time for serialiation with arena"
+-1 "Time for serialiation with arena";
 // Serialize data into char array
-\t serialized:.protobufkdb.serializeArrayArena[`SubMessageExample; huge];
+\t serialized:.protobufkdb.serializeArrayArenaFromList[`SubMessageExample; huge];
 show serialized;
 
--1 "Time for deserialiation without arena"
+-1 "Time for deserialiation without arena";
 // Deserialize char array into kdb+ data
-\t deserialized:.protobufkdb.parseArray[`SubMessageExample; serialized];
+\t deserialized:.protobufkdb.parseArrayToList[`SubMessageExample; serialized];
 show deserialized;
 
--1 "Time for deserialiation with arena"
+-1 "Time for deserialiation with arena";
 // Deserialize char array into kdb+ data
-\t deserialized:.protobufkdb.parseArrayArena[`SubMessageExample; serialized];
+\t deserialized:.protobufkdb.parseArrayArenaToList[`SubMessageExample; serialized];
 show deserialized;
 
 -1 "\n+----------------------------------------+\n";

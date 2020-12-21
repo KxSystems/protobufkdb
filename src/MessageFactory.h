@@ -12,8 +12,10 @@
 #include <google/protobuf/compiler/importer.h>
 #include <google/protobuf/dynamic_message.h>
 
-namespace gpb = ::google::protobuf;
 
+namespace kx {
+namespace protobufkdb {
+namespace gpb = ::google::protobuf;
 
 class MessageFactory
 {
@@ -24,7 +26,7 @@ private:
 
   // List of errors and warnings (if any) which occurred while parsing the last
   // proto file. 
-  std::ostringstream import_errors; 
+  std::ostringstream import_errors;
 
   // Helper class used by the Importer to populate import_errors.
   std::unique_ptr<ErrorPrinter> error_printer;
@@ -61,7 +63,8 @@ private:
   class ErrorPrinter : public gpb::compiler::MultiFileErrorCollector
   {
   public:
-    explicit ErrorPrinter(std::ostringstream& oss) : output(oss) {}
+    explicit ErrorPrinter(std::ostringstream& oss) : output(oss)
+    {}
 
     void AddError(const std::string& filename, int line, int column, const std::string& message) override;
     void AddWarning(const std::string& filename, int line, int column, const std::string& message) override;
@@ -85,7 +88,7 @@ public:
    * @param message_type  String representation of a message type.  Must be the
    * same as the message name in its .proto definition.
    * @param arena         Optional google arena in which to create the message
-   * @return              New protobuf message        
+   * @return              New protobuf message
   */
   gpb::Message* CreateMessage(const std::string& message_type, gpb::Arena* arena = NULL) const;
 
@@ -120,5 +123,9 @@ public:
   */
   void ListImportedMessageTypes(std::vector<std::string>* output) const;
 };
+
+} // namespace protobufkdb
+} // namespace kx
+
 
 #endif // __MESSAGE_FACTORY_H__

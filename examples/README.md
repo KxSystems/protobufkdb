@@ -13,7 +13,7 @@ More basic example workflows are highlighted in the documentation for this inter
 
 The following example is taken from the first section in `examples/scalar.q`:
 
-```
+```q
 q).protobufkdb.displayMessageSchema[`ScalarExample]
 message ScalarExample {
   int32 scalar_int32 = 1;
@@ -21,16 +21,16 @@ message ScalarExample {
   string scalar_string = 3;
 }
 
-q)scalars:(12i;55f;`str)
+q)scalars:(12i;55f;"str")
 
 // Serialize the kdb structure to a protobuf encoded char array:
-q)serialized:.protobufkdb.serializeArray[`ScalarExample;a]
+q)serialized:.protobufkdb.serializeArrayFromList[`ScalarExample;scalars]
 
 q)serialized
 "\010\014\021\000\000\000\000\000\200K@\032\003str"
 
 // Parse the char array back to kdb and check the result is the same as the original mixed list
-q)deserialized:.protobufkdb.parseArray[`ScalarExample;serialized]
+q)deserialized:.protobufkdb.parseArrayToList[`ScalarExample;serialized]
 
 q)scalars~deserialized
 1b
@@ -38,13 +38,13 @@ q)scalars~deserialized
 
 Modify the structure of the kdb+ list to make it non-conformant in order to observe potential type checking errors:
 
-```
-q)array:.protobufkdb.serializeArray[`ScalarExample;(12i;55f;`str;1)]
-'Incorrect number of fields, message: 'ScalarExample', expected: 3, received: 4
-  [0]  array:.protobufkdb.serializeArray[`ScalarExample;(12i;55f;`str;1)]
+```q
+q).protobufkdb.serializeArrayFromList[`ScalarExample;(12i;55f)]
+'Incorrect number of fields, message: 'ScalarExample', expected: 3, received: 2
+  [0]  array:.protobufkdb.serializeArray[`ScalarExample;(12i;55f)]
              ^
 
-q)array:.protobufkdb.serializeArray[`ScalarExample;(12j;55f;`str)]
+q).protobufkdb.serializeArray[`ScalarExample;(12j;55f;"str")]
 'Invalid scalar type, field: 'ScalarExample.scalar_int32', expected: -6, received: -7
 ```
 
@@ -54,7 +54,7 @@ Equivalent to the compiled in message examples, `proto/examples_dynamic.proto` p
 
 The following example is taken from the second section of `examples/scalar.q` and outlines the retrieval of a schema from a `.proto` file based specified on a specified import search path. So if the q session is started in the `examples` subdirectory then the path to the `proto` subdirectory is specified as follows:
 
-```
+```q
 q).protobufkdb.addProtoImportPath["../proto"]
 ```
 
@@ -62,13 +62,13 @@ q).protobufkdb.addProtoImportPath["../proto"]
 
 Import the message definitions contained in `examples_dynamic.proto` into the q session:
 
-```
+```q
 q).protobufkdb.importProtoFile["examples_dynamic.proto"]
 ```
 
 The examples then proceed as per the compiled in messages (using the corresponding dynamic message type names):
 
-```
+```q
 q).protobufkdb.displayMessageSchema[`ScalarExampleDynamic]
 message ScalarExampleDynamic {
   int32 scalar_int32 = 1;

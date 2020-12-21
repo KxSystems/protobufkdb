@@ -1,13 +1,10 @@
-// one_of.q
+// oneof.q
 // Examples of serializing from and deserializing to oneof kdb+ data
 
--1"\n+----------|| one_of.q ||----------+\n";
+-1"\n+----------|| oneof.q ||----------+\n";
 
 // import the Protobuf library
 \l ../q/protobufkdb.q
-
-// Move into the protobufkdb namespace
-\d .protobufkdb
 
 //-------------------------------------//
 // Example-1. Use compiled schema file //
@@ -18,21 +15,21 @@
 
 // Prepare oneof data
 // Note that the third element (string) is not oneof message
-oneof:(1.1f;();`str);
+oneof:(1.1f;();"str");
 
 // Serialize data into char array
-serialized:.protobufkdb.serializeArray[`OneofExample; oneof];
+serialized:.protobufkdb.serializeArrayFromList[`OneofExample; oneof];
 show serialized;
 
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`OneofExample; serialized];
+deserialized:.protobufkdb.parseArrayToList[`OneofExample; serialized];
 show deserialized;
 
 // Compare the kdb+ objects
 show oneof~deserialized
 
 // Serialize into char array and then deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`OneofExample;.protobufkdb.serializeArray[`OneofExample;(();12:34:56;`str)]];
+deserialized:.protobufkdb.parseArrayToList[`OneofExample;.protobufkdb.serializeArrayFromList[`OneofExample;(();12:34:56;"str")]];
 show deserialized;
 
 //-------------------------------------------------//
@@ -50,21 +47,21 @@ show deserialized;
 
 // Prepare oneof data
 // Note that the third element (string) is not oneof message
-oneof:(-35.712f;();`str);
+oneof:(-35.712f;();"str");
 
 // Serialize data into char array
-serialized:.protobufkdb.serializeArray[`OneofExampleDynamic; oneof];
+serialized:.protobufkdb.serializeArrayFromList[`OneofExampleDynamic; oneof];
 show serialized;
 
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`OneofExampleDynamic; serialized];
+deserialized:.protobufkdb.parseArrayToList[`OneofExampleDynamic; serialized];
 show deserialized;
 
 // Compare the kdb+ objects
 show oneof~deserialized
 
 // Serialize into char array and then deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`OneofExampleDynamic;.protobufkdb.serializeArray[`OneofExampleDynamic;(();00:01:02;`foo)]];
+deserialized:.protobufkdb.parseArrayToList[`OneofExampleDynamic;.protobufkdb.serializeArrayFromList[`OneofExampleDynamic;(();00:01:02;"foo")]];
 show deserialized;
 
 -1 "\n+----------------------------------------+\n";

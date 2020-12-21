@@ -2,8 +2,9 @@
 #include "TypeCheck.h"
 #include "KdbTypes.h"
 
-using namespace std;
 
+namespace kx {
+namespace protobufkdb {
 
 // Singleton instance
 ScalarValues* ScalarValues::instance = nullptr;
@@ -55,7 +56,7 @@ K ScalarValues::GetScalar(const gpb::Message& msg, const gpb::Reflection* refl, 
 
   // Update the atom type if the field has a KdbTypeSpecifier and it is
   // compatible
-  result->t = -(KdbTypes::Instance()->GetKdbType(field));
+  result->t = KdbTypes::Instance()->GetScalarKdbType(field);
   return result;
 }
 
@@ -102,9 +103,27 @@ K ScalarValues::GetEnum(SCALAR_VALUES_GET_ARGS)
 K ScalarValues::GetString(SCALAR_VALUES_GET_ARGS)
 {
   if (KdbTypes::Instance()->IsKdbTypeGuid(field))
-    return ku(KdbTypes::Instance()->GuidFromString(refl->GetString(msg, field)));
-  else
+    return ku(KdbTypes::Instance()->GuidFromString(field, refl->GetString(msg, field)));
+
+  // Get the string or bytes field mapping: -KS|KC|KG
+  KdbTypes::KType k_type = -KS;
+  if (field->type() == gpb::FieldDescriptor::TYPE_STRING)
+    k_type = KdbTypes::Instance()->GetStringKdbType();
+  else if (field->type() == gpb::FieldDescriptor::TYPE_BYTES)
+    k_type = KdbTypes::Instance()->GetBytesKdbType();
+
+  if (k_type == -KS) {
+    // Create symbol atom
     return ks((S)refl->GetString(msg, field).c_str());
+  }
+
+  // Create char list
+  K result = kpn((S)refl->GetString(msg, field).c_str(), refl->GetString(msg, field).length());
+
+  // Update list kdb type in case mapping to KG (kpn creates a KC list)
+  result->t = k_type;
+
+  return result;
 }
 
 
@@ -117,10 +136,15 @@ void ScalarValues::SetScalar(gpb::Message* msg, const gpb::Reflection* refl, con
   // cpp_type
   const auto cpp_type = field->cpp_type();
   assert(cpp_type >= 0 && cpp_type < gpb::FieldDescriptor::CPPTYPE_MESSAGE);
-  const auto k_type = KdbTypes::Instance()->GetKdbType(field);
+  const auto k_type = KdbTypes::Instance()->GetScalarKdbType(field);
 
-  // Check the atom has the same type as we expected
-  TYPE_CHECK_SCALAR(k_type + k_scalar->t != 0, field->full_name(), -k_type, k_scalar->t);
+  // Check the atom has the same type as we expected.  For string or bytes proto
+  // fields (other than GUID encoded into string), allow -KS|KC|KG to be used
+  // interchangeably.
+  if (k_type == -UU || cpp_type != gpb::FieldDescriptor::CPPTYPE_STRING ||
+      (k_scalar->t != -KS && k_scalar->t != KC && k_scalar->t != KG))
+    TYPE_CHECK_SCALAR(k_type != k_scalar->t, field->full_name(), k_type, k_scalar->t);
+
   return set_scalar_fns[cpp_type](msg, refl, field, k_scalar);
 }
 
@@ -168,6 +192,16 @@ void ScalarValues::SetString(SCALAR_VALUES_SET_ARGS)
 {
   if (KdbTypes::Instance()->IsKdbTypeGuid(field))
     refl->SetString(msg, field, KdbTypes::Instance()->GuidToString((U*)kG(k_scalar)));
-  else
-    refl->SetString(msg, field, k_scalar->s);
+  else {
+    if (k_scalar->t == -KS) {
+      // Deference k_scalar as symbol
+      refl->SetString(msg, field, k_scalar->s);
+    } else {
+      // Deference k_scalar as char list
+      refl->SetString(msg, field, std::string((S)kG(k_scalar), k_scalar->n));
+    }
+  }
 }
+
+} // namespace protobufkdb
+} // namespace kx

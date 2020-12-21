@@ -6,9 +6,6 @@
 // import the Protobuf library
 \l ../q/protobufkdb.q
 
-// Move into the protobufkdb namespace
-\d .protobufkdb
-
 //-------------------------------------//
 // Example-1. Use compiled schema file //
 //-------------------------------------//
@@ -17,14 +14,14 @@
 .protobufkdb.displayMessageSchema[`RepeatedExample];
 
 // Prepare repeated (simple list) data
-repeated:(1 2i;10 -20f;`s1`s2);
+repeated:(1 2i;10 -20f;("s1";"s2"));
 
 // Serialize data into char array
-serialized:.protobufkdb.serializeArray[`RepeatedExample; repeated];
+serialized:.protobufkdb.serializeArrayFromList[`RepeatedExample; repeated];
 show serialized;
 
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`RepeatedExample; serialized];
+deserialized:.protobufkdb.parseArrayToList[`RepeatedExample; serialized];
 show deserialized;
 
 // Compare the kdb+ objects
@@ -44,14 +41,14 @@ show repeated~deserialized
 .protobufkdb.displayMessageSchema[`RepeatedExampleDynamic];
 
 // Prepare repeated (simple list) data
-repeated:(1 -2 -3i; 102.4 0.3971f; enlist `str);
+repeated:(1 -2 -3i; 102.4 0.3971f; enlist "str");
 
 // Serialize data into char array
-serialized:.protobufkdb.serializeArray[`RepeatedExampleDynamic; repeated];
+serialized:.protobufkdb.serializeArrayFromList[`RepeatedExampleDynamic; repeated];
 show serialized;
 
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`RepeatedExampleDynamic; serialized];
+deserialized:.protobufkdb.parseArrayToList[`RepeatedExampleDynamic; serialized];
 show deserialized;
 
 // Compare the kdb+ objects
