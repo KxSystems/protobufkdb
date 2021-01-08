@@ -2,6 +2,9 @@
 #include "MessageFactory.h"
 
 
+namespace kx {
+namespace protobufkdb {
+
 // Singleton instance
 MessageFactory* MessageFactory::instance = nullptr;
 
@@ -22,8 +25,7 @@ MessageFactory::MessageFactory() :
   file_db(new gpb::DescriptorPoolDatabase(*importer->pool())),
   desc_pool(new gpb::DescriptorPool(file_db.get())),
   dynamic_factory(new gpb::DynamicMessageFactory())
-{
-}
+{}
 
 void MessageFactory::AddProtoImportPath(const std::string& import_path)
 {
@@ -34,7 +36,7 @@ void MessageFactory::AddProtoImportPath(const std::string& import_path)
 bool MessageFactory::ImportProtoFile(const std::string& filename, std::string& error)
 {
   // Clear any errors which occurred while last importing
-  import_errors.clear();
+  import_errors.str("");
 
   // Import this .proto, returning any errors which occur.
   if (!importer->Import(filename)) {
@@ -67,14 +69,12 @@ void MessageFactory::ListImportedMessageTypes(std::vector<std::string>* output) 
 
 void MessageFactory::ErrorPrinter::AddError(const std::string& filename, int line, int column, const std::string& message)
 {
-  output << "Import error: " << message << std::endl
-    << "File: '" << filename << "', line: " << line << ", column: " << column << std::endl;
+  output << "Error: " << filename << ":" << line << ":" << column << ": " << message << std::endl;
 }
 
 void MessageFactory::ErrorPrinter::AddWarning(const std::string& filename, int line, int column, const std::string& message)
 {
-  output << "Import warning: " << message << std::endl
-    << "File: '" << filename << "', line: " << line << ", column: " << column << std::endl;
+  output << "Warning: " << filename << ":" << line << ":" << column << ": " << message << std::endl;
 }
 
 gpb::Message* MessageFactory::CreateMessage(const std::string& message_type, gpb::Arena* arena) const
@@ -95,3 +95,6 @@ gpb::Message* MessageFactory::CreateMessage(const std::string& message_type, gpb
   // Unknown message type.
   return NULL;
 }
+
+} // namespace protobufkdb
+} // namespace kx

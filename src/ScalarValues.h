@@ -7,6 +7,9 @@
 // after all the protobuf headers to avoid conflicts.
 #include <k.h>
 
+
+namespace kx {
+namespace protobufkdb {
 namespace gpb = ::google::protobuf;
 
 // Each of the sets of of getter and setter functions shared the same argument
@@ -70,9 +73,10 @@ public:
    *  float             -KE
    *  bool              -KB
    *  enum              -KI
-   *  string            -KS
-   * 
-   * Note that a sub-message field is handled by 
+   *  string             KC
+   *  bytes              KG
+   *
+   * Note that a sub-message field is handled by
    * MessageFormat::GetMessageField().
    *
    * @param msg   Protobuf message containing the field
@@ -91,9 +95,13 @@ public:
    * @param msg       Protobuf message containing the field
    * @param refl      Reflection interface to the message
    * @param field     FieldDescriptor of the scalar field to be populated
-   * @param k_scalar  Kdb atom from which the scalar value is set 
+   * @param k_scalar  Kdb atom from which the scalar value is set
   */
   void SetScalar(gpb::Message* msg, const gpb::Reflection* refl, const gpb::FieldDescriptor* field, K k_scalar) const;
 };
+
+} // namespace protobufkdb
+} // namespace kx
+
 
 #endif // __SCALAR_VALUES_H__

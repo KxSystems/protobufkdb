@@ -7,6 +7,9 @@
 // after all the protobuf headers to avoid conflicts.
 #include <k.h>
 
+
+namespace kx {
+namespace protobufkdb {
 namespace gpb = ::google::protobuf;
 
 // Each of the sets of of getter and setter functions shared the same argument
@@ -70,7 +73,8 @@ public:
    *  float               KE
    *  bool                KB
    *  enum                KI
-   *  string              KS
+   *  string              0 (of KC)
+   *  bytes               0 (of KG)
    *
    * Note that a repeated sub-message field is handled by
    * MessageFormat::GetMessageField().
@@ -95,5 +99,9 @@ public:
   */
   void SetRepeated(gpb::Message* msg, const gpb::Reflection* refl, const gpb::FieldDescriptor* field, K k_repeated) const;
 };
+
+} // namespace protobufkdb
+} // namespace kx
+
 
 #endif // __REPEATED_VALUES_H__

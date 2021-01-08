@@ -2,6 +2,9 @@
 #include "TypeCheck.h"
 
 
+namespace kx {
+namespace protobufkdb {
+
 // Singleton instance
 KdbTypes* KdbTypes::instance = nullptr;
 
@@ -50,6 +53,38 @@ const KdbTypes::KType KdbTypes::GetKdbType(const gpb::FieldDescriptor* field) co
   return Cpp2KdbType(field->cpp_type());
 }
 
+const KdbTypes::KType KdbTypes::GetScalarKdbType(const gpb::FieldDescriptor* field) const
+{
+  auto k_type = GetKdbType(field);
+
+  // Map string and bytes fields to their configured setting
+  if (k_type == KS) {
+    if (field->type() == gpb::FieldDescriptor::TYPE_STRING)
+      return string_kdb_type;
+    if (field->type() == gpb::FieldDescriptor::TYPE_BYTES)
+      return bytes_kdb_type;
+  }
+
+  // Scalar so negate to get atom type
+  return -k_type;
+}
+
+const KdbTypes::KType KdbTypes::GetRepeatedKdbType(const gpb::FieldDescriptor* field) const
+{
+  auto k_type = GetKdbType(field);
+
+  // Map string and bytes fields to their configured setting.  Since field is
+  // repeated non-symbol requires mixed list.
+  if (k_type == KS) {
+    if (field->type() == gpb::FieldDescriptor::TYPE_STRING && string_kdb_type != -KS)
+      return 0;
+    if (field->type() == gpb::FieldDescriptor::TYPE_BYTES && bytes_kdb_type != -KS)
+      return 0;
+  }
+
+  return k_type;
+}
+
 const KdbTypes::KType KdbTypes::GetMapKeyKdbType(const gpb::FieldDescriptor* map_field, const gpb::FieldDescriptor* key_field) const
 {
   // Check if the MapKdbTypeSpecifier field options extension is present on the
@@ -68,7 +103,14 @@ const KdbTypes::KType KdbTypes::GetMapKeyKdbType(const gpb::FieldDescriptor* map
   }
 
   // No field option so determine the kdb type from the map-key field's cpp type
-  return Cpp2KdbType(key_field->cpp_type());
+  auto k_type = Cpp2KdbType(key_field->cpp_type());
+
+  // Map string field to its configured setting.  Since map key is repeated
+  // non-symbol requires mixed list.
+  if (k_type == KS && key_field->type() == gpb::FieldDescriptor::TYPE_STRING && string_map_key_kdb_type != -KS)
+      return 0;
+
+  return k_type;
 }
 
 const KdbTypes::KType KdbTypes::GetMapValueKdbType(const gpb::FieldDescriptor* map_field, const gpb::FieldDescriptor* value_field) const
@@ -89,7 +131,18 @@ const KdbTypes::KType KdbTypes::GetMapValueKdbType(const gpb::FieldDescriptor* m
   }
 
   // No field option so determine the kdb type from the map-value field's cpp type
-  return Cpp2KdbType(value_field->cpp_type());
+  auto k_type = Cpp2KdbType(value_field->cpp_type());
+
+  // Map string and bytes fields to their configured setting.  Since map value
+  // is repeated non-symbol requires mixed list.
+  if (k_type == KS) {
+    if (value_field->type() == gpb::FieldDescriptor::TYPE_STRING && string_kdb_type != -KS)
+      return 0;
+    if (value_field->type() == gpb::FieldDescriptor::TYPE_BYTES && bytes_kdb_type != -KS)
+      return 0;
+  }
+
+  return k_type;
 }
 
 bool KdbTypes::IsKdbTypeGuid(const gpb::FieldDescriptor* field) const
@@ -112,18 +165,44 @@ const std::string KdbTypes::GuidToString(const U* guid) const
   return result;
 }
 
-const U KdbTypes::GuidFromString(const std::string& guid) const
-{
-  // ASCII offsets for alpha hex chars
-  static const char char_a_base = 'a' - 10;
-  static const char char_A_base = 'A' - 10;
-  U result;
-  for (size_t i = 0; i < sizeof(U); ++i) {
-    auto higher = guid[i * 2];
-    higher -= (higher >= 'a' ? char_a_base : (higher >= 'A' ? char_A_base : '0'));
-    auto lower = guid[i * 2 + 1];
-    lower -= (lower >= 'a' ? char_a_base : (lower >= 'A' ? char_A_base : '0'));
-    result.g[i] = (higher << 4) | lower;
+const U KdbTypes::GuidFromString(const gpb::FieldDescriptor* field, const std::string& guid) const
+{ 
+  if (guid == "") {
+    // Allow default value string "" as empty guid
+    return U{0};
+  } else {
+    // An ASCII hex encoded guid string requires 32 bytes
+    TYPE_CHECK_GUID(guid.length() != sizeof(U) * 2, field->full_name(), sizeof(U) * 2, guid.length());
+
+    // ASCII offsets for alpha hex chars
+    static const char char_a_base = 'a' - 10;
+    static const char char_A_base = 'A' - 10;
+    U result;
+    for (size_t i = 0; i < sizeof(U); ++i) {
+      auto higher = guid[i * 2];
+      higher -= (higher >= 'a' ? char_a_base : (higher >= 'A' ? char_A_base : '0'));
+      auto lower = guid[i * 2 + 1];
+      lower -= (lower >= 'a' ? char_a_base : (lower >= 'A' ? char_A_base : '0'));
+      result.g[i] = (higher << 4) | lower;
+    }
+    return result;
   }
-  return result;
 }
+
+KdbTypes::KType KdbTypes::GetStringKdbType(void) const
+{
+  return string_kdb_type;
+}
+
+KdbTypes::KType KdbTypes::GetBytesKdbType(void) const
+{
+  return bytes_kdb_type;
+}
+
+KdbTypes::KType KdbTypes::GetStringMapKeyKdbType(void) const
+{
+  return string_map_key_kdb_type;
+}
+
+} // namespace protobufkdb
+} // namespace kx

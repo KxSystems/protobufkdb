@@ -21,6 +21,7 @@ message ScalarTest {
     EnumType scalar_enum    = 8;
     
     string  scalar_string   = 9;  
+    bytes   scalar_bytes    = 10;
 }
 
 message RepeatedTest {
@@ -40,6 +41,7 @@ message RepeatedTest {
     repeated EnumType   rep_enum    = 8;
     
     repeated string     rep_string  = 9;
+    repeated bytes      rep_bytes   = 10;
 }
 
 message SubMessageTest {
@@ -108,4 +110,11 @@ message OneofTest {
         OneofMsg    oneof_msg       = 3;
     }
     string non_oneoff_str           = 4;
+}
+
+message SametypeTest {
+    double quatro_one           = 1;
+    double quatro_two           = 2;
+    double quatro_three         = 3;
+    double quatro_four          = 4;
 }

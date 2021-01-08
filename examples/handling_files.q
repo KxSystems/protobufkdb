@@ -7,17 +7,14 @@
 // import the Protobuf library
 \l ../q/protobufkdb.q
 
-// Move into the protobufkdb namespace
-\d .protobufkdb
-
 // Prepare data to be saved
-scalars:(12i;55f;`str);
+scalars:(12i;55f;"str");
 
 // Save the data to a file named "sample_scalars_file"
-saveMessage[`ScalarExample; `sample_scalars_file; scalars];
+.protobufkdb.saveMessageFromList[`ScalarExample; `sample_scalars_file; scalars];
 
 // Load the file
-loaded:loadMessage[`ScalarExample; `sample_scalars_file];
+loaded:.protobufkdb.loadMessageToList[`ScalarExample; `sample_scalars_file];
 show loaded;
 
 // Compare the kdb+ objects

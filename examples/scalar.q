@@ -6,9 +6,6 @@
 // import the Protobuf library
 \l ../q/protobufkdb.q
 
-// Move into the protobufkdb namespace
-\d .protobufkdb
-
 //-------------------------------------//
 // Example-1. Use compiled schema file //
 //-------------------------------------//
@@ -17,14 +14,14 @@
 .protobufkdb.displayMessageSchema[`ScalarExample];
 
 // Prepare scalar (atom) data
-scalars:(12i;55f;`str);
+scalars:(12i;55f;"str");
 
 // Serialize data into char array
-serialized:.protobufkdb.serializeArray[`ScalarExample; scalars];
+serialized:.protobufkdb.serializeArrayFromList[`ScalarExample; scalars];
 show serialized;
 
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`ScalarExample; serialized];
+deserialized:.protobufkdb.parseArrayToList[`ScalarExample; serialized];
 show deserialized;
 
 // Compare the kdb+ objects
@@ -44,14 +41,14 @@ show scalars~deserialized
 .protobufkdb.displayMessageSchema[`ScalarExampleDynamic];
 
 // Prepare scalar data
-scalars:(12i;55f;`str);
+scalars:(12i;55f;"str");
 
 // Serialize data into char array
-serialized:.protobufkdb.serializeArray[`ScalarExampleDynamic; scalars];
+serialized:.protobufkdb.serializeArrayFromList[`ScalarExampleDynamic; scalars];
 show serialized;
 
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`ScalarExampleDynamic; serialized]
+deserialized:.protobufkdb.parseArrayToList[`ScalarExampleDynamic; serialized];
 show deserialized;
 
 // Compare the kdb+ objects

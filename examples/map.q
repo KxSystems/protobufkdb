@@ -6,9 +6,6 @@
 // import the Protobuf library
 \l ../q/protobufkdb.q
 
-// Move into the protobufkdb namespace
-\d .protobufkdb
-
 //-------------------------------------//
 // Example-1. Use compiled schema file //
 //-------------------------------------//
@@ -17,14 +14,14 @@
 .protobufkdb.displayMessageSchema[`MapExample];
 
 // Prepare map (dictionary list) data
-map:(1 2j!3 4f;`s1`s2!((42i;1.58;`foo); (-30i;5.999;`bar)));
+map:(1 2j!3 4f;`s1`s2!((42i;1.58;"foo"); (-30i;5.999;"bar")));
 
 // Serialize data into char array
-serialized:.protobufkdb.serializeArray[`MapExample; map];
+serialized:.protobufkdb.serializeArrayFromList[`MapExample; map];
 show serialized;
 
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`MapExample; serialized];
+deserialized:.protobufkdb.parseArrayToList[`MapExample; serialized];
 show deserialized;
 
 // Ordering of protobuf maps is undefined so compare using key lookups
@@ -48,14 +45,14 @@ show map[1][`s2]~deserialized[1][`s2];
 .protobufkdb.displayMessageSchema[`MapExampleDynamic];
 
 // Prepare map (dictionary list) data
-map:(enlist[0]!enlist[100.4]; `s1`s2`s3!((-77i;29.123;`foo); (1260i;3.14;`bar); (3i;0.0001;`po)));
+map:(enlist[0]!enlist[100.4]; `s1`s2`s3!((-77i;29.123;"foo"); (1260i;3.14;"bar"); (3i;0.0001;"po")));
 
 // Serialize data into char array
-serialized:.protobufkdb.serializeArray[`MapExampleDynamic; map];
+serialized:.protobufkdb.serializeArrayFromList[`MapExampleDynamic; map];
 show serialized;
 
 // Deserialize char array into kdb+ data
-deserialized:.protobufkdb.parseArray[`MapExampleDynamic; serialized];
+deserialized:.protobufkdb.parseArrayToList[`MapExampleDynamic; serialized];
 show deserialized;
 
 // Ordering of protobuf maps is undefined so compare using key lookups

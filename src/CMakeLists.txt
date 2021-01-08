@@ -93,9 +93,13 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(BITNESS 64)
 endif()
 
+# Copy built shared object after build instead of during installation
+add_custom_command(TARGET ${MY_LIBRARY_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${MY_LIBRARY_NAME}>" ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/lib/${MY_LIBRARY_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
+    DEPENDS ${MY_LIBRARY_NAME}
+)
+
 # Minimum build/install move binary to $QHOME/<QARCH>
 file(TO_CMAKE_PATH "$ENV{QHOME}" QHOME_PATH)
 install(TARGETS ${MY_LIBRARY_NAME} DESTINATION "${QHOME_PATH}/${OSFLAG}${BITNESS}/" CONFIGURATIONS MinSizeRel Release)
-
-# Add the shared object to the install package
-install(TARGETS ${MY_LIBRARY_NAME} DESTINATION ${PROJECT_BINARY_DIR}/${MY_LIBRARY_NAME}/lib CONFIGURATIONS Release)
