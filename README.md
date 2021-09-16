@@ -100,14 +100,15 @@ It is therefore recommend that the protocol buffer runtime is built from source 
 
 #### Building protocol buffers - Linux/MacOS
 
-The tools required to build protocol buffers from source on Linux/MacOS are described [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).  Then follow the below instructions to build protocol buffers with the correct compiler options and install it to a non-system directory.
+The tools required to build protocol buffers from source on Linux/MacOS are described [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).
+
+However, do not build protocol buffers using Google's `configure` script since that will create a debug version of `libprotobuf.a` which protobufkdb links against.  Rather, follow the instructions below to build protocol buffers using CMake with the correct compiler flags and install it to a non-system directory.
 
 Clone the protocol buffers source from github:
 
 ```bash
 $ git clone https://github.com/protocolbuffers/protobuf.git
 $ cd protobuf
-$ ./autogen.sh
 ```
 
 Create an install directory and set an environment variable to this directory (this is used again later when building protobufkdb):
@@ -117,17 +118,19 @@ $ mkdir install
 $ export PROTOBUF_INSTALL=$(pwd)/install
 ```
 
-Configure protocol buffers to build with C/C++ flag `-fPIC` (otherwise symbol relocation errors will occur during linking of protobufkdb) and to install it to the directory created above:
+Create the CMake build directory and generate the build files, specifying position independent code (otherwise symbol relocation errors will occur during linking of protobufkdb):
 
 ```bash
-$ ./configure --prefix=$PROTOBUF_INSTALL "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
+$ mkdir cmake/build
+$ cd cmake/build
+$ cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=$PROTOBUF_INSTALL ..
 ```
 
 Finally build and install protocol buffers:
 
 ```bash
-$ make
-$ make install
+$ cmake --build . --config Release
+$ cmake --build . --config Release --target install
 ```
 
 #### Building protocol buffers - Windows

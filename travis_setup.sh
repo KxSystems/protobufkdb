@@ -8,12 +8,13 @@ tar xvf protobuf-cpp-3.12.3.tar.gz -C ./cbuild --strip-components=1
 
 if [[ "$TRAVIS_OS_NAME" == "osx" || "$TRAVIS_OS_NAME" == "linux" ]]; then
   # Build and install protobuf to cbuild/install
-  cd cbuild
-  mkdir install
-  ./configure --prefix=$(pwd)/install "CFLAGS=-fPIC" "CXXFLAGS=-fPIC"
-  make
-  sudo make install
-  cd ..
+  mkdir cbuild/install
+  mkdir cbuild/cmake/build
+  cd cbuild/cmake/build
+  cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=../../install ..
+  cmake --build . --config Release
+  cmake --build . --config Release --target install
+  cd ../../..	
 elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
   # Build and install protobuf to cbuild/install
   mkdir cbuild/install
