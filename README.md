@@ -19,7 +19,7 @@ Kdb+ is the world’s fastest timeseries database, optimized for ingesting, anal
 
 Protocol Buffers (Protobuf) is a language-neutral, platform-neutral, extensible mechanism for serializing structured data. It is used both in the development of programs which are required to communicate over the wire or for data storage. Developed originally for internal use by Google, it is released under an open source BSD license. The core principle behind this data format is to allow a user to define the expected structure of their data and incorporate this within specially generated source code. This allows a user to easily read and write structured data to and from a variety of languages. 
 
-:globe_with_meriidians:
+:globe_with_meridians:
 [Protobuf documentation](https://developers.google.com/protocol-buffers/docs/overview)
 
 
@@ -86,10 +86,10 @@ The protobufkdb releases are linked statically against libprotobuf to avoid pote
     install.bat
     ```
 
-3.  If you wish to use the KdbTypeSpecifier field option (described below) with dynamic messages then the directory containing `kdb_type_specifier.proto` must be specified to the interface as an import search location.  In the release package `kdb_type_specifier.proto` (and its dependencies) are found in the `proto` subdirectory.  Import paths can be relative or absolute.  For example, if the q session is started from the root of the release package run:
+3.  To use the KdbTypeSpecifier field option (described below) with dynamic messages then the directory containing `kdb_type_specifier.proto` must be specified to the interface as an import search location.  In the release package `kdb_type_specifier.proto` (and its dependencies) are found in the `proto` subdirectory.  Import paths can be relative or absolute.  For example, if the q session is started from the root of the release package run:
 
     ```
-    q).protobufkdb.addProtoImportPath["proto"]
+    .protobufkdb.addProtoImportPath["proto"]
     ```
 
 ### Building and installing from source
@@ -238,7 +238,7 @@ cmake --build . --config Release --target install
 
 Because the protobufkdb interface uses both the protoc compiler and the Protocol Buffers’ runtime, the versions of protoc, libprotobuf and its header files must be consistent and installed from the same build.  Otherwise build errors can occur when compiling any of the proto-generated `.pb.h` or `.pb.cc` files.  To help identify these problems the protobufkdb CMake scripts log the locations of the Protocol Buffers installation it has found.  For example:
 
-```bash
+```txt
 [build]$ cmake ..
  -- The CXX compiler identification is GNU 4.8.5
  -- Check for working CXX compiler: /usr/bin/c++
