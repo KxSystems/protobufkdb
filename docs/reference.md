@@ -1,71 +1,54 @@
----
-title: Function reference | Protobuf | Interfaces | Documentation for kdb+ and q
-description: Protobuf/Protocol Buffers kdb+ interface function reference
----
 # Protobuf/Protocol Buffers function reference
 
 
 
 _Functions exposed in the `.protobufkdb` namespace allow you to generate and parse Protobuf messages_
 
-:fontawesome-brands-github:
-[KxSystems/protobufkdb](https://github.com/KxSystems/protobufkdb)
+`.protobufkdb.`   **Protobuf/Protocol Buffers interface**
 
-<div markdown="1" class="typewriter">
-.protobufkdb.   **Protobuf/Protocol Buffers interface**
+Library information<br>
+[`version`](#protobufkdbversion)                         Return the libprotobuf version as an integer<br>
+[`versionStr`](#protobufkdbversionstr)                      Return the libprotobuf version as a string
 
+Import schema<br>
+[`addProtoImportPath`](#protobufkdbaddprotoimportpath)              Add a path from which to import proto schema files<br>
+[`importProtoFile`](#protobufkdbimportprotofile)                 Import a proto schema file<br>
+[`listImportedMessageTypes`](#protobufkdblistimportedmessagetypes)        List successfully imported message schemas
 
-Library information
-  [version](#protobufkdbversion)                         Return the libprotobuf version as an integer
-  [versionStr](#protobufkdbversionstr)                      Return the libprotobuf version as a string
+Inspect schema<br>
+[`displayMessageSchema`](#protobufkdbdisplaymessageschema)            Display the schema definition of the message<br>
+[`getMessageFields`](#protobufkdbgetmessagefields)                Get the list of message fields
 
-Import schema
-  [addProtoImportPath](#protobufkdbaddprotoimportpath)              Add a path from which to import proto schema files
-  [importProtoFile](#protobufkdbimportprotofile)                 Import a proto schema file
-  [listImportedMessageTypes](#protobufkdblistimportedmessagetypes)        List successfully imported message schemas
+Serialize/parse using list<br>
+[`serializeArrayFromList`](#protobufkdbserializearrayfromlist)          Serialize from a kdb+ mixed list object to a string<br>
+[`serializeArrayArenaFromList`](#protobufkdbserializearrayarenafromlist)     Serialize from a kdb+ mixed list object to a string, using a Google Arena for the intermediate message<br>
+[`parseArrayToList`](#protobufkdbparsearraytolist)                Parse from a string to a kdb+ mixed list object<br>
+[`parseArrayArenaToList`](#protobufkdbparsearrayarenatolist)           Parse from a string to a kdb+ mixed list object, using a Google Arena for the intermediate message
 
-Inspect schema
-  [displayMessageSchema](#protobufkdbdisplaymessageschema)            Display the schema definition of the message
-  [getMessageFields](#protobufkdbgetmessagefields)                Get the list of message fields
+Serialize/parse using dictionary<br>
+[`serializeArrayFromDict`](#protobufkdbserializearrayfromdict)          Serialize from a kdb+ dictionary to a string<br>
+[`serializeArrayArenaFromDict`](#protobufkdbserializearrayarenafromdict)     Serialize from a kdb+ dictionary to a string, using a Google Arena for the intermediate message<br>
+[`parseArrayToDict`](#protobufkdbparsearraytodict)                Parse from a string to a kdb+ dictionary<br>
+[`parseArrayArenaToDict`](#protobufkdbparsearrayarenatodict)           Parse from a string to a kdb+ dictionary, using a Google Arena for the intermediate message
 
-Serialize/parse using list
-  [serializeArrayFromList](#protobufkdbserializearrayfromlist)          Serialize from a kdb+ mixed list object to a string
-  [serializeArrayArenaFromList](#protobufkdbserializearrayarenafromlist)     Serialize from a kdb+ mixed list object to a string, 
-                                  using a Google Arena for the intermediate message
-  [parseArrayToList](#protobufkdbparsearraytolist)                Parse from a string to a kdb+ mixed list object
-  [parseArrayArenaToList](#protobufkdbparsearrayarenatolist)           Parse from a string to a kdb+ mixed list object, using 
-                                  a Google Arena for the intermediate message
+Save/load using list<br>
+[`saveMessageFromList`](#protobufkdbsavemessagefromlist)             Serialize from a kdb+ mixed list object to a file<br>
+[`loadMessageToList`](#protobufkdbloadmessagetolist)               Parse from a file to a kdb+ mixed list object
 
-Serialize/parse using dictionary
-  [serializeArrayFromDict](#protobufkdbserializearrayfromdict)          Serialize from a kdb+ dictionary to a string
-  [serializeArrayArenaFromDict](#protobufkdbserializearrayarenafromdict)     Serialize from a kdb+ dictionary to a string, using 
-                                  a Google Arena for the intermediate message
-  [parseArrayToDict](#protobufkdbparsearraytodict)                Parse from a string to a kdb+ dictionary
-  [parseArrayArenaToDict](#protobufkdbparsearrayarenatodict)           Parse from a string to a kdb+ dictionary, using 
-                                  a Google Arena for the intermediate message
+Save/load using dictionary<br>
+[`saveMessageFromDict`](#protobufkdbsavemessagefromdict)             Serialize from a kdb+ dictionary to a file<br>
+[`loadMessageToDict`](#protobufkdbloadmessagetodict)               Parse from a file to a kdb+ dictionary
 
-Save/load using list
-  [saveMessageFromList](#protobufkdbsavemessagefromlist)             Serialize from a kdb+ mixed list object to a file
-  [loadMessageToList](#protobufkdbloadmessagetolist)               Parse from a file to a kdb+ mixed list object
-
-Save/load using dictionary
-  [saveMessageFromDict](#protobufkdbsavemessagefromdict)             Serialize from a kdb+ dictionary to a file
-  [loadMessageToDict](#protobufkdbloadmessagetodict)               Parse from a file to a kdb+ dictionary
-
-Debugging
-  [parseArrayDebug](#protobufkdbparsearraydebug)                 Parse from a string and display debugging
-  [loadMessageDebug](#protobufkdbloadmessagedebug)                Parse from a file and display debugging
+Debugging<br>
+[`parseArrayDebug`](#protobufkdbparsearraydebug)                 Parse from a string and display debugging<br>
+[`loadMessageDebug`](#protobufkdbloadmessagedebug)                Parse from a file and display debugging
 
 
-
-</div>
-
-
-??? detail "Message types"
-
-    Where a function takes a `message_type` parameter to specify the name of the message to be be processed, the interface first looks for that message type in the compiled messages. 
-    
-    If that fails it then searches the imported message definitions.  Only if the message type is not found in either is an error returned.
+> Message types
+> 
+> Where a function takes a `message_type` parameter to specify the name of the message to be be processed, the interface first looks for that message type in the compiled messages. 
+> 
+> If that fails it then searches the imported message definitions.  Only if the message type is not found in either is an error returned.
 
 
 ## `addProtoImportPath`
@@ -82,15 +65,15 @@ Where `import_path` is a path (absolute or relative) as a string
 1.  adds it as a path to be searched when dynamically importing `.proto` file definitions
 1.  returns generic null
 
-Establishes virtual file system mappings such that the import locations appear under the current directory, similar to the `PATH` environment variable.  Can be called more than once to specify multiple import locations.
+establishes virtual file system mappings such that the import locations appear under the current directory, similar to the `PATH` environment variable.  Can be called more than once to specify multiple import locations.
 
 Where your `.proto` file definition imports other `.proto` files (including recursively), these must also be available on the import paths.  
 
-??? detail "Importing Google's .proto files"
-
-    The regular `.proto` files provided by Google are available in the install package (either when downloaded or built from source) under the `proto` subdirectory.
-    
-    For examples `kdb_type_specifier.proto` imports `google/protobuf/descriptor.proto` which is available in the `proto` subdirectory.
+> Importing Google's `.proto` files
+> 
+> The regular `.proto` files provided by Google are available in the install package (either when downloaded or built from source) under the `proto` subdirectory.
+>     
+> For examples `kdb_type_specifier.proto` imports `google/protobuf/descriptor.proto` which is available in the `proto` subdirectory.
 
 ```q
 // successful execution
@@ -117,9 +100,9 @@ Where `message_type` is the name of a message type as a string,
 
 `message_type` must match a message name in its `.proto` definition.
 
-??? warning "For use only in debugging"
-
-    The schema is generated by the libprotobuf `DebugString()` functionality and displayed on stdout to preserve formatting and indentation.
+> :warning: **For use only in debugging**
+> 
+> The schema is generated by the libprotobuf `DebugString()` functionality and displayed on stdout to preserve formatting and indentation.
 
 ```q
 q).protobufkdb.displayMessageSchema[`ScalarExampleDynamic]
@@ -167,9 +150,9 @@ Success allows the message types defined in the file to be parsed and serialized
 
 Signalled errors contain errors and warnings which occurred in parsing the file.
 
-!!! warning "The filename may not include a path." 
+:warning: **The filename may not include a path.**
 
-    Define directory search locations beforehand with `.protobufkdb.addProtoImportPath`.
+Define directory search locations beforehand with `.protobufkdb.addProtoImportPath`.
 
 ```q
 // successful function invocation
@@ -194,7 +177,7 @@ _List imported message types_
 
 Returns successfully imported message types as a symbol list.
 
-!!! detail "The list does not contain message types compiled into the interface."
+> The list does not contain message types compiled into the interface.
 
 ```q
 q).protobufkdb.listImportedMessageTypes[]
@@ -220,9 +203,9 @@ the function
 1.  prints debugging information to stdout 
 1.  returns generic null
 
-??? warning "For use only in debugging"
-
-    The debugging is generated by the libprotobuf `DebugString()` functionality and displayed on stdout to preserve formatting and indentation.
+> :warning: **For use only in debugging**
+> 
+> The debugging is generated by the libprotobuf `DebugString()` functionality and displayed on stdout to preserve formatting and indentation.
 
 ```q
 q)data
@@ -314,12 +297,11 @@ the function
 1.  parses the string as a Protobuf message, which it creates on a Google Arena
 2.  returns the message as a kdb+ dictionary from field name symbols to field values
 
-!!! detail "Identical to `parseArrayToDict` except the intermediate Protobuf message is created on a Google Arena"
-
-    Can improve memory allocation performance for large messages with deep repeated fields/map.
-    
-    :fontawesome-brands-google:
-    [Google Arenas](https://developers.google.com/protocol-buffers/docs/reference/arenas)
+> **Identical to `parseArrayToDict` except the intermediate Protobuf message is created on a Google Arena**
+> 
+> Can improve memory allocation performance for large messages with deep repeated fields/map.
+>     
+> [Google Arenas](https://developers.google.com/protocol-buffers/docs/reference/arenas)
 
 ```q
 q)fields:.protobufkdb.getMessageFields[`RepeatedExampleDynamic]
@@ -352,12 +334,11 @@ the function
 1.  parses the string as a Protobuf message, which it creates on a Google Arena
 2.  returns the message as a kdb+ mixed list object
 
-!!! detail "Identical to `parseArrayToList` except the intermediate Protobuf message is created on a Google Arena"
-
-    Can improve memory allocation performance for large messages with deep repeated fields/map.
-    
-    :fontawesome-brands-google:
-    [Google Arenas](https://developers.google.com/protocol-buffers/docs/reference/arenas)
+> **Identical to `parseArrayToList` except the intermediate Protobuf message is created on a Google Arena**
+> 
+> Can improve memory allocation performance for large messages with deep repeated fields/map.
+>     
+> [Google Arenas](https://developers.google.com/protocol-buffers/docs/reference/arenas)
 
 ```q
 q)data:(1 2i;10 20f;("s1";"s2"))
@@ -389,9 +370,9 @@ the function
 1.  prints debugging information to stdout 
 1.  returns generic null
 
-??? warning "For use only in debugging"
-
-    The debugging is generated by the libprotobuf `DebugString()` functionality and displayed on stdout to preserve formatting and indentation.
+> :warning: **For use only in debugging**
+> 
+> The debugging is generated by the libprotobuf `DebugString()` functionality and displayed on stdout to preserve formatting and indentation.
 
 ```q
 q)data:(1 2i;10 20f;("s1";"s2"))
@@ -535,12 +516,11 @@ the function
 1.  serializes `msg_in` as a Protobuf message and creates it on a Google Arena
 2.  returns the serialized Protobuf message as a string
 
-!!! detail "Identical to `serializeArrayFromDict` except the intermediate Protobuf message is created on a Google Arena"
-
-    Can improve memory allocation performance for large messages with deep repeated fields/map.
-    
-    :fontawesome-brands-google:
-    [Google Arenas](https://developers.google.com/protocol-buffers/docs/reference/arenas)
+> **Identical to `serializeArrayFromDict` except the intermediate Protobuf message is created on a Google Arena**
+> 
+> Can improve memory allocation performance for large messages with deep repeated fields/map.
+> 
+> [Google Arenas](https://developers.google.com/protocol-buffers/docs/reference/arenas)
 
 ```q
 q)fields:.protobufkdb.getMessageFields[`RepeatedExampleDynamic]
@@ -568,12 +548,11 @@ the function
 1.  serializes `msg_in` as a Protobuf message and creates it on a Google Arena
 2.  returns the serialized Protobuf message as a string
 
-!!! detail "Identical to `serializeArrayFromList` except the Protobuf message is created on a Google Arena"
-
-    Can improve memory allocation performance for large messages with deep repeated fields/map.
-    
-    :fontawesome-brands-google:
-    [Google Arenas](https://developers.google.com/protocol-buffers/docs/reference/arenas)
+> **Identical to `serializeArrayFromList` except the Protobuf message is created on a Google Arena**
+> 
+> Can improve memory allocation performance for large messages with deep repeated fields/map.
+>     
+> [Google Arenas](https://developers.google.com/protocol-buffers/docs/reference/arenas)
 
 ```q
 q)data:(1 2i;10 20f;("s1";"s2"))

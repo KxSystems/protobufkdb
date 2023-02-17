@@ -1,13 +1,6 @@
----
-title: Interface example | Protobuf | Interfaces | Documentation for kdb+ and q
-description: Examples of interfacing kdb+ and Protobuf
----
 # Protobuf/Protocol Buffers interface example
 
-:fontawesome-brands-github:
-[KxSystems/protobufkdb](https://github.com/KxSystems/protobufkdb)
-
-It is assumed in the example that you are executing logic in the root of the `protobufkdb` repository. The file structure for the required components from this location is:
+It is assumed here that you are executing logic in the root of the `protobufkdb` repository. The file structure for the required components from this location is:
 
 ```treeview
 ./
@@ -47,7 +40,7 @@ message Region {
 From the root of the repository load the `protobufkdb` library
 
 ```q
-q)\l q/protobufkdb.q
+\l q/protobufkdb.q
 ```
 
 
@@ -55,11 +48,11 @@ q)\l q/protobufkdb.q
 
 When using dynamic import functionality, specify the path of your Proto (schema) files first. As such we tell `protobufkdb` the location of schema files of interest, specifying its path (`"./proto"`) and importing the relevant file (`"sample.proto"`).
 
-!!! detail "This step is not necessary when using a library built from source, where schema files are linked appropriately."
+> This step is not necessary when using a library built from source, where schema files are linked appropriately.
 
 ```q
-q).protobufkdb.addProtoImportPath["proto"]
-q).protobufkdb.importProtoFile["sample.proto"]
+.protobufkdb.addProtoImportPath["proto"]
+.protobufkdb.importProtoFile["sample.proto"]
 ```
 
 
@@ -131,7 +124,7 @@ q).protobufkdb.parseArrayArenaToList[`Region; encodedEMEA]
 You can serialize and save data to a file by specifying a target schema and the target file name.
 
 ```q
-q).protobufkdb.saveMessageFromList[`Office; "proto/record_HQ"; HQ]
+.protobufkdb.saveMessageFromList[`Office; "proto/record_HQ"; HQ]
 ```
 
 
@@ -147,9 +140,7 @@ q).protobufkdb.loadMessageToList[`Office; "proto/record_HQ"]
 2020.03.23
 ```
 
-
-More examples:
-:fontawesome-brands-github: 
-[protobufkdb/examples](https://github.com/KxSystems/protobufkdb/tree/master/examples)
+:point_right:
+[More examples](../examples/README.md)
 
 

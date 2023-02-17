@@ -1,18 +1,7 @@
----
-title: Datatype mappings | Protobuf | Interfaces | Documentation for kdb+ and q
-author: Conor McCarthy
-description: Datatype mappings between kdb+ and Protobuf
-date: September 2020
----
 # Type mapping between kdb+ and Protobuf 
 
-:fontawesome-brands-github:
-[KxSystems/protobufkdb](https://github.com/KxSystems/protobufkdb)
 
-
-
-
-We describe how q numeric and string types are represented in Protobuf, how Protobuf structures are mapped to q.
+_How q numeric and string types are represented in Protobuf, how Protobuf structures are mapped to q_
 
 ## Protobuf/q mapping
 
@@ -101,9 +90,9 @@ bytes                     string     0h (of 4h)
 
 Protobuf maps are represented as kdb+ dictionaries with keys and values defined as follows
 
-!!! warning "The Protobuf wire format and map iteration ordering of map items is not deterministic"
-
-    You cannot rely upon it to return a particular dictionary ordering on conversion to q.
+> :warning: **The Protobuf wire format and map iteration ordering of map items is not deterministic**
+> 
+> You cannot rely upon it to return a particular dictionary ordering on conversion to q.
 
 
 **Protobuf map keys** can only be integer, boolean or string types and are therefore limited to the following type mappings.
@@ -151,9 +140,9 @@ Set                As per regular field
 Unset              Empty mixed list    
 ```
 
-!!! tip "When serializing from kdb+ to Protobuf it is possible to specify values for multiple oneof fields"
-
-    This is valid usage of oneof and does not produce an error; rather the oneof will be set to the value of the last specified field.
+> Tip: When serializing from kdb+ to Protobuf it is possible to specify values for multiple oneof fields
+>
+> This is valid usage of oneof and does not produce an error; rather the oneof will be set to the value of the last specified field.
 
 
 ### `KdbTypeSpecifier` field option
@@ -193,10 +182,10 @@ extend google.protobuf.FieldOptions {
 }
 ```
 
-??? detail "Protobuf versions"
-
-  	For the purpose of compatibility across different versions of Protobuf the above has been defined in proto2. 
-    This definition is equally valid in proto3.
+> Protobuf versions
+> 
+> For the purpose of compatibility across different versions of Protobuf the above has been defined in proto2. 
+> This definition is equally valid in proto3.
 
 To apply a `KdbTypeSpecifier` to a field, import `kdb_type_specifier.proto` into your `.proto` file, then specify the `KdbTypeSpecifier` field option. 
 For example:
