@@ -6,7 +6,7 @@
 
 This interface allows kdb+ users to parse data which has been encoded using Google Protocol Buffers [(protobuf)](https://github.com/protocolbuffers/protobuf) into kdb+ according to the proto schema and serialise it back to the encoded wire format. The interface utilises the `libprotobuf` descriptor and reflection C++ [APIs](https://developers.google.com/protocol-buffers/docs/reference/cpp#google.protobuf).
 
-This is part of the [*Fusion for kdb+*](http://code.kx.com/q/interfaces#fusion) interface collection.
+This is part of the [*Fusion for kdb+*](http://code.kx.com/q/interfaces/#fusion-interfaces) interface collection.
 
 
 
