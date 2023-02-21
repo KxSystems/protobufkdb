@@ -2,10 +2,10 @@
 
 Each script contained within this folder deals with a different aspect of the interface and aims to showcases a particular section of the protobufkdb library. The use cases highlighted below are:
 
-1. Messages added to a session at compile time
-2. Messages dynamically loaded into the session
+1.  Messages added to a session at compile time
+2.  Messages dynamically loaded into the session
 
-More basic example workflows are highlighted in the documentation for this interface [here](https://code.kx.com/q/interfaces/protobuf/examples).
+More basic example workflows are highlighted in the [exaples documentation](../docs/examples.md).
 
 ## Compiled in messages
 

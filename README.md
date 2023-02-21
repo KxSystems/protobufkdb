@@ -2,23 +2,25 @@
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/kxsystems/protobufkdb?include_prereleases)](https://github.com/kxsystems/protobufkdb/releases) [![Travis (.org) branch](https://img.shields.io/travis/kxsystems/protobufkdb/master?label=travis%20build)](https://travis-ci.org/kxsystems/protobufkdb/branches)
 
-## Introduction
 
-This interface allows kdb+ users to parse data which has been encoded using Google Protocol Buffers [(protobuf)](https://github.com/protocolbuffers/protobuf) into kdb according to the proto schema and serialise it back to the encoded wire format. The interface utilises the libprotobuf descriptor and reflection C++  [APIs](https://developers.google.com/protocol-buffers/docs/reference/cpp#google.protobuf).
 
-This is part of the [*Fusion for kdb+*](http://code.kx.com/q/interfaces/fusion/) interface collection.
+This interface allows kdb+ users to parse data which has been encoded using Google Protocol Buffers [(protobuf)](https://github.com/protocolbuffers/protobuf) into kdb+ according to the proto schema and serialise it back to the encoded wire format. The interface utilises the `libprotobuf` descriptor and reflection C++ [APIs](https://developers.google.com/protocol-buffers/docs/reference/cpp#google.protobuf).
+
+This is part of the [*Fusion for kdb+*](http://code.kx.com/q/interfaces/#fusion-interfaces) interface collection.
 
 
 
 ## New to kdb+ ?
 
-Kdb+ is the world's fastest time-series database, optimized for  ingesting, analyzing and storing massive amounts of structured data. To  get started with kdb+, please visit https://code.kx.com/q/learn/ for downloads and developer information. For general information, visit https://kx.com/
-
+Kdb+ is the world’s fastest timeseries database, optimized for ingesting, analyzing and storing massive amounts of structured data. To  get started with kdb+, visit https://code.kx.com/q/learn/ for downloads and developer information. For general information, visit https://kx.com/
 
 
 ## New to Protocol Buffers ?
 
-Protocol Buffers (Protobuf) is a language-neutral, platform-neutral, extensible mechanism for serializing structured data. It is used both in the development of programs which are required to communicate over the wire or for data storage. Developed originally for internal use by Google, it is released under an open source BSD license. The core principle behind this data format is to allow a user to define the expected structure of their data and incorporate this within specially generated source code. This allows a user to easily read and write structured data to and from a variety of languages. You can find [protobuf's documentation on the Google Developers site](https://developers.google.com/protocol-buffers/docs/overview).
+Protocol Buffers (Protobuf) is a language-neutral, platform-neutral, extensible mechanism for serializing structured data. It is used both in the development of programs which are required to communicate over the wire or for data storage. Developed originally for internal use by Google, it is released under an open source BSD license. The core principle behind this data format is to allow a user to define the expected structure of their data and incorporate this within specially generated source code. This allows a user to easily read and write structured data to and from a variety of languages. 
+
+:globe_with_meridians:
+[Protobuf documentation](https://developers.google.com/protocol-buffers/docs/overview)
 
 
 
@@ -28,9 +30,9 @@ Protobuf messages are defined in a `.proto` schema file and these message defini
 
 ### 1.  Compiling in the generated message definitions
 
-Normally the protocol buffers compiler is used to generate source code from the `.proto` schema files which is then compiled in to the binary:
+Normally the Protocol Buffers compiler is used to generate source code from the `.proto` schema files which is then compiled in to the binary:
 
-protoc compiles your message definitions based on a file defined as:
+`protoc` compiles your message definitions based on a file defined as:
 
 ```bash
 <schema>.proto
@@ -43,15 +45,15 @@ producing both a C++ source and header file defined as:
 <schema>.pb.h
 ```
 
-These files contain the classes and metadata which describe the schema and the functionality required to serialise to and parse from this schema.
+These files contain the classes and metadata which describe the schema and the functionality required to serialize to and parse from this schema.
 
 This mechanism is more performant but does require that protobufkdb be built from source since the binary needs to be rebuilt to change the statically available messages.
 
 ### 2.  Dynamically importing the message definitions at runtime
 
-In order to provide greater flexibility and usability it is also possible to dynamically import a `.proto` schema file at runtime from within the q session.  Imported message definitions can then be used subsequently by the interface and behave similarly to compiled in ones (the import procedure leverages the same functionality as used by the protobuf compiler).
+To provide greater flexibility and usability it is also possible to dynamically import a `.proto` schema file at runtime from within the q session.  Imported message definitions can then be used subsequently by the interface and behave similarly to compiled in ones (the import procedure leverages the same functionality as used by the protobuf compiler).
 
-If only dynamically imported message definitions are required then the packaged installation of protobufkdb can be used.  However, importing message definitions is less performant - in addition to the one off import cost there is also an overhead from the subsequent use of these dynamically created messages (approx. 10% for parsing, 20% for serialising).  Alternatively a hybrid approach can be employed where dynamic messages are used during development until the schemas are finalised at which point they are compiled into the interface.
+If only dynamically imported message definitions are required then the packaged installation of protobufkdb can be used.  However, importing message definitions is less performant - in addition to the one-off import cost, there is also an overhead from the subsequent use of these dynamically created messages (approx. 10% for parsing, 20% for serializing).  Alternatively a hybrid approach can be employed where dynamic messages are used during development until the schemas are finalized, at which point they are compiled into the interface.
 
 
 
@@ -59,7 +61,7 @@ If only dynamically imported message definitions are required then the packaged 
 
 ### Requirements
 
-- kdb+ ≥ 3.5 64-bit (Linux/MacOS/Windows)
+- kdb+ ≥ 3.5 64-bit (Linux/macOS/Windows)
 - protobuf ≥ 3.0 (recommended [^1])
 - C++11 or later [^2] 
 - CMake ≥ 3.1 [^2]
@@ -70,137 +72,137 @@ If only dynamically imported message definitions are required then the packaged 
 
 ### Installing a release
 
-The protobufkdb releases are linked statically against libprotobuf to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf.  Therefore it is not necessary to install protobuf separately when used a packaged release.
+The protobufkdb releases are linked statically against libprotobuf to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf.  Therefore it is unnecessary to install protobuf separately when used a packaged release.
 
-1. Download a release from [here](https://github.com/KxSystems/protobufkdb/releases)
+1.  Download a release from [here](https://github.com/KxSystems/protobufkdb/releases)
 
-2. Install required q executable script `q/protobufkdb.q` and binary file `lib/protobufkdb.(so|dll)` to `$QHOME` and `$QHOME/[mlw](64)`, by executing the following from the Release directory
+2.  Install required q executable script `q/protobufkdb.q` and binary file `lib/protobufkdb.(so|dll)` to `$QHOME` and `$QHOME/[mlw](64)`, by executing the following from the Release directory
 
-   ```bash
-   ## Linux/MacOS
-   chmod +x install.sh && ./install.sh
+    ```bash
+    ## Linux/MacOS
+    chmod +x install.sh && ./install.sh
    
-   ## Windows
-   install.bat
-   ```
+    ## Windows
+    install.bat
+    ```
 
-3. If you wish to use the KdbTypeSpecifier field option (described below) with dynamic messages then the directory containing `kdb_type_specifier.proto` must be specified to the interface as an import search location.  In the release package `kdb_type_specifier.proto` (and its dependencies) are found in the `proto` subdirectory.  Import paths can be relative or absolute.  For example, if the q session is started from the root of the release package run:
+3.  To use the KdbTypeSpecifier field option (described below) with dynamic messages then the directory containing `kdb_type_specifier.proto` must be specified to the interface as an import search location.  In the release package `kdb_type_specifier.proto` (and its dependencies) are found in the `proto` subdirectory.  Import paths can be relative or absolute.  For example, if the q session is started from the root of the release package run:
 
-   ```
-   q).protobufkdb.addProtoImportPath["proto"]
-   ```
+    ```
+    .protobufkdb.addProtoImportPath["proto"]
+    ```
 
 ### Building and installing from source
 
-#### Third-Party Library Installation
+#### Third-party library installation
 
-Protobufkdb requires the full protocol buffers runtime (protoc compiler, libprotobuf and its header files) to be installed on your system.  Many packaged installations only contain a subset of the required functionality or use an incompatible build.  Furthermore, version mismatches can occur between protoc and libprotobuf if a new installation is applied on top of an existing one.  
+Protobufkdb requires the full Protocol Buffers runtime (protoc compiler, libprotobuf and its header files) to be installed on your system.  Many packaged installations only contain a subset of the required functionality or use an incompatible build.  Furthermore, version mismatches can occur between protoc and libprotobuf if a new installation is applied on top of an existing one.  
 
-It is therefore recommend that the protocol buffer runtime is built from source and installed to a non-system directory.  This directory can then be specified to the protobufkdb build so it will use that protocol buffers installation in preference to any existing system installs.
+It is therefore recommend that the protocol buffer runtime is built from source and installed to a non-system directory.  This directory can then be specified to the protobufkdb build so it will use that Protocol Buffers installation in preference to any existing system installs.
 
-#### Building protocol buffers - Linux/MacOS
+#### Building Protocol Buffers - Linux/macOS
 
-The tools required to build protocol buffers from source on Linux/MacOS are described [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).
+The tools required to build Protocol Buffers from source on Linux/macOS are described [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).
 
-However, do not build protocol buffers using Google's `configure` script since that will create a debug version of `libprotobuf.a` which protobufkdb links against.  Rather, follow the instructions below to build protocol buffers using CMake with the correct compiler flags and install it to a non-system directory.
+However, do not build Protocol Buffers using Google's `configure` script, since that will create a debug version of `libprotobuf.a` which protobufkdb links against.  Rather, follow the instructions below to build Protocol Buffers using CMake with the correct compiler flags and install it to a non-system directory.
 
-Clone the protocol buffers source from github:
+Clone the Protocol Buffers source from GitHub:
 
 ```bash
-$ git clone https://github.com/protocolbuffers/protobuf.git
-$ cd protobuf
+git clone https://github.com/protocolbuffers/protobuf.git
+cd protobuf
 ```
 
 Create an install directory and set an environment variable to this directory (this is used again later when building protobufkdb):
 
 ```bash
-$ mkdir install
-$ export PROTOBUF_INSTALL=$(pwd)/install
+mkdir install
+export PROTOBUF_INSTALL=$(pwd)/install
 ```
 
 Create the CMake build directory and generate the build files, specifying position independent code (otherwise symbol relocation errors will occur during linking of protobufkdb):
 
 ```bash
-$ mkdir cmake/build
-$ cd cmake/build
-$ cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=$PROTOBUF_INSTALL ..
+mkdir cmake/build
+cd cmake/build
+cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=$PROTOBUF_INSTALL ..
 ```
 
-Finally build and install protocol buffers:
+Finally build and install Protocol Buffers:
 
 ```bash
-$ cmake --build . --config Release
-$ cmake --build . --config Release --target install
+cmake --build . --config Release
+cmake --build . --config Release --target install
 ```
 
-#### Building protocol buffers - Windows
+#### Building Protocol Buffers - Windows
 
-The tools required to build protocol buffers from source on Windows are described [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md) and details on how to setup your environment to build with VS2019 are [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#environment-setup). Then follow the below instructions to build a Release version protocol buffers and install it to a non-system directory.
+The tools required to build Protocol Buffers from source on Windows are described [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md) and details on how to setup your environment to build with VS2019 are [here](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#environment-setup). Then follow the below instructions to build a Release version Protocol Buffers and install it to a non-system directory.
 
-From a Visual Studio command prompt, clone the protocol buffers source from github:
+From a Visual Studio command prompt, clone the Protocol Buffers source from github:
 
-```bash
+```shell
 C:\Git> git clone https://github.com/protocolbuffers/protobuf.git
 C:\Git> cd protobuf
 ```
 
 Create an install directory and set an environment variable to this directory (substituting the correct absolute path as appropriate).  This environment variable is used again later when building protobufkdb:
 
-```bash
+```shell
 C:\Git\protobuf> mkdir install
 C:\Git\protobuf> set PROTOBUF_INSTALL=C:\Git\protobuf\install
 ```
 
-Create the CMake build directory (note that if you also wish to build a Debug version of protocol buffers then a second CMake build directory is required):
+Create the CMake build directory (note that if you also wish to build a Debug version of Protocol Buffers then a second CMake build directory is required):
 
-```bash
+```shell
 C:\Git\protobuf> mkdir cmake\release_build
 C:\Git\protobuf> cd cmake\release_build
 ```
 
 Generate the build files (this will default to using the Visual Studio CMake generator when run from a VS command prompt):
 
-```bash
+```shell
 C:\Git\protobuf\cmake\release_build> cmake -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=%PROTOBUF_INSTALL% ..
 ```
 
-Finally build and install protocol buffers:
+Finally build and install Protocol Buffers:
 
-```bash
+```shell
 C:\Git\protobuf\cmake\release_build> cmake --build . --config Release
 C:\Git\protobuf\cmake\release_build> cmake --build . --config Release --target install
 ```
 
 #### Add the protobuf schema files to the build procedure
 
-protobufkdb uses a factory to create a message class object of the correct type from the message type string passed from kdb.  The lookup requires that the message type string passed from kdb is the same as the message name in its .proto definition.
+Protobufkdb uses a factory to create a message class object of the correct type from the message type string passed from kdb.  The lookup requires that the message type string passed from kdb is the same as the message name in its .proto definition.
 
 In order to populate the factory, the .proto files for all messages to be serialised/parsed must be incorporated into the build as follows:
 
-1. Place the new `<schema>.proto` file into the `src/` subdirectory
-2. Edit `src/CMakeLists.txt` file, adding the new .proto file to the line below the following comment:
+1.  Place the new `<schema>.proto` file into the `src/` subdirectory
+2.  Edit `src/CMakeLists.txt` file, adding the new .proto file to the line below the following comment:
 
-  ```cmake
-  # ### GENERATE PROTO FILES ###
-  ```
+    ```cmake
+    # ### GENERATE PROTO FILES ###
+    ```
 
-  For example, to add `examples.proto` (which is already present in the `src/` subdirectory), in addition to the existing `tests.proto`, change:
+    For example, to add `examples.proto` (which is already present in the `src/` subdirectory), in addition to the existing `tests.proto`, change:
 
-  ```cmake
-  set(MY_PROTO_FILES tests.proto)
-  ```
+    ```cmake
+    set(MY_PROTO_FILES tests.proto)
+    ```
 
-  to:
+    to:
 
-  ```cmake
-  set(MY_PROTO_FILES tests.proto examples.proto)
-  ```
+    ```cmake
+    set(MY_PROTO_FILES tests.proto examples.proto)
+    ```
 
-**Note:** `MY_PROTO_FILES` is a CMake space separated list, do not wrap the list of .proto files in a string.
+**Note:** `MY_PROTO_FILES` is a CMake-space separated list; do not wrap the list of `.proto` files in a string.
 
 #### Building protobufkdb
 
-A CMake script is provided to build protobufkdb. This uses the CMake functionality to locate the protobuf installation on your system.  By setting the CMake environment variable `CMAKE_PREFIX_PATH` to the protocol buffers installation directory created above when building protobuf from source, CMake will use this installation in preference to any existing system installs.  This avoids issues with existing incompatible or mismatched protobuf installs.
+A CMake script is provided to build protobufkdb. This uses the CMake functionality to locate the protobuf installation on your system.  By setting the CMake environment variable `CMAKE_PREFIX_PATH` to the Protocol Buffers installation directory created above when building protobuf from source, CMake will use this installation in preference to any existing system installs.  This avoids issues with existing incompatible or mismatched protobuf installs.
 
 From the root of this repository create and move into a directory in which to perform the build:
 
@@ -232,11 +234,11 @@ cmake --build . --config Release --target install
 
 **Note:**  By default `src/CMakeLists.txt` is configured to link statically against libprotobuf to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf.  This is a particular issue on [Windows](https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#dlls-vs-static-linking).
 
-#### Build Issues
+#### Build issues
 
-Because the protobufkdb interface uses both the protoc compiler and the protocol buffer's runtime, the versions of protoc, libprotobuf and its header files must be consistent and installed from the same build.  Otherwise build errors can occur when compiling any of the proto-generated `.pb.h` or `.pb.cc` files.  To help identify these problems the protobufkdb CMake scripts will log the locations of the protocol buffers installation it has found.  For example:
+Because the protobufkdb interface uses both the protoc compiler and the Protocol Buffers’ runtime, the versions of protoc, libprotobuf and its header files must be consistent and installed from the same build.  Otherwise build errors can occur when compiling any of the proto-generated `.pb.h` or `.pb.cc` files.  To help identify these problems the protobufkdb CMake scripts log the locations of the Protocol Buffers installation it has found.  For example:
 
-```bash
+```txt
 [build]$ cmake ..
  -- The CXX compiler identification is GNU 4.8.5
  -- Check for working CXX compiler: /usr/bin/c++
@@ -261,11 +263,11 @@ Because the protobufkdb interface uses both the protoc compiler and the protocol
 
 indicates it found protoc version 3.11.4 at `/home/protobuf/install/bin/protoc` but version 3.7.1 of `libprotobuf.a` (and the headers) installed on the system under `/usr/local/`.  This can occur if there was a conflicting packaged version of protobuf already on the system and will likely cause the protobufkdb build to fail.  
 
-The solution, as described above, is to build the protocol buffers runtime from source, install it to non-system directory then specify that directory when building protobufkdb.
+The solution, as described above, is to build the Protocol Buffers runtime from source, install it to non-system directory then specify that directory when building protobufkdb.
 
-#### Docker - Linux
+#### Docker – Linux
 
-A sample docker file is provided in the `docker_linux` directory to create a Ubuntu 18.04 LTS environment (including downloading and building the protocol buffers runtime from source) before building and installing the kdb+ `protobufkdb` interface.
+A sample Docker file is provided in the `docker_linux` directory to create a Ubuntu 18.04 LTS environment (including downloading and building the Protocol Buffers runtime from source) before building and installing the kdb+ `protobufkdb` interface.
 
 For Docker Windows, the `PROTOBUFKDB_SOURCE` and `QHOME_LINUX` directories are specified at the top of `protobufkdb_build.bat`, which sets up the environment specified in `Dockerfile.build` and invokes `protobufkdb_build.sh` to build the interface.
 
@@ -276,11 +278,11 @@ For Docker Windows, the `PROTOBUFKDB_SOURCE` and `QHOME_LINUX` directories are s
 
 The protobufkdb interface is provided here as a beta release under an Apache 2.0 license.
 
-If you find issues with the interface or have feature requests, please consider raising an issue [here](https://github.com/KxSystems/protobufkdb/issues).
+If you find issues with the interface or have feature requests, please [raise an issue](../../issues).
 
-If you wish to contribute to this project, please follow the contributing guide [here](CONTRIBUTING.md).
+To contribute to this project, please follow the [contribution guide](CONTRIBUTING.md).
 
-Protocol Buffers is used under the terms of [Google's license](https://github.com/protocolbuffers/protobuf/blob/master/LICENSE):
+Protocol Buffers is used under the terms of [Google’s license](https://github.com/protocolbuffers/protobuf/blob/master/LICENSE):
 
 ```txt
 Copyright 2008 Google Inc.  All rights reserved.
