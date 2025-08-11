@@ -118,3 +118,11 @@ message SametypeTestDynamic {
     required double quatro_three         = 3;
     required double quatro_four          = 4;
 }
+
+message MessageLoopTest {
+    optional string id = 1;
+    optional string name = 2;
+    optional string country = 3;
+    optional MessageLoopTest parent = 4;
+    optional double parentScalingFactor = 5;
+}

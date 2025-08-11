@@ -14,7 +14,7 @@ addProtoImportPath["proto"];
 importProtoFile["tests_proto2_dynamic.proto"];
 .test.ASSERT_ERROR[importProtoFile; enlist "not_exist.proto"; "Error: not_exist.proto:-1:0: File not found."]
 
-listImportedMessageTypes[]~`ScalarTestDynamic`RepeatedTestDynamic`SubMessageTestDynamic`MapTestDynamic`ScalarSpecifiersTestDynamic`RepeatedSpecifiersTestDynamic`MapSpecifiersTestDynamic`OneofTestDynamic`SametypeTestDynamic
+listImportedMessageTypes[]~`ScalarTestDynamic`RepeatedTestDynamic`SubMessageTestDynamic`MapTestDynamic`ScalarSpecifiersTestDynamic`RepeatedSpecifiersTestDynamic`MapSpecifiersTestDynamic`OneofTestDynamic`SametypeTestDynamic`MessageLoopTest
 
 -1 "\n+----------|| Test scalars with file ||----------+\n";
 
@@ -890,6 +890,13 @@ wrong_sames:("single"; "double"; "triple"; "quadraple");
 
 .test.ASSERT_ERROR[serializeArrayFromList; (`SametypeTestDynamic; wrong_sames); "Invalid scalar type"]
 
+-1 "<--- Message referencing itself --->";
 
+scalars:("testID";"testName";"testCountry";(::);5.0);
+x:serializeArrayFromList[`MessageLoopTest; scalars];
+.test.ASSERT_TRUE[parseArrayToList;(`MessageLoopTest; x);scalars]
+scalars:("testID";"testName";"testCountry";("testID";"testName";"testCountry";(::);5.0);5.0);
+x:serializeArrayFromList[`MessageLoopTest; scalars];
+.test.ASSERT_TRUE[parseArrayToList;(`MessageLoopTest; x);scalars]
 
 -1 "\n+----------|| Finished testing ||----------+\n";
