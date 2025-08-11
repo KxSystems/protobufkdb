@@ -2,11 +2,27 @@ jobs:
   include:
   - dist: xenial
     os: linux
+    deploy:
+    - provider: releases
+      token: "$GITHUB_APIKEY"
+      file: "$FILE_NAME"
+      skip_cleanup: true
+      dpl_version: 1.10.16
+      on:
+        tags: true
   - dist: focal
     os: linux
   - dist: bionic
     os: linux
   - os: windows
+    deploy:
+    - provider: releases
+      token: "$GITHUB_APIKEY"
+      file: "$FILE_NAME"
+      skip_cleanup: true
+      dpl_version: 2.0.3.beta.4
+      on:
+        tags: true
 language: c
 compiler: gcc
 os: linux
@@ -90,11 +106,3 @@ script:
       tar  -zcvf $FILE_NAME README.md install.sh LICENSE q examples proto docs;
     fi
 
-deploy:
-  provider: releases
-  token: "$GITHUB_APIKEY"
-  file: "$FILE_NAME"
-  on:
-    tags: true
-    condition: $TRAVIS_OS_NAME = windows || $TRAVIS_OS_NAME = osx || ($TRAVIS_DIST = xenial && $TRAVIS_OS_NAME = linux)
-  skip_cleanup: 'true'
