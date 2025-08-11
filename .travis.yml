@@ -78,6 +78,7 @@ script:
   - if [[ $TESTS == "True" && "x$OD" != "x" && "x$QLIC_KC" != "x" ]]; then
       curl -o test.q -L https://github.com/KxSystems/hdf5/raw/master/test.q;
       q test.q tests_proto3/ -q;
+      q test.q tests_proto2/ -q;
     fi
   - if [[ $TRAVIS_OS_NAME == "windows" && $BUILD == "True" ]]; then
       7z a -tzip -r $FILE_NAME ./cmake/$FILE_ROOT/*;

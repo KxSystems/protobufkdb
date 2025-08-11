@@ -1,0 +1,120 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+import "kdb_type_specifier.proto";
+
+message ScalarTestDynamic {
+    required int32   scalar_int32    = 1;
+    required uint32  scalar_uint32   = 2;
+    required int64   scalar_int64    = 3;
+    required uint64  scalar_uint64   = 4;
+    required double  scalar_double   = 5;
+    required float   scalar_float    = 6;
+    required bool    scalar_bool     = 7;
+    
+    enum EnumType {
+        ZERO    = 0;
+        ONE     = 1;
+        TWO     = 2;
+    }
+    required EnumType scalar_enum    = 8;
+    
+    required string  scalar_string   = 9;  
+    required bytes   scalar_bytes    = 10;
+}
+
+message RepeatedTestDynamic {
+    repeated int32      rep_int32   = 1;
+    repeated uint32     rep_uint32  = 2;
+    repeated int64      rep_int64   = 3;
+    repeated uint64     rep_uint64  = 4;
+    repeated double     rep_double  = 5;
+    repeated float      rep_float   = 6;
+    repeated bool       rep_bool    = 7;
+    
+    enum EnumType {
+        ZERO    = 0;
+        ONE     = 1;
+        TWO     = 2;
+    }
+    repeated EnumType   rep_enum    = 8;
+    
+    repeated string     rep_string  = 9;
+    repeated bytes      rep_bytes   = 10;
+}
+
+message SubMessageTestDynamic {
+    required ScalarTestDynamic              sub_scalar  = 1;
+    repeated RepeatedTestDynamic   sub_rep     = 2;
+}
+
+message MapTestDynamic {
+    // Map keys can only be integral types or string
+    map<uint32, uint64>         map_uint        = 1;
+    map<int32,  int64>          map_int         = 2;
+    map<uint64, double>         map_double      = 3;
+    map<int64,  float>          map_float       = 4;
+
+    enum EnumType {
+        ZERO    = 0;
+        ONE     = 1;
+        TWO     = 2;
+    }
+    map<bool, EnumType>         map_bool_enum   = 5;
+
+    map<string, ScalarTestDynamic>     map_message     = 6;
+    map<string, SubMessageTestDynamic> map_depth       = 7;
+}
+
+message ScalarSpecifiersTestDynamic {
+    required int64   timestamp   = 1 [(kdb_type) = TIMESTAMP];
+    required uint32  month       = 2 [(kdb_type) = MONTH];
+    required int32   date        = 3 [(kdb_type) = DATE];
+    required double  datetime    = 4 [(kdb_type) = DATETIME];
+    required uint64  timespan    = 5 [(kdb_type) = TIMESPAN];
+    required int32   minute      = 6 [(kdb_type) = MINUTE];
+    required uint32  second      = 7 [(kdb_type) = SECOND];
+    required int32   time        = 8 [(kdb_type) = TIME];
+    required string  guid        = 9 [(kdb_type) = GUID];
+}
+
+message RepeatedSpecifiersTestDynamic {
+    repeated int64  timestamp   = 1 [(kdb_type) = TIMESTAMP];
+    repeated uint32 month       = 2 [(kdb_type) = MONTH];
+    repeated int32  date        = 3 [(kdb_type) = DATE];
+    repeated double datetime    = 4 [(kdb_type) = DATETIME];
+    repeated uint64 timespan    = 5 [(kdb_type) = TIMESPAN];
+    repeated int32  minute      = 6 [(kdb_type) = MINUTE];
+    repeated uint32 second      = 7 [(kdb_type) = SECOND];
+    repeated int32  time        = 8 [(kdb_type) = TIME];
+    repeated string guid        = 9 [(kdb_type) = GUID];
+}
+
+message MapSpecifiersTestDynamic {
+    map<uint64, int32>  timestamp_month = 1 [(map_kdb_type).key_type = TIMESTAMP, (map_kdb_type).value_type = MONTH];
+    map<uint32, double> date_datetime   = 2 [(map_kdb_type).key_type = DATE, (map_kdb_type).value_type = DATETIME];
+    map<int64,  uint32> timespan_minute = 3 [(map_kdb_type).key_type = TIMESPAN, (map_kdb_type).value_type = MINUTE];
+    map<int32,  uint32> second_time     = 4 [(map_kdb_type).key_type = SECOND, (map_kdb_type).value_type = TIME];
+    map<string, bytes>  guids_guidb     = 5 [(map_kdb_type).key_type = GUID, (map_kdb_type).value_type = GUID];
+}
+
+message OneofTestDynamic {
+    message OneofMsg {
+        required int64           scalar_int64    = 1;
+        repeated double rep_double      = 2;
+    }
+    oneof test_oneof {
+        double      oneof_scalar    = 1;
+        int32       oneof_specifier = 2 [(kdb_type) = SECOND];
+        OneofMsg    oneof_msg       = 3;
+    }
+    required string non_oneoff_str           = 4;
+}
+
+message SametypeTestDynamic {
+    required double quatro_one           = 1;
+    required double quatro_two           = 2;
+    required double quatro_three         = 3;
+    required double quatro_four          = 4;
+}
