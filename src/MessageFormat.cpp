@@ -103,7 +103,12 @@ K MessageFormat::GetMessageField(const gpb::Message& msg, const gpb::FieldDescri
     // Non-repeating sub-message
     //
     // Recurse into the single sub-message
-    element = GetMessage(refl->GetMessage(msg, fd), use_field_names);
+    if (refl->HasField(msg, fd)) {
+        element = GetMessage(refl->GetMessage(msg, fd), use_field_names);
+    } else{
+        element = ka(101);
+        element->g = 0;
+    }
   } else {
     // Scalar value
     element = ScalarValues::Instance()->GetScalar(msg, refl, fd);
