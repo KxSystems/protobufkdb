@@ -1,0 +1,79 @@
+name: win-protobuf-build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened]
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      BUILD_HOME: ${{ github.workspace }}\cbuild\install
+      OUTPUT_FILE: protobufkdb-win.tgz
+      QHOME: ${{ github.workspace }}\qhome
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Restore cached protobuf lib
+        id: cache-protobuf
+        uses: actions/cache@v5
+        with:
+          path: |
+            cbuild/install
+          key: ${{ runner.os }}-protobuf-3.12.3
+          restore-keys: |
+            ${{ runner.os }}-protobuf-3.12.3
+
+      - name: Get protobuf
+        if: steps.cache-protobuf.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          mkdir cbuild
+          $uri = "https://github.com/protocolbuffers/protobuf/releases/download/v3.12.3/protobuf-cpp-3.12.3.tar.gz"
+          $out = "protobuf-cpp-3.12.3.tar.gz"
+          Invoke-WebRequest -Uri $uri -OutFile $out
+          tar xvf $out -C ./cbuild --strip-components=1
+
+      - name: Build protobuf
+        if: steps.cache-protobuf.outputs.cache-hit != 'true'
+        run: |
+          mkdir cbuild/install 
+          mkdir cbuild/cmake/solution 
+          cd cbuild/cmake/solution 
+          cmake -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="${{ env.BUILD_HOME }}" ..
+          cmake --build . --config Release
+          cmake --build . --config Release --target install
+          cd ../../.. 
+           
+      - name: Build 
+        run: |
+          mkdir "${{ env.QHOME }}"
+          mkdir cmake
+          cd cmake
+          cmake -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="${{ env.BUILD_HOME }}" ..
+          cmake --build . --config Release
+          cmake --build . --config Release --target install
+          cd ..
+          7z a -tzip -r "${{ env.OUTPUT_FILE }}" cmake\protobufkdb\*
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: kdbldap-windows
+          path: ${{ env.OUTPUT_FILE }}
+          retention-days: 1
+
+  release:
+    needs: build
+    permissions:
+      contents: write
+    uses: ./.github/workflows/release-assets.yml
