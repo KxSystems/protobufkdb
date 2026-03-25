@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.3)
+cmake_minimum_required(VERSION 3.1.3...3.30)
 project(protobufkdb CXX)
 
 if(NOT CMAKE_BUILD_TYPE)

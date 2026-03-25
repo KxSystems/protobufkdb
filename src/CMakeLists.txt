@@ -96,8 +96,11 @@ endif()
 # Copy built shared object after build instead of during installation
 add_custom_command(TARGET ${MY_LIBRARY_NAME}
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${MY_LIBRARY_NAME}>" ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/lib/${MY_LIBRARY_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-    DEPENDS ${MY_LIBRARY_NAME}
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+        "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/lib"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:${MY_LIBRARY_NAME}>"
+        "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/lib/$<TARGET_FILE_NAME:${MY_LIBRARY_NAME}>"
 )
 
 # Minimum build/install move binary to $QHOME/<QARCH>

@@ -1,0 +1,83 @@
+name: linux-protobuf-build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened]
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: rockylinux:8
+
+    env:
+      BUILD_HOME: ${{ github.workspace }}/cbuild/install
+      OUTPUT_FILE: protobufkdb-linux.tgz
+      QHOME: ${{ github.workspace }}/qhome
+
+    steps:
+      - name: Install build tools
+        run: |
+          yum -y install \
+            gcc \
+            gcc-c++ \
+            make \
+            cmake \
+            wget \
+            tar \
+            gzip
+
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Restore cached protobuf lib
+        id: cache-protobuf
+        uses: actions/cache@v5
+        with:
+          path: |
+            cbuild/install
+          key: ${{ runner.os }}-protobuf-3.12.3
+          restore-keys: |
+            ${{ runner.os }}-protobuf-3.12.3
+
+      - name: Get protobuf
+        if: steps.cache-protobuf.outputs.cache-hit != 'true'
+        run: |
+          mkdir cbuild
+          wget https://github.com/protocolbuffers/protobuf/releases/download/v3.12.3/protobuf-cpp-3.12.3.tar.gz
+          tar xvf protobuf-cpp-3.12.3.tar.gz -C ./cbuild --strip-components=1
+
+      - name: Build protobuf
+        if: steps.cache-protobuf.outputs.cache-hit != 'true'
+        run: |
+          mkdir cbuild/install &&
+          mkdir cbuild/cmake/build &&
+          cd cbuild/cmake/build &&
+          cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=../../install .. &&
+          cmake --build . --config Release && 
+          cmake --build . --config Release --target install &&
+          cd ../../..
+           
+      - name: Build 
+        run: |
+          mkdir "$QHOME" && mkdir cmake && cd cmake && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$BUILD_HOME && make install && cd .. && tar -zcvf "$OUTPUT_FILE" -C cmake/protobufkdb .
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: kdbldap-linux
+          path: ${{ env.OUTPUT_FILE }}
+          retention-days: 1
+
+  release:
+    needs: build
+    permissions:
+      contents: write
+    uses: ./.github/workflows/release-assets.yml
