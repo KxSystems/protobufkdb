@@ -6,8 +6,8 @@
 #ifdef _WIN32
 #define EXP __declspec(dllexport)
 #else
-#define EXP
-#endif // _WIN32
+#define EXP __attribute__((visibility("default")))
+#endif
 
 
 extern "C"
@@ -20,7 +20,7 @@ extern "C"
    * @param unused 
    * @return NULL
   */
-  EXP K Init(K unused);
+  K init(K unused);
 
   /**
    * @brief Returns the libprotobuf version as an integer
@@ -28,14 +28,14 @@ extern "C"
    * @param unused 
    * @return KI atom containing the version
   */
-  EXP K Version(K unused);
+  K version(K unused);
 
   /**
    * @brief Returns the libprotobuf version as a string
    * @param unused 
    * @return Kdb char array containing the version
   */
-  EXP K VersionStr(K unused);
+  K versionStr(K unused);
 
   /**
    * @brief Converts the kdb object to a protobuf message then serializes that
@@ -50,14 +50,14 @@ extern "C"
    * field values
    * @return                Kdb char array containing the serialized message
   */
-  EXP K SerializeArray(K message_type, K msg_in, K use_field_names);
+  K serializeArray(K message_type, K msg_in, K use_field_names);
 
   /**
    * @brief Identical to SerializeArray() except the intermediate protobuf
    * message is created on a google arena (helps improves memory allocation
    * performance for large messages with deep repeated/map fields).
   */
-  EXP K SerializeArrayArena(K message_type, K msg_in, K use_field_names);
+  K serializeArrayArena(K message_type, K msg_in, K use_field_names);
 
   /**
    * @brief Parses the proto-serialized char array into a protobuf message then
@@ -73,14 +73,14 @@ extern "C"
    * field values
    * @return                Kdb object corresponding to the protobuf message
   */
-  EXP K ParseArray(K message_type, K char_array, K use_field_names);
+  K parseArray(K message_type, K char_array, K use_field_names);
 
   /**
    * @brief Identical to ParseArray() except the intermediate protobuf message
    * is created on a google arena (helps improves memory allocation performance
    * for large messages with deep repeated/map fields).
   */
-  EXP K ParseArrayArena(K message_type, K char_array, K use_field_names);
+  K parseArrayArena(K message_type, K char_array, K use_field_names);
 
   /**
    * @brief Parses the proto-serialized char array into a protobuf message then
@@ -97,7 +97,7 @@ extern "C"
    * control passes back to q.
    * @return              Kdb char array containing the output.
   */
-  EXP K ParseArrayDebug(K message_type, K char_array);
+  K parseArrayDebug(K message_type, K char_array);
 
   /**
    * @brief Converts the kdb object to a protobuf message, serializes that then
@@ -113,7 +113,7 @@ extern "C"
    * field values
    * @return                NULL
   */
-  EXP K SaveMessage(K message_type, K filename, K msg_in, K use_field_names);
+  K saveMessage(K message_type, K filename, K msg_in, K use_field_names);
 
   /**
    * @brief Parses the proto-serialized stream from the file specified to a
@@ -124,7 +124,7 @@ extern "C"
    * @param filename      String containing the name of the file to read from.
    * @return              Kdb object corresponding to the protobuf message
   */
-  EXP K LoadMessage(K message_type, K filename, K use_field_names);
+  K loadMessage(K message_type, K filename, K use_field_names);
 
   /**
    * @brief Parses the proto-serialized stream from the file specified to a
@@ -139,7 +139,7 @@ extern "C"
    * @param filename      Name of the file to read from.
    * @return              Kdb char array containing the output.
   */
-  EXP K LoadMessageDebug(K message_type, K filename);
+  K loadMessageDebug(K message_type, K filename);
 
   /**
    * @brief Returns the proto schema of the specified message.
@@ -152,7 +152,7 @@ extern "C"
    * be the same as the message name in its .proto definition.
    * @return              Kdb char array detailing the schema
   */
-  EXP K GetMessageSchema(K message_type);
+  K getMessageSchema(K message_type);
 
   /**
    * @brief Returns a symbol list containing the message fields in the order
@@ -162,7 +162,7 @@ extern "C"
    * be the same as the message name in its .proto definition.
    * @return              Symbol list of message fields
   */
-  EXP K GetMessageFields(K message_type);
+  K getMessageFields(K message_type);
 
   /**
    * @brief Adds a path to be searched when dynamically importing .proto file
@@ -172,7 +172,7 @@ extern "C"
    * @param import_path String containing the path to be searched for proto file
    * definitions.  Can be absolute or relative.
   */
-  EXP K AddProtoImportPath(K import_path);
+  K addProtoImportPath(K import_path);
 
   /**
    * @brief Dynamically imports a .proto file definition into the interface,
@@ -185,7 +185,7 @@ extern "C"
    * @return          If the file fails to parse, returns an error containing
    * information on the errors and warnings which occurred.
   */
-  EXP K ImportProtoFile(K filename);
+  K importProtoFile(K filename);
 
   /**
    * @brief Returns a list of the message types which have been successfully
@@ -196,7 +196,9 @@ extern "C"
    *
    * @return Symbol list of the successfully imported message types.
   */
-  EXP K ListImportedMessageTypes(K unused);
+  K listImportedMessageTypes(K unused);
+
+  EXP K kexport(K unused);
 
 }
 

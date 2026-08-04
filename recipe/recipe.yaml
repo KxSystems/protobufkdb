@@ -1,0 +1,47 @@
+context:
+  version: "2.0.0"
+
+package:
+  name: q-kx-protobuf
+  version: ${{ version }}
+
+source:
+  path: ..
+  filter:
+    exclude:
+      - recipe/**
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - ${{ compiler("cxx") }}
+    - cmake
+    - make
+  host:
+    - libprotobuf 3.*
+  run:
+    - libprotobuf 3.*
+
+tests:
+  - script:
+    - if: unix
+      then:
+      - test -f ${PREFIX}/lib/q/mod/kx/protobuf/init.q
+    - if: linux and x86_64
+      then:
+        - test -f ${PREFIX}/lib/q/mod/kx/protobuf/clib.li64.so
+    - if: linux and aarch64
+      then:
+        - test -f ${PREFIX}/lib/q/mod/kx/protobuf/clib.la64.so
+    - if: osx and arm64
+      then:
+        - test -f ${PREFIX}/lib/q/mod/kx/protobuf/clib.ma64.so
+    - if: osx and x86_64
+      then:
+        - test -f ${PREFIX}/lib/q/mod/kx/protobuf/clib.mi64.so
+    - if: win
+      then:
+        - if not exist %PREFIX%\\lib\\q\\mod\\kx\\protobuf\\init.q exit 1
+        - if not exist %PREFIX%\\lib\\q\\mod\\kx\\\protobuf\\clib.wi64.dll exit 1

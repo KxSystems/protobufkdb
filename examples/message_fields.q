@@ -4,7 +4,7 @@
 -1"\n+----------|| message_fields.q ||----------+\n";
 
 // import the Protobuf library
-\l ../q/protobufkdb.q
+$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
 
 //------------------------------------------------------//
 // Example-1. Trivial message without submessage fields //

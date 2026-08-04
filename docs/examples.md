@@ -1,6 +1,6 @@
 # Protobuf/Protocol Buffers interface example
 
-It is assumed here that you are executing logic in the root of the `protobufkdb` repository. The file structure for the required components from this location is:
+It is assumed here that you are executing logic in the root of the `protobufkdb` release package. The file structure for the required components from this location is:
 
 ```treeview
 ./
@@ -9,7 +9,7 @@ It is assumed here that you are executing logic in the root of the `protobufkdb`
 │   ├── kdb_type_specifier.proto
 │   └── sample.proto
 └── q/
-    └── protobufkdb.q
+    └── init.q
 ```
 
 Here `sample.proto` is defined as follows:
@@ -37,10 +37,8 @@ message Region {
 
 ## Load Protobufkdb library
 
-From the root of the repository load the `protobufkdb` library
-
 ```q
-\l q/protobufkdb.q
+.protobufkdb:use`kx.protobuf
 ```
 
 

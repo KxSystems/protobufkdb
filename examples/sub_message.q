@@ -4,7 +4,7 @@
 -1"\n+----------|| sub_message.q ||----------+\n";
 
 // import the Protobuf library
-\l ../q/protobufkdb.q
+$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
 
 //-------------------------------------//
 // Example-1. Use compiled schema file //
@@ -31,8 +31,11 @@ show submessage~deserialized
 // Example-2. Use dynamically imported schema file //
 //-------------------------------------------------//
 
-// Add impot path of schema file for dynamic schema import
+// Add import path of schema file for dynamic schema import
 .protobufkdb.addProtoImportPath["../proto"];
+if[not""~getenv`CONDA_PREFIX;
+ .protobufkdb.addProtoImportPath[(getenv`CONDA_PREFIX),"/include"]
+ ]
 
 // Import schema file
 .protobufkdb.importProtoFile["examples_dynamic.proto"];

@@ -64,29 +64,26 @@ If only dynamically imported message definitions are required then the packaged 
 - kdb+ ≥ 3.5 64-bit (Linux/macOS/Windows)
 - protobuf ≥ 3.0 (recommended [^1])
 - C++11 or later [^2] 
-- CMake ≥ 3.1 [^2]
+- CMake ≥ 3.5 [^2]
 
 [^1]: Protocol Buffers language version 3 ([proto3](https://developers.google.com/protocol-buffers/docs/proto3)) simplifies the protocol buffer language, both for ease of use and to make it available in a  wider range of programming languages.  However, schemas defined in [proto2](https://developers.google.com/protocol-buffers/docs/cpptutorial) should also be supported.
 
 [^2]: Required when building from source
 
-### Installing a release
+# Installing a Release
+
+It is recommended that a user install this module through a release. 
 
 The protobufkdb releases are linked statically against libprotobuf to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf.  Therefore it is unnecessary to install protobuf separately when used a packaged release.
+A release package is prebuilt and statically linked against `libprotobuf`, so no separate Protocol Buffers runtime needs to be installed to use it.
 
-1.  Download a release from [here](https://github.com/KxSystems/protobufkdb/releases)
+1. [Download a release](https://github.com/KxSystems/protobufkdb/releases) and then unzip to your module directory. The following example assumes the default install location for KDB-X.
 
-2.  Install required q executable script `q/protobufkdb.q` and binary file `lib/protobufkdb.(so|dll)` to `$QHOME` and `$QHOME/[mlw](64)`, by executing the following from the Release directory
+```
+unzip protobufkdb.zip -d ~/.kx/mod
+```
 
-    ```bash
-    ## Linux/MacOS
-    chmod +x install.sh && ./install.sh
-   
-    ## Windows
-    install.bat
-    ```
-
-3.  To use the KdbTypeSpecifier field option (described below) with dynamic messages then the directory containing `kdb_type_specifier.proto` must be specified to the interface as an import search location.  In the release package `kdb_type_specifier.proto` (and its dependencies) are found in the `proto` subdirectory.  Import paths can be relative or absolute.  For example, if the q session is started from the root of the release package run:
+1.  To use the KdbTypeSpecifier field option (described below) with dynamic messages then the directory containing `kdb_type_specifier.proto` must be specified to the interface as an import search location.  In the release package `kdb_type_specifier.proto` (and its dependencies) are found in the `proto` subdirectory.  Import paths can be relative or absolute.  For example, if the q session is started from the root of the release package run:
 
     ```
     .protobufkdb.addProtoImportPath["proto"]
@@ -106,11 +103,12 @@ The tools required to build Protocol Buffers from source on Linux/macOS are desc
 
 However, do not build Protocol Buffers using Google's `configure` script, since that will create a debug version of `libprotobuf.a` which protobufkdb links against.  Rather, follow the instructions below to build Protocol Buffers using CMake with the correct compiler flags and install it to a non-system directory.
 
-Clone the Protocol Buffers source from GitHub:
+Clone the Protocol Buffers source from GitHub and checkout the last version that supported C++11:
 
 ```bash
 git clone https://github.com/protocolbuffers/protobuf.git
 cd protobuf
+git checkout refs/tags/v21.12
 ```
 
 Create an install directory and set an environment variable to this directory (this is used again later when building protobufkdb):
@@ -123,8 +121,8 @@ export PROTOBUF_INSTALL=$(pwd)/install
 Create the CMake build directory and generate the build files, specifying position independent code (otherwise symbol relocation errors will occur during linking of protobufkdb):
 
 ```bash
-mkdir cmake/build
-cd cmake/build
+mkdir build
+cd build
 cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=$PROTOBUF_INSTALL ..
 ```
 
@@ -214,10 +212,10 @@ Generate the build scripts,  specifying the protobuf buffers installation create
 
 ```bash
 ## Linux/MacOS
-cmake -DCMAKE_PREFIX_PATH=$PROTOBUF_INSTALL ..
+cmake -DCMAKE_PREFIX_PATH=$PROTOBUF_INSTALL -DQMOD=ON ..
 
 ## Windows
-cmake -DCMAKE_PREFIX_PATH=%PROTOBUF_INSTALL% ..
+cmake -DCMAKE_PREFIX_PATH=%PROTOBUF_INSTALL% -DQMOD=ON ..
 ```
 
 Start the build:
@@ -271,8 +269,9 @@ A sample Docker file is provided in the `docker_linux` directory to create a Ubu
 
 For Docker Windows, the `PROTOBUFKDB_SOURCE` and `QHOME_LINUX` directories are specified at the top of `protobufkdb_build.bat`, which sets up the environment specified in `Dockerfile.build` and invokes `protobufkdb_build.sh` to build the interface.
 
+## Conda package
 
-
+For information on how to build and host a conda package see [`Conda usage`](https://github.com/KxSystems/qmamba/wiki/Build)
 
 ## Status
 
@@ -319,3 +318,8 @@ standalone and requires a support library to be linked with it.  This
 support library is itself covered by the above license.
 ```
 
+## Notice
+
+Copyright (c) 2026 KX Systems, Inc.
+
+Licensed under the Apache License, Version 2.0.

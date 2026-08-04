@@ -5,7 +5,7 @@
 -1"\n+----------|| handling_files.q ||----------+\n";
 
 // import the Protobuf library
-\l ../q/protobufkdb.q
+$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
 
 // Prepare data to be saved
 scalars:(12i;55f;"str");

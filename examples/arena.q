@@ -12,7 +12,7 @@
 -1"\n+----------|| arena.q ||----------+\n";
 
 // import the Protobuf library
-\l ../q/protobufkdb.q
+$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
 
 // Prepare huge submessage data
 huge:submessage:((0i;0f;`str); (10000#enlist (`int$til 100; `float$til 100; 100#enlist "str")));

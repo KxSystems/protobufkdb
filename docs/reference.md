@@ -1,8 +1,10 @@
 # Protobuf/Protocol Buffers function reference
 
 
+_Functions exposed in the `kx.protobuf` module allow you to generate and parse Protobuf messages_
 
-_Functions exposed in the `.protobufkdb` namespace allow you to generate and parse Protobuf messages_
+**Note:** In the documentation we use `.protobufkdb` to import `kx.protobuf` with ```.protobufkdb: use kx.protobuf```
+
 
 `.protobufkdb.`   **Protobuf/Protocol Buffers interface**
 

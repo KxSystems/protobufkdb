@@ -2,13 +2,16 @@
 // Test both compliled schema and dynamically imported schema
 -1 "\n+----------|| Load protobufkdb library ||----------+\n";
 
-\l q/protobufkdb.q
+$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
 \l tests_proto2/test_helper_function.q
 
 // Move to protobuf namespace
 \d .protobufkdb
 
 -1 "\n+----------|| Test import of dynamic schema files ||----------+\n";
+if[not""~condaPrefix:getenv`CONDA_PREFIX;
+ addProtoImportPath[condaPrefix,$[`w64=.z.o;"\\Library\\";"/"],"include"]
+ ]
 
 addProtoImportPath["proto"];
 importProtoFile["tests_proto2_dynamic.proto"];
