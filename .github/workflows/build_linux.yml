@@ -60,7 +60,7 @@ jobs:
           mkdir cbuild/install &&
           mkdir cbuild/cmake/build &&
           cd cbuild/cmake/build &&
-          cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=../../install .. &&
+          cmake -DQMOD=ON -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=../../install .. &&
           cmake --build . --config Release && 
           cmake --build . --config Release --target install &&
           cd ../../..
