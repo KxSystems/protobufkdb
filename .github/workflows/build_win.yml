@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     env:
       BUILD_HOME: ${{ github.workspace }}\cbuild\install
@@ -29,9 +29,9 @@ jobs:
         with:
           path: |
             cbuild/install
-          key: ${{ runner.os }}-protobuf-3.12.3
+          key: ${{ runner.os }}-protobuf-3.12.3-vs2022
           restore-keys: |
-            ${{ runner.os }}-protobuf-3.12.3
+            ${{ runner.os }}-protobuf-3.12.3-vs2022
 
       - name: Get protobuf
         if: steps.cache-protobuf.outputs.cache-hit != 'true'
@@ -59,7 +59,7 @@ jobs:
           mkdir "${{ env.QHOME }}"
           mkdir cmake
           cd cmake
-          cmake -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="${{ env.BUILD_HOME }}" ..
+          cmake -G "Visual Studio 17 2022" -DQMOD=ON -DCMAKE_PREFIX_PATH="${{ env.BUILD_HOME }}" ..
           cmake --build . --config Release
           cmake --build . --config Release --target install
           cd ..
