@@ -24,22 +24,20 @@ else()
     message(FATAL_ERROR "Unsupported OS")
 endif()
 
-if(APPLE)
-    if(CMAKE_OSX_ARCHITECTURES MATCHES "arm64")
-        set(A "${A}a64")
-    elseif(CMAKE_OSX_ARCHITECTURES MATCHES "x86_64")
-        set(A "${A}i64")
-    else()
-        message(FATAL_ERROR "Unsupported macOS architecture")
-    endif()
+# CMAKE_OSX_ARCHITECTURES is only set for explicit/universal macOS builds; otherwise
+# the build targets the host, reported in CMAKE_SYSTEM_PROCESSOR.
+if(APPLE AND CMAKE_OSX_ARCHITECTURES)
+    set(TARGET_ARCH "${CMAKE_OSX_ARCHITECTURES}")
 else()
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
-        set(A "${A}i64")
-    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
-        set(A "${A}a64")
-    else()
-        message(FATAL_ERROR "Unsupported processor architecture")
-    endif()
+    set(TARGET_ARCH "${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+
+if(TARGET_ARCH MATCHES "aarch64|arm64")
+    set(A "${A}a64")
+elseif(TARGET_ARCH MATCHES "x86_64|AMD64|x64")
+    set(A "${A}i64")
+else()
+    message(FATAL_ERROR "Unsupported target architecture: ${TARGET_ARCH}")
 endif()
 
 message(STATUS "A: ${A}")
@@ -49,12 +47,6 @@ set(MY_MODULE_NAME protobuf)
 # A limitation of cmake protobuf support is that the .proto files must be in 
 # the same directory as the CMakeLists.txt which builds them
 add_subdirectory(src)
-
-if (MSVC)
-    set(INSTALL_SCRIPT "install.bat")
-else()
-    set(INSTALL_SCRIPT "install.sh")
-endif()
 
 file(GLOB PROTO_FILES ${CMAKE_PREFIX_PATH}/include/google/protobuf/*.proto)
 file(COPY ${PROTO_FILES} DESTINATION ${CMAKE_SOURCE_DIR}/proto/google/protobuf/)

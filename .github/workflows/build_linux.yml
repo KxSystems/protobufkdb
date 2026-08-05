@@ -60,19 +60,19 @@ jobs:
           mkdir cbuild/install &&
           mkdir cbuild/cmake/build &&
           cd cbuild/cmake/build &&
-          cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=../../install .. &&
+          cmake -DQMOD=ON -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=../../install .. &&
           cmake --build . --config Release && 
           cmake --build . --config Release --target install &&
           cd ../../..
            
       - name: Build 
         run: |
-          mkdir "$QHOME" && mkdir cmake && cd cmake && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$BUILD_HOME && make install && cd .. && tar -zcvf "$OUTPUT_FILE" -C cmake/protobufkdb .
+          mkdir "$QHOME" && mkdir cmake && cd cmake && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$BUILD_HOME -DCMAKE_INSTALL_PREFIX=$QHOME/kx && make install && cd .. && tar -zcvf "$OUTPUT_FILE" -C $QHOME .
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v6
         with:
-          name: kdbldap-linux
+          name: protobufkdb-linux
           path: ${{ env.OUTPUT_FILE }}
           retention-days: 1
 
