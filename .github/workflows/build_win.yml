@@ -63,12 +63,12 @@ jobs:
           cmake --build . --config Release
           cmake --build . --config Release --target install
           cd ..
-          7z a -tzip -r "${{ env.OUTPUT_FILE }}" cmake\protobufkdb\*
+          7z a -tzip -r "${{ env.OUTPUT_FILE }}" ${{ env.QHOME }}\*
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v6
         with:
-          name: kdbldap-windows
+          name: protobufkdb-windows
           path: ${{ env.OUTPUT_FILE }}
           retention-days: 1
 

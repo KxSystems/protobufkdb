@@ -72,7 +72,7 @@ jobs:
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v6
         with:
-          name: kdbldap-linux
+          name: protobufkdb-linux
           path: ${{ env.OUTPUT_FILE }}
           retention-days: 1
 
