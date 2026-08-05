@@ -53,7 +53,7 @@ jobs:
            
       - name: Build 
         run: |
-          mkdir "$QHOME" && mkdir cmake && cd cmake && cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$BUILD_HOME && make install && cd .. && tar  -zcvf "$OUTPUT_FILE" -C cmake/protobufkdb .
+          mkdir "$QHOME" && mkdir cmake && cd cmake && cmake .. -DQMOD=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$BUILD_HOME && make install && cd .. && tar  -zcvf "$OUTPUT_FILE" -C cmake/protobufkdb .
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v6
