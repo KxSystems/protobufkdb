@@ -61,6 +61,11 @@ If only dynamically imported message definitions are required then the packaged 
 
 ### Requirements
 
+If you are installing as a module using qmamba:
+- kdb-x (Linux/MacOS/Windows)
+- [qmamba](https://github.com/KxSystems/qmamba)
+
+If you are building from source or install from a release:
 - kdb+ ≥ 3.5 64-bit (Linux/macOS/Windows)
 - protobuf ≥ 3.0 (recommended [^1])
 - C++11 or later [^2] 
@@ -70,9 +75,23 @@ If only dynamically imported message definitions are required then the packaged 
 
 [^2]: Required when building from source
 
+# Install module with qmamba
+
+qmamba is a package manager for kdb-x. It is currently available in a private preview capacity. You are welcome to try it and provide feedback.
+Follow the install instructions for [qmamba](https://github.com/KxSystems/qmamba/blob/main/README.md#installation).
+
+```q
+qmamba:use`kx.qmamba
+qmamba.create "myenv"
+qmamba.activate "myenv"
+qmamba.install `SPECS`CHANNEL!(enlist "q-kx-protobuf";("kx";"conda-forge"))
+proto:use`kx.protobuf
+```
+
+
 # Installing a Release
 
-It is recommended that a user install this module through a release. 
+If you are not using qmamba it is recommended that a user install this module through a release. 
 
 The protobufkdb releases are linked statically against libprotobuf to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf.  Therefore it is unnecessary to install protobuf separately when used a packaged release.
 A release package is prebuilt and statically linked against `libprotobuf`, so no separate Protocol Buffers runtime needs to be installed to use it.
