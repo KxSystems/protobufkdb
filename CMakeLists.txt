@@ -6,7 +6,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 option(QMOD "Build module" OFF)
-option(STATIC_LINK ON)
+option(STATIC_LINK "Link libprotobuf statically" ON)
 
 if(NOT CMAKE_PREFIX_PATH)
 	message(FATAL_ERROR "CMAKE_PREFIX_PATH must be set to the location of your protobuf installation directory")

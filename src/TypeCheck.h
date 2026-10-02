@@ -2,6 +2,7 @@
 #define __TYPE_CHECK_H__
 
 #include <exception>
+#include <sstream>
 #include <string>
 
 
@@ -40,138 +41,158 @@ namespace protobufkdb {
 #define TYPE_CHECK_GUID(condition, name, expected, received) \
   if (condition) throw TypeCheckGuid(name, expected, received);
 
+inline void Stream(std::ostringstream&)
+{};
+
+template <typename HEAD, typename ...TAIL>
+void Stream(std::ostringstream& oss, const HEAD& head, const TAIL&... tail)
+{
+  oss << head;
+  Stream(oss, tail...);
+}
+
+template <typename ...PARTS>
+std::string Format(const PARTS&... parts)
+{
+  std::ostringstream oss;
+  Stream(oss, parts...);
+  return oss.str();
+}
+
 // Hierachy of TypeCheck exceptions with each derived type being using for a
 // specific check when converting from a kdb object to a protobuf message while
 // only requiring a single catch specification for the parent type.
 class TypeCheck : public std::invalid_argument
 {
 public:
-  TypeCheck(std::string message) : std::invalid_argument(message.c_str())
+  TypeCheck(const std::string& message) : std::invalid_argument(message)
   {};
 };
 
 class TypeCheckMessage : public TypeCheck
 {
 public:
-  TypeCheckMessage(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid message type, descriptor: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckMessage(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid message type, descriptor: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckRepeatedMessage : public TypeCheck
 {
 public:
-  TypeCheckRepeatedMessage(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid repeated message type, field: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckRepeatedMessage(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid repeated message type, field: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckScalar : public TypeCheck
 {
 public:
-  TypeCheckScalar(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid scalar type, field: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckScalar(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid scalar type, field: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckRepeated : public TypeCheck
 {
 public:
-  TypeCheckRepeated(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid repeated type, field: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckRepeated(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid repeated type, field: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckRepeatedString : public TypeCheck
 {
 public:
-  TypeCheckRepeatedString(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid repeated string type, field: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckRepeatedString(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid repeated string type, field: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckMap : public TypeCheck
 {
 public:
-  TypeCheckMap(const std::string& name, int received) :
-    TypeCheck("Invalid map type, field: '" + name + "', expected: 99, received: "
-      + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckMap(const STRINGTYPE& name, int received) :
+    TypeCheck(Format("Invalid map type, field: '", name, "', expected: 99, received: ", received))
   {};
 };
 
 class TypeCheckMapElement : public TypeCheck
 {
 public:
-  TypeCheckMapElement(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid map element type, field: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckMapElement(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid map element type, field: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckMapStringElement : public TypeCheck
 {
 public:
-  TypeCheckMapStringElement(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid map string element type, field: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckMapStringElement(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid map string element type, field: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckFieldNum : public TypeCheck
 {
 public:
-  TypeCheckFieldNum(const std::string& name, int expected, int received) :
-    TypeCheck("Incorrect number of fields, message: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckFieldNum(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Incorrect number of fields, message: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckCompatible : public TypeCheck
 {
 public:
-  TypeCheckCompatible(const std::string& name, const char* cpp_type, int compatible, int requested) :
-    TypeCheck("Incompatible kdb type mapping, field: '" + name + "', cpp type: " + cpp_type
-      + ", compatible: " + std::to_string(compatible) + ", requested: " + std::to_string(requested))
+  template <typename STRINGTYPE, typename CPPTYPE>
+  TypeCheckCompatible(const STRINGTYPE& name, const CPPTYPE& cpp_type, int compatible, int requested) :
+    TypeCheck(Format("Incompatible kdb type mapping, field: '", name, "', cpp type: ", cpp_type,
+                     ", compatible: ", compatible, ", requested: ", requested))
   {};
 };
 
 class TypeCheckFieldNames : public TypeCheck
 {
 public:
-  TypeCheckFieldNames(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid message field names, descriptor: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckFieldNames(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid message field names, descriptor: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckFieldValues : public TypeCheck
 {
 public:
-  TypeCheckFieldValues(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid message field values, descriptor: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckFieldValues(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid message field values, descriptor: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 
 class TypeCheckUnknownField : public TypeCheck
 {
 public:
-  TypeCheckUnknownField(const std::string& name, const std::string& field) :
-    TypeCheck("Unknown message field name, descriptor: '" + name + "', field: '" + field + "'")
+  template <typename STRINGTYPE, typename FIELDTYPE>
+  TypeCheckUnknownField(const STRINGTYPE& name, const FIELDTYPE& field) :
+    TypeCheck(Format("Unknown message field name, descriptor: '", name, "', field: '", field, "'"))
   {};
 };
 
 class TypeCheckGuid : public TypeCheck
 {
 public:
-  TypeCheckGuid(const std::string& name, int expected, int received) :
-    TypeCheck("Invalid GUID encoded string length, field: '" + name + "', expected: "
-      + std::to_string(expected) + ", received: " + std::to_string(received))
+  template <typename STRINGTYPE>
+  TypeCheckGuid(const STRINGTYPE& name, int expected, int received) :
+    TypeCheck(Format("Invalid GUID encoded string length, field: '", name, "', expected: ", expected, ", received: ", received))
   {};
 };
 

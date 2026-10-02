@@ -41,8 +41,10 @@ K MessageFormat::GetMessage(const gpb::Message& msg, bool use_field_names) const
 
   // Create a symbol list containing the field names
   K field_names = ktn(KS, desc->field_count());
-  for (int i = 0; i < desc->field_count(); ++i)
-    kS(field_names)[i] = ss((S)desc->field(i)->name().c_str());
+  for (int i = 0; i < desc->field_count(); ++i) {
+    const auto& name = desc->field(i)->name();
+    kS(field_names)[i] = sn((S)name.data(), name.length());
+  }
 
   // Return dictionary of field names to field values
   return xD(field_names, field_values);

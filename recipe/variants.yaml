@@ -1,0 +1,11 @@
+# Auto-loaded by rattler-build from the recipe directory.
+#
+# One package per libprotobuf major.  Values are version prefixes, so each
+# becomes a `libprotobuf <major>.*` pin resolving to the newest release of that
+# series - no edit needed for new minor/patch releases, only new majors.
+libprotobuf:
+  - "3"
+  - "4"
+  - "5"
+  - "6"
+  - "7"

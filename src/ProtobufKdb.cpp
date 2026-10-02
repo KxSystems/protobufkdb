@@ -172,8 +172,10 @@ K getMessageFields(K message_type)
 
   const auto desc = msg->GetDescriptor();
   K fields = ktn(KS, desc->field_count());
-  for (int i = 0; i < desc->field_count(); ++i)
-    kS(fields)[i] = ss((S)desc->field(i)->name().c_str());
+  for (int i = 0; i < desc->field_count(); ++i) {
+    const auto& name = desc->field(i)->name();
+    kS(fields)[i] = sn((S)name.data(), name.length());
+  }
 
   return fields;
 }

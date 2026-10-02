@@ -67,13 +67,15 @@ If you are installing as a module using qmamba:
 
 If you are building from source or install from a release:
 - kdb+ ≥ 3.5 64-bit (Linux/macOS/Windows)
-- protobuf ≥ 3.0 (recommended [^1])
-- C++11 or later [^2] 
+- protobuf ≥ 3.21 (recommended [^1])
+- C++11 or later, or C++17 or later when building against protobuf ≥ 4.22 [^2] [^3]
 - CMake ≥ 3.5 [^2]
 
 [^1]: Protocol Buffers language version 3 ([proto3](https://developers.google.com/protocol-buffers/docs/proto3)) simplifies the protocol buffer language, both for ease of use and to make it available in a  wider range of programming languages.  However, schemas defined in [proto2](https://developers.google.com/protocol-buffers/docs/cpptutorial) should also be supported.
 
 [^2]: Required when building from source
+
+[^3]: protobuf v22.0 (released as libprotobuf 4.22) raised its own C++ standard floor to C++14, v30.0 (libprotobuf 6.30) raised it to C++17, and Abseil became a hard dependency at 4.22.  `src/CMakeLists.txt` detects the version of protobuf it finds and raises `CMAKE_CXX_STANDARD` to 17 for anything ≥ 4.22, so an explicit `-DCMAKE_CXX_STANDARD=11` is honoured only where protobuf supports it.
 
 # Install module with qmamba
 

@@ -6,12 +6,29 @@
 #include <sstream>
 #include <memory>
 
+#include <google/protobuf/stubs/common.h>  // GOOGLE_PROTOBUF_VERSION
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/compiler/importer.h>
 #include <google/protobuf/dynamic_message.h>
 
+
+// Catch a second protobuf shadowing the one CMake found on the include path.
+#ifdef KXPB_EXPECTED_PROTOBUF_VERSION
+#if GOOGLE_PROTOBUF_VERSION != KXPB_EXPECTED_PROTOBUF_VERSION
+#error "protobuf headers do not match the version CMake detected - check CMAKE_PREFIX_PATH and the Protobuf lines in the CMake output"
+#endif
+#endif
+
+// v22.0 renamed MultiFileErrorCollector::AddError/AddWarning to RecordError/
+// RecordWarning and moved them to absl::string_view.  GOOGLE_PROTOBUF_VERSION is
+// major * 10^6 + minor * 10^3 + micro.
+#if GOOGLE_PROTOBUF_VERSION >= 4022000
+  #define KXPB_ERROR_COLLECTOR_RECORD 1
+#else
+  #define KXPB_ERROR_COLLECTOR_RECORD 0
+#endif
 
 namespace kx {
 namespace protobufkdb {
@@ -66,8 +83,13 @@ private:
     explicit ErrorPrinter(std::ostringstream& oss) : output(oss)
     {}
 
+#if KXPB_ERROR_COLLECTOR_RECORD
+    void RecordError(absl::string_view filename, int line, int column, absl::string_view message) override;
+    void RecordWarning(absl::string_view filename, int line, int column, absl::string_view message) override;
+#else
     void AddError(const std::string& filename, int line, int column, const std::string& message) override;
     void AddWarning(const std::string& filename, int line, int column, const std::string& message) override;
+#endif
 
   private:
     std::ostringstream& output;

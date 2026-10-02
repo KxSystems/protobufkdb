@@ -14,9 +14,102 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -DKXVER=3")
-set(CMAKE_CXX_STANDARD 11)
+set(Protobuf_DEBUG ON)
+set(Protobuf_USE_STATIC_LIBS ${STATIC_LINK})
+
+# Must be a cache entry: protobuf-options.cmake declares this with option(),
+# which under CMP0077 OLD clears a normal variable of the same name.
+set(protobuf_MODULE_COMPATIBLE TRUE CACHE BOOL "" FORCE)
+
+# The config package is preferred because it is the only thing that exports
+# protobuf's Abseil dependency.  Turn this off where CMAKE_PREFIX_PATH points at
+# a protobuf that ships no config package and another protobuf is installed
+# system-wide, or the config search escapes to the wrong one - e.g. on macOS,
+# keg-only protobuf@21 next to Homebrew's keg-linked protobuf in /usr/local.
+option(PROTOBUF_PREFER_CONFIG "Use protobuf's CMake config package if present" ON)
+
+if(PROTOBUF_PREFER_CONFIG)
+    find_package(Protobuf CONFIG QUIET)
+endif()
+if(Protobuf_FOUND)
+    set(PROTOBUF_CONFIG_MODE TRUE)
+    message(STATUS "Found protobuf ${Protobuf_VERSION} (CMake config package)")
+else()
+    set(PROTOBUF_CONFIG_MODE FALSE)
+    find_package(Protobuf MODULE REQUIRED)
+    message(STATUS "Found protobuf ${Protobuf_VERSION} (FindProtobuf module)")
+endif()
+
+if(NOT COMMAND protobuf_generate_cpp)
+    message(FATAL_ERROR "protobuf provided no protobuf_generate_cpp() command")
+endif()
+
+# Protobuf_VERSION cannot be compared across releases: 3.21.12 reports
+# "3.21.12", v22.0 reports "4.22.0", but from v25 the config package drops the
+# major and reports <minor>.<patch>.0 ("36.1.0" for v36.1).  Read
+# GOOGLE_PROTOBUF_VERSION from the header instead - the same value
+# MessageFactory.h keys its MultiFileErrorCollector override off.
+if(TARGET protobuf::libprotobuf)
+    get_target_property(PROTOBUF_TARGET_INCLUDE_DIRS
+        protobuf::libprotobuf INTERFACE_INCLUDE_DIRECTORIES)
+endif()
+
+# PATHS + NO_DEFAULT_PATH, not HINTS: find_file searches CMAKE_PREFIX_PATH
+# *before* HINTS, so HINTS could read a different protobuf's header than the one
+# found above.  Only the include dirs find_package reported are acceptable.
+find_file(PROTOBUF_COMMON_H
+    NAMES common.h
+    PATHS ${PROTOBUF_TARGET_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS}
+    PATH_SUFFIXES google/protobuf/stubs
+    NO_DEFAULT_PATH
+)
+if(NOT PROTOBUF_COMMON_H)
+    message(FATAL_ERROR
+        "Could not locate google/protobuf/stubs/common.h under the protobuf "
+        "include dirs: ${PROTOBUF_TARGET_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS}")
+endif()
+message(STATUS "Protobuf headers: ${PROTOBUF_COMMON_H}")
+
+file(STRINGS "${PROTOBUF_COMMON_H}" PROTOBUF_VERSION_DEFINE
+    REGEX "^#define[ \t]+GOOGLE_PROTOBUF_VERSION[ \t]+[0-9]+")
+string(REGEX MATCH "[0-9]+" GOOGLE_PROTOBUF_VERSION "${PROTOBUF_VERSION_DEFINE}")
+message(STATUS "GOOGLE_PROTOBUF_VERSION: ${GOOGLE_PROTOBUF_VERSION}")
+
+# Let the sources verify they really are compiling against this protobuf; see
+# the #error in MessageFactory.h.
+add_definitions(-DKXPB_EXPECTED_PROTOBUF_VERSION=${GOOGLE_PROTOBUF_VERSION})
+
+# FindProtobuf does not export protobuf's Abseil dependency, so linking would
+# silently leave the absl symbols in the protoc-generated code undefined.
+if(NOT PROTOBUF_CONFIG_MODE AND GOOGLE_PROTOBUF_VERSION GREATER_EQUAL 4022000)
+    message(FATAL_ERROR
+        "protobuf ${Protobuf_VERSION} was found through the FindProtobuf module, "
+        "which cannot supply its Abseil dependency.  Point CMAKE_PREFIX_PATH at "
+        "an installation that ships protobuf's CMake config package, or use an "
+        "older protobuf.")
+endif()
+
+# major * 10^6 + minor * 10^3 + micro, so 4022000 is v22.0, which needs C++14.
+# v30.0 needs C++17, as does the cxx17 libabseil that libprotobuf is built
+# against, so use C++17 for everything from v22.0 rather than track both floors.
+if(GOOGLE_PROTOBUF_VERSION LESS 4022000)
+    set(REQUIRED_CXX_STANDARD 11)
+else()
+    set(REQUIRED_CXX_STANDARD 17)
+endif()
+
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD ${REQUIRED_CXX_STANDARD})
+elseif(CMAKE_CXX_STANDARD LESS REQUIRED_CXX_STANDARD)
+    message(STATUS
+        "Raising CMAKE_CXX_STANDARD from ${CMAKE_CXX_STANDARD} to "
+        "${REQUIRED_CXX_STANDARD}, required by protobuf ${Protobuf_VERSION}")
+    set(CMAKE_CXX_STANDARD ${REQUIRED_CXX_STANDARD})
+endif()
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+message(STATUS "CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}")
 
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -44,16 +137,21 @@ include_directories (
     ${CMAKE_BINARY_DIR} # For 'k.h', downloaded below
 )
 
-# travis
-if(DEFINED ENV{BUILD_HOME} AND NOT "$ENV{BUILD_HOME}" STREQUAL "")
-    include_directories($ENV{BUILD_HOME}/include)
+if(NOT PROTOBUF_INCLUDE_DIRS)
+    message(FATAL_ERROR "protobuf was found but reported no include directories")
 endif()
 
-set(Protobuf_DEBUG ON)
-set(Protobuf_USE_STATIC_LIBS ${STATIC_LINK})
-find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIRS})
+# Imported targets contribute their include dirs as -isystem, which is searched
+# after every -I *and* alongside the compiler's own system dirs - so on macOS
+# /usr/local/include can win over the protobuf CMAKE_PREFIX_PATH points at.
+# Keep them as plain -I so the BEFORE below actually puts protobuf first.
+set(CMAKE_NO_SYSTEM_FROM_IMPORTED TRUE)
+include_directories(BEFORE ${PROTOBUF_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+message(STATUS "Protobuf include dirs: ${PROTOBUF_INCLUDE_DIRS}")
+if(DEFINED ENV{BUILD_HOME})
+    message(STATUS "BUILD_HOME is set in the environment: $ENV{BUILD_HOME}")
+endif()
 
 # Generate the list of .proto files in $MY_PROTO_FILES
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${MY_PROTO_FILES})
@@ -120,7 +218,11 @@ else()
     set(OSFLAG l)
 endif()
 
-target_link_libraries(${MY_LIBRARY_NAME} ${PROTOBUF_LIBRARIES} ${LINK_LIBS})
+if(TARGET protobuf::libprotobuf)
+    target_link_libraries(${MY_LIBRARY_NAME} protobuf::libprotobuf ${LINK_LIBS})
+else()
+    target_link_libraries(${MY_LIBRARY_NAME} ${PROTOBUF_LIBRARIES} ${LINK_LIBS})
+endif()
 set_target_properties(${MY_LIBRARY_NAME} PROPERTIES PREFIX "")
 
 if(QMOD)

@@ -61,11 +61,30 @@ void MessageFactory::ListImportedMessageTypes(std::vector<std::string>* output) 
   for (auto it : imported_files) {
     auto file_desc = desc_pool->FindFileByName(it);
     if (file_desc != nullptr) {
-      for (auto message_num = 0; message_num < file_desc->message_type_count(); ++message_num)
-        output->push_back(file_desc->message_type(message_num)->full_name());
+      for (auto message_num = 0; message_num < file_desc->message_type_count(); ++message_num) {
+        const auto& full_name = file_desc->message_type(message_num)->full_name();
+        output->emplace_back(full_name.data(), full_name.length());
+      }
     }
   }
 }
+
+// See the KXPB_ERROR_COLLECTOR_RECORD comment in MessageFactory.h for why these
+// come in two flavours.  absl::string_view streams to std::ostream just as
+// std::string does, so the bodies are otherwise identical.
+#if KXPB_ERROR_COLLECTOR_RECORD
+
+void MessageFactory::ErrorPrinter::RecordError(absl::string_view filename, int line, int column, absl::string_view message)
+{
+  output << "Error: " << filename << ":" << line << ":" << column << ": " << message << std::endl;
+}
+
+void MessageFactory::ErrorPrinter::RecordWarning(absl::string_view filename, int line, int column, absl::string_view message)
+{
+  output << "Warning: " << filename << ":" << line << ":" << column << ": " << message << std::endl;
+}
+
+#else
 
 void MessageFactory::ErrorPrinter::AddError(const std::string& filename, int line, int column, const std::string& message)
 {
@@ -76,6 +95,8 @@ void MessageFactory::ErrorPrinter::AddWarning(const std::string& filename, int l
 {
   output << "Warning: " << filename << ":" << line << ":" << column << ": " << message << std::endl;
 }
+
+#endif
 
 gpb::Message* MessageFactory::CreateMessage(const std::string& message_type, gpb::Arena* arena) const
 {

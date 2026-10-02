@@ -20,9 +20,9 @@ requirements:
     - cmake
     - make
   host:
-    - libprotobuf 3.*
-  run:
-    - libprotobuf 3.*
+    - libprotobuf
+    - if: match(libprotobuf, ">=4")
+      then: libabseil
 
 tests:
   - script:
