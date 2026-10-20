@@ -1,5 +1,5 @@
 context:
-  version: "2.0.1"
+  version: ${{ env.get("PKG_VERSION", default="0.0.0") }}
 
 package:
   name: q-kx-protobuf
@@ -23,6 +23,18 @@ requirements:
     - libprotobuf
     - if: match(libprotobuf, ">=4")
       then: libabseil
+
+about:
+  homepage: https://github.com/KxSystems/protobufkdb
+  repository: https://github.com/KxSystems/protobufkdb
+  documentation: https://github.com/KxSystems/protobufkdb/blob/master/docs/reference.md
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: kdb-x APIs to parse Google Protocol Buffers data into kdb-x and serialise it back to the wire format.
+  description: >-
+    kdb-x APIs to parse data which has been encoded using Google Protocol
+    Buffers (protobuf) into kdb-x according to the proto schema and serialise
+    it back to the encoded wire format.
 
 tests:
   - script:
