@@ -1,0 +1,24 @@
+name: q-kx-protobuf
+description: >-
+  kdb-x APIs to parse data which has been encoded using Google Protocol Buffers (protobuf) into kdb-x according to the proto schema and serialise it back to the encoded wire format.
+homepage: https://github.com/KxSystems/protobufkdb
+namespace: kx.protobuf
+
+source:
+  repo: https://github.com/KxSystems/protobufkdb
+  version: 2.0.1
+  path: .
+
+license: Apache-2.0
+
+maintainers:
+  - github: KxSystems
+
+platforms:
+  - linux
+  - linux-arm
+  - mac
+  - mac-arm
+
+compatibility:
+  kdbx: ">=5.0.0"
