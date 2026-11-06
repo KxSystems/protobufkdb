@@ -74,7 +74,7 @@ If only dynamically imported message definitions are required then the packaged 
 
 The protobufkdb releases are linked statically against libprotobuf to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf.  Therefore it is unnecessary to install protobuf separately when used a packaged release.
 
-1.  Download a release from [here](https://github.com/KxSystems/protobufkdb/releases)
+1.  Download a release from [here](https://github.com/KxSystems/protobufkdb/releases). Latest release for kdb+ is [1.0.3](https://github.com/KxSystems/protobufkdb/releases/tag/1.0.3)
 
 2.  Install required q executable script `q/protobufkdb.q` and binary file `lib/protobufkdb.(so|dll)` to `$QHOME` and `$QHOME/[mlw](64)`, by executing the following from the Release directory
 
