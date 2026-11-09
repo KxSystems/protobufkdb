@@ -20,7 +20,7 @@ jobs:
     env:
       BUILD_HOME: ${{ github.workspace }}/cbuild/install
       OUTPUT_FILE: protobufkdb-linux.tgz
-      QHOME: ${{ github.workspace }}/qhome
+      MODULE_DIR: ${{ github.workspace }}/mod
 
     steps:
       - name: Install build tools
@@ -60,14 +60,14 @@ jobs:
           mkdir cbuild/install &&
           mkdir cbuild/cmake/build &&
           cd cbuild/cmake/build &&
-          cmake -DQMOD=ON -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=../../install .. &&
+          cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=../../install .. &&
           cmake --build . --config Release && 
           cmake --build . --config Release --target install &&
           cd ../../..
            
       - name: Build 
         run: |
-          mkdir "$QHOME" && mkdir cmake && cd cmake && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$BUILD_HOME -DCMAKE_INSTALL_PREFIX=$QHOME/kx && make install && cd .. && tar -zcvf "$OUTPUT_FILE" -C $QHOME .
+          mkdir "$MODULE_DIR" && mkdir cmake && cd cmake && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$BUILD_HOME -DCMAKE_INSTALL_PREFIX=$MODULE_DIR/kx && make install && cd .. && tar -zcvf "$OUTPUT_FILE" -C $MODULE_DIR .
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v6
