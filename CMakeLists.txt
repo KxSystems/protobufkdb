@@ -5,7 +5,6 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
 endif()
 
-option(QMOD "Build module" OFF)
 option(STATIC_LINK "Link libprotobuf statically" ON)
 
 if(NOT CMAKE_PREFIX_PATH)
@@ -50,21 +49,3 @@ add_subdirectory(src)
 
 file(GLOB PROTO_FILES ${CMAKE_PREFIX_PATH}/include/google/protobuf/*.proto)
 file(COPY ${PROTO_FILES} DESTINATION ${CMAKE_SOURCE_DIR}/proto/google/protobuf/)
-
-if(NOT QMOD)
-    # Minimum build/install move q-script to $QHOME
-    file(TO_CMAKE_PATH "$ENV{QHOME}" QHOME_PATH)
-    install(DIRECTORY "q/" DESTINATION "${QHOME_PATH}" CONFIGURATIONS MinSizeRel Release FILES_MATCHING PATTERN "*.q")
-
-    set(MY_PRE_MOD_LIBRARY_NAME protobufkdb)
-
-    # Add the copied files to the install package
-    file(COPY README.md LICENSE DESTINATION ${PROJECT_BINARY_DIR}/${MY_PRE_MOD_LIBRARY_NAME}/)
-    file(COPY examples/ DESTINATION ${PROJECT_BINARY_DIR}/${MY_PRE_MOD_LIBRARY_NAME}/examples/)
-    file(COPY q/init.q DESTINATION ${PROJECT_BINARY_DIR}/${MY_PRE_MOD_LIBRARY_NAME}/q/)
-    file(RENAME ${PROJECT_BINARY_DIR}/${MY_PRE_MOD_LIBRARY_NAME}/q/init.q "${PROJECT_BINARY_DIR}/${MY_PRE_MOD_LIBRARY_NAME}/q/${MY_PRE_MOD_LIBRARY_NAME}.q")
-    file(COPY proto/ DESTINATION ${PROJECT_BINARY_DIR}/${MY_PRE_MOD_LIBRARY_NAME}/proto/)
-
-    # Copy the .proto files from the protobuf include directory to the install package
-    file(COPY ${PROTO_FILES} DESTINATION ${PROJECT_BINARY_DIR}/${MY_PRE_MOD_LIBRARY_NAME}/proto/google/protobuf/)
-endif()

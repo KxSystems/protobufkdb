@@ -1,11 +1,11 @@
 // handling_files.q
-// Examples of saving kdb+ data into a file with serializing using Protobuf schema file
+// Examples of saving KDB-X data into a file with serializing using Protobuf schema file
 // and loading the file with deserializing
 
 -1"\n+----------|| handling_files.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 // Prepare data to be saved
 scalars:(12i;55f;"str");
@@ -17,7 +17,7 @@ scalars:(12i;55f;"str");
 loaded:.protobufkdb.loadMessageToList[`ScalarExample; `sample_scalars_file];
 show loaded;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show scalars~loaded
 
 -1 "\n+----------------------------------------+\n";

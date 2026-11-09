@@ -1,10 +1,10 @@
 // sub_message.q
-// Examples of serializing from and deserializing to sub_message kdb+ data (mixed list)
+// Examples of serializing from and deserializing to sub_message KDB-X data (mixed list)
 
 -1"\n+----------|| sub_message.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 //-------------------------------------//
 // Example-1. Use compiled schema file //
@@ -20,11 +20,11 @@ submessage:((12i;55f;"str"); ((1 2i;-12.3 20.492f;("s1";"s2")); (3 4 5i;-102.104
 serialized:.protobufkdb.serializeArrayFromList[`SubMessageExample; submessage];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`SubMessageExample; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show submessage~deserialized
 
 //-------------------------------------------------//
@@ -50,11 +50,11 @@ submessage:((-2i;2.5;"str"); ((-44 3i;2.47 8.9 -0.492f;enlist "s2"); (90 13 25i;
 serialized:.protobufkdb.serializeArrayFromList[`SubMessageExampleDynamic; submessage];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`SubMessageExampleDynamic; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show submessage~deserialized
 
 -1 "\n+----------------------------------------+\n";

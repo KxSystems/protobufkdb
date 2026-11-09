@@ -1,10 +1,10 @@
 // repeated.q
-// Examples of serializing from and deserializing to type specified kdb+ data
+// Examples of serializing from and deserializing to type specified KDB-X data
 
 -1"\n+----------|| type_specified.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 //-------------------------------------//
 // Example-1. Use compiled schema file //
@@ -20,11 +20,11 @@ type_specified:(2020.01.01;enlist 12:34:56.123;(1?0Ng)!(enlist 12:34:56.12345678
 serialized:.protobufkdb.serializeArrayFromList[`SpecifierExample; type_specified];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`SpecifierExample;serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show type_specified~deserialized
 
 //-------------------------------------------------//
@@ -50,11 +50,11 @@ type_specified:(2008.02.29;00:30:58 12:34:56.123;(2?0Ng)!2D00:00:00:000000001 12
 serialized:.protobufkdb.serializeArrayFromList[`SpecifierExampleDynamic; type_specified];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`SpecifierExampleDynamic;serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show type_specified~deserialized
 
 -1 "\n+----------------------------------------+\n";

@@ -18,7 +18,7 @@ RUN apt-get -y install libtool
 
 RUN apt-get clean all
 
-RUN mkdir -p /q
+RUN mkdir -p /mod
 RUN mkdir -p /source
 RUN mkdir -p /source/protobufkdb
 
@@ -42,9 +42,6 @@ RUN make install
 COPY protobufkdb_build.sh /source
 RUN dos2unix /source/protobufkdb_build.sh
 RUN chmod a+x /source/protobufkdb_build.sh
-
-ENV QHOME /q
-ENV PATH /q/l64:$PATH
 
 WORKDIR /source
 

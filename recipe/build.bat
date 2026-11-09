@@ -8,7 +8,6 @@ set BUILD_TYPE=RelWithDebInfo
 echo CMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH%
 
 cmake -G "NMake Makefiles" ^
-      -DQMOD=ON ^
       -DSTATIC_LINK=OFF ^
       -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
       -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% ^

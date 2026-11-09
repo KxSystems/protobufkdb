@@ -1,9 +1,9 @@
 SETLOCAL
 
 SET PROTOBUFKDB_SOURCE="C:\Git\protobufkdb\nmcdonnell-kx"
-SET QHOME_LINUX="C:\q"
+SET MODULE_DIR="C:\kx\mod"
 
 docker build -f Dockerfile.build -t protobufkdb-dev .
-docker run --rm -it -v %QHOME_LINUX%:/q -v %PROTOBUFKDB_SOURCE%:/source/protobufkdb protobufkdb-dev /bin/bash -c /source/protobufkdb_build.sh
+docker run --rm -it -v %MODULE_DIR%:/mod -v %PROTOBUFKDB_SOURCE%:/source/protobufkdb protobufkdb-dev /bin/bash -c /source/protobufkdb_build.sh
 
 ENDLOCAL

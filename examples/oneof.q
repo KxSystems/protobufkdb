@@ -1,10 +1,10 @@
 // oneof.q
-// Examples of serializing from and deserializing to oneof kdb+ data
+// Examples of serializing from and deserializing to oneof KDB-X data
 
 -1"\n+----------|| oneof.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 //-------------------------------------//
 // Example-1. Use compiled schema file //
@@ -21,14 +21,14 @@ oneof:(1.1f;();"str");
 serialized:.protobufkdb.serializeArrayFromList[`OneofExample; oneof];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`OneofExample; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show oneof~deserialized
 
-// Serialize into char array and then deserialize char array into kdb+ data
+// Serialize into char array and then deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`OneofExample;.protobufkdb.serializeArrayFromList[`OneofExample;(();12:34:56;"str")]];
 show deserialized;
 
@@ -56,14 +56,14 @@ oneof:(-35.712f;();"str");
 serialized:.protobufkdb.serializeArrayFromList[`OneofExampleDynamic; oneof];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`OneofExampleDynamic; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show oneof~deserialized
 
-// Serialize into char array and then deserialize char array into kdb+ data
+// Serialize into char array and then deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`OneofExampleDynamic;.protobufkdb.serializeArrayFromList[`OneofExampleDynamic;(();00:01:02;"foo")]];
 show deserialized;
 

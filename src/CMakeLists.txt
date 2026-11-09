@@ -208,14 +208,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     )
 endif()
 
-IF(APPLE)
+if(APPLE)
     set_target_properties(${MY_LIBRARY_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
     set_target_properties(${MY_LIBRARY_NAME} PROPERTIES SUFFIX .so)
-    set(OSFLAG m)
-elseif(WIN32)
-    set(OSFLAG w)
-else()
-    set(OSFLAG l)
 endif()
 
 if(TARGET protobuf::libprotobuf)
@@ -225,24 +220,6 @@ else()
 endif()
 set_target_properties(${MY_LIBRARY_NAME} PROPERTIES PREFIX "")
 
-if(QMOD)
-    install(TARGETS ${MY_LIBRARY_NAME} DESTINATION ${MY_MODULE_NAME})
-    install(FILES ${CMAKE_SOURCE_DIR}/q/init.q DESTINATION ${MY_MODULE_NAME})
-else()
-    # Check if 32-bit/64-bit machine
-    set(BITNESS 32)
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(BITNESS 64)
-    endif()
-
-    # Copy built shared object after build instead of during installation
-    add_custom_command(TARGET ${MY_LIBRARY_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${MY_LIBRARY_NAME}>" ${PROJECT_BINARY_DIR}/${MY_PRE_MOD_LIBRARY_NAME}/lib/${MY_PRE_MOD_LIBRARY_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-        DEPENDS ${MY_LIBRARY_NAME}
-    )
-
-    # Minimum build/install move binary to $QHOME/<QARCH>
-    file(TO_CMAKE_PATH "$ENV{QHOME}" QHOME_PATH)
-    install(TARGETS ${MY_LIBRARY_NAME} DESTINATION "${QHOME_PATH}/${OSFLAG}${BITNESS}/" CONFIGURATIONS MinSizeRel Release)
-endif()
+# Install the shared object and q/init.q into CMAKE_INSTALL_PREFIX/protobuf
+install(TARGETS ${MY_LIBRARY_NAME} DESTINATION ${MY_MODULE_NAME})
+install(FILES ${CMAKE_SOURCE_DIR}/q/init.q DESTINATION ${MY_MODULE_NAME})

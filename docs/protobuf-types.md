@@ -1,4 +1,4 @@
-# Type mapping between kdb+ and Protobuf 
+# Type mapping between KDB-X and Protobuf 
 
 
 _How q numeric and string types are represented in Protobuf, how Protobuf structures are mapped to q_
@@ -27,7 +27,7 @@ A Protobuf message is represented in q using a mixed list with length equal to t
 The q type used for each list item depends on the field type:
 
 ```txt
-field type            kdb+ structure        
+field type            KDB-X structure        
 --------------------------------------------
 Scalar                Atom                  
 Repeated scalar       Simple list           
@@ -47,7 +47,7 @@ Furthermore, an additional `::` can be included at the end of the mixed list (pa
 Scalar fields are represented as q atoms with their type mapping based on the underlying C++ representation.
 
 ```txt
-scalar                    C++        kdb+
+scalar                    C++        KDB-X
 ----------------------------------------------
 int32, sint32, sfixed32   int32      -6h       
 uint32, fixed32           int32      -6h       
@@ -61,7 +61,7 @@ string                    string     10h
 bytes                     string     4h
 ```
 
-When parsing from Protobuf to kdb+, for any field which has not been explicitly set in the encoded message, Protobuf will return the default value for that field type which is then populated as usual into the corresponding q element.
+When parsing from Protobuf to KDB-X, for any field which has not been explicitly set in the encoded message, Protobuf will return the default value for that field type which is then populated as usual into the corresponding q element.
 
 Similarly when serializing from q to Protobuf, any q element set to its field-specific default value is equivalent to not explicitly setting that field in the encoded message. It is necessary to pad unspecified message fields with their default value or `::` in q in order to maintain the one-to-one positional mapping between any given message field and its corresponding q element.
 
@@ -71,7 +71,7 @@ Similarly when serializing from q to Protobuf, any q element set to its field-sp
 Repeated fields are represented as singularly typed q lists with the underlying q type based on the repeated type:
 
 ```txt
-repeated                  C++        kdb+
+repeated                  C++        KDB-X
 -----------------------------------------
 int32, sint32, sfixed32   int32      6h       
 uint32, fixed32           int32      6h       
@@ -88,7 +88,7 @@ bytes                     string     0h (of 4h)
 
 ### Map fields
 
-Protobuf maps are represented as kdb+ dictionaries with keys and values defined as follows
+Protobuf maps are represented as KDB-X dictionaries with keys and values defined as follows
 
 > :warning: **The Protobuf wire format and map iteration ordering of map items is not deterministic**
 > 
@@ -98,7 +98,7 @@ Protobuf maps are represented as kdb+ dictionaries with keys and values defined 
 **Protobuf map keys** can only be integer, boolean or string types and are therefore limited to the following type mappings.
 
 ```txt
-map-key                   C++        kdb+
+map-key                   C++        KDB-X
 -----------------------------------------
 int32, sint32, sfixed32   int32      6h        
 uint32, fixed32           int32      6h        
@@ -111,7 +111,7 @@ string                    string     11h
 **Protobuf map values** can be any type other than repeated fields or maps and therefore are defined by the following type mapping.
 
 ```txt
-map-value                 C++              kdb+
+map-value                 C++              KDB-X
 -----------------------------------------------
 int32, sint32, sfixed32   int32            6h  
 uint32, fixed32           int32            6h  
@@ -134,13 +134,13 @@ Oneof fields are similar to regular fields except all the fields in a oneof shar
 The q representation of a oneof field is therefore dependent on whether that field is currently the active member of the oneof:
 
 ```txt
-Oneof field state  kdb+ representation 
+Oneof field state  KDB-X representation 
 ---------------------------------------
 Set                As per regular field
 Unset              Empty mixed list    
 ```
 
-> Tip: When serializing from kdb+ to Protobuf it is possible to specify values for multiple oneof fields
+> Tip: When serializing from KDB-X to Protobuf it is possible to specify values for multiple oneof fields
 >
 > This is valid usage of oneof and does not produce an error; rather the oneof will be set to the value of the last specified field.
 
@@ -206,7 +206,7 @@ message SpecifierExample {
 The following is the mapping between the `KdbTypeSpecifier` and associated q types.
 
 ```txt
-KdbTypeSpecifier  kdb+ type
+KdbTypeSpecifier  KDB-X type
 ---------------------------
 GUID              2h       
 TIMESTAMP         12h      
@@ -295,7 +295,7 @@ Rather than the field-positional order:
 In addition the dictionary style is used recursively when fields contain other messages:
 
 ```txt
-field type            kdb+ structure        
+field type            KDB-X structure        
 ------------------------------------------------------------------------------------
 Sub-message           Field name dictionary            
 Repeated sub-message  List of field name dictionaries or a flip table   

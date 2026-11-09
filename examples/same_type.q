@@ -1,10 +1,10 @@
 // same_type.q
-// Examples of serializing from and deserializing to general list kdb+ data each element of which has the same type.
+// Examples of serializing from and deserializing to general list KDB-X data each element of which has the same type.
 
 -1"\n+----------|| same_type.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 // Add import path of schema file for dynamic schema import
 .protobufkdb.addProtoImportPath["../proto"];
@@ -30,11 +30,11 @@ triple:(39.27524; 51.70911; 51.59796; ::);
 serialized:.protobufkdb.serializeArrayFromList[`SametypeExampleDynamic; triple];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`SametypeExampleDynamic; serialized];
 show deserialized;
 
-// Compare the kdb+ objects.
+// Compare the KDB-X objects.
 // Note that returned list does not have `::` any more but still its type is general list.
 show triple ~ deserialized, (::);
 
@@ -53,11 +53,11 @@ triple:("single"; "double"; "triple");
 serialized:.protobufkdb.serializeArrayFromList[`SametypeExampleDynamic2; triple];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`SametypeExampleDynamic2; serialized];
 show deserialized;
 
-// Compare the kdb+ objects.
+// Compare the KDB-X objects.
 show triple~deserialized;
 
 -1 "\n+----------------------------------------+\n";

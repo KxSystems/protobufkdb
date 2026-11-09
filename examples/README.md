@@ -9,7 +9,7 @@ More basic example workflows are highlighted in the [exaples documentation](../d
 
 ## Compiled in messages
 
-`src/examples.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from kdb: `ScalarExample`, `RepeatedExample`, `SubMessageExample`, `MapExample`, `SpecifierExample` and `OneofExample`.
+`src/examples.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from KDB-X: `ScalarExample`, `RepeatedExample`, `SubMessageExample`, `MapExample`, `SpecifierExample` and `OneofExample`.
 
 The following example is taken from the first section in `examples/scalar.q`:
 
@@ -23,20 +23,20 @@ message ScalarExample {
 
 q)scalars:(12i;55f;"str")
 
-// Serialize the kdb structure to a protobuf encoded char array:
+// Serialize the KDB-X structure to a protobuf encoded char array:
 q)serialized:.protobufkdb.serializeArrayFromList[`ScalarExample;scalars]
 
 q)serialized
 "\010\014\021\000\000\000\000\000\200K@\032\003str"
 
-// Parse the char array back to kdb and check the result is the same as the original mixed list
+// Parse the char array back to KDB-X and check the result is the same as the original mixed list
 q)deserialized:.protobufkdb.parseArrayToList[`ScalarExample;serialized]
 
 q)scalars~deserialized
 1b
 ```
 
-Modify the structure of the kdb+ list to make it non-conformant in order to observe potential type checking errors:
+Modify the structure of the KDB-X list to make it non-conformant in order to observe potential type checking errors:
 
 ```q
 q).protobufkdb.serializeArrayFromList[`ScalarExample;(12i;55f)]
@@ -50,7 +50,7 @@ q).protobufkdb.serializeArray[`ScalarExample;(12j;55f;"str")]
 
 ## Dynamically imported messages
 
-Equivalent to the compiled in message examples, `proto/examples_dynamic.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from kdb: `ScalarExampleDynamic`, `RepeatedExampleDynamic`, `SubMessageExampleDynamic`, `MapExampleDynamic`, `SpecifierExampleDynamic` and `OneofExampleDynamic`.
+Equivalent to the compiled in message examples, `proto/examples_dynamic.proto` provides sample message definitions which help to illustrate the different protobuf field types and the mappings each uses when converting to and from KDB-X: `ScalarExampleDynamic`, `RepeatedExampleDynamic`, `SubMessageExampleDynamic`, `MapExampleDynamic`, `SpecifierExampleDynamic` and `OneofExampleDynamic`.
 
 The following example is taken from the second section of `examples/scalar.q` and outlines the retrieval of a schema from a `.proto` file based specified on a specified import search path. So if the q session is started in the `examples` subdirectory then the path to the `proto` subdirectory is specified as follows:
 

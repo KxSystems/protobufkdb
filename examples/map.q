@@ -1,10 +1,10 @@
 // map.q
-// Examples of serializing from and deserializing to map kdb+ data (dictionary)
+// Examples of serializing from and deserializing to map KDB-X data (dictionary)
 
 -1"\n+----------|| map.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 //-------------------------------------//
 // Example-1. Use compiled schema file //
@@ -20,7 +20,7 @@ map:(1 2j!3 4f;`s1`s2!((42i;1.58;"foo"); (-30i;5.999;"bar")));
 serialized:.protobufkdb.serializeArrayFromList[`MapExample; map];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`MapExample; serialized];
 show deserialized;
 
@@ -54,7 +54,7 @@ map:(enlist[0]!enlist[100.4]; `s1`s2`s3!((-77i;29.123;"foo"); (1260i;3.14;"bar")
 serialized:.protobufkdb.serializeArrayFromList[`MapExampleDynamic; map];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`MapExampleDynamic; serialized];
 show deserialized;
 

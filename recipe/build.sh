@@ -42,7 +42,6 @@ IGNORED_PREFIXES="/usr/local;/opt/homebrew"
 ls -d $PREFIX/lib/cmake/* 2>/dev/null || echo "no CMake packages under $PREFIX/lib/cmake"
 
 cmake ${CMAKE_ARGS} \
-      -DQMOD=ON \
       -DSTATIC_LINK=OFF \
       -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
       -DCMAKE_PREFIX_PATH=$PROTOBUF_PREFIX \

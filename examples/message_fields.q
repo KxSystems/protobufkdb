@@ -1,10 +1,10 @@
 // message_fields.q
-// Examples of serializing from and deserializing to kdb+ data using field name dictionaries for proto messages
+// Examples of serializing from and deserializing to KDB-X data using field name dictionaries for proto messages
 
 -1"\n+----------|| message_fields.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 //------------------------------------------------------//
 // Example-1. Trivial message without submessage fields //
@@ -26,11 +26,11 @@ scalars:scalar_fields!scalar_values;
 serialized:.protobufkdb.serializeArrayFromDict[`ScalarExample; scalars];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToDict[`ScalarExample; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show scalars~deserialized
 
 //-------------------------------------------//
@@ -65,11 +65,11 @@ submessage:submessage_fields!submessage_values;
 serialized:.protobufkdb.serializeArrayFromDict[`SubMessageExample; submessage];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToDict[`SubMessageExample; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show submessage~deserialized
 
 //---------------------------------------------------//
@@ -98,11 +98,11 @@ map:map_fields!map_values;
 serialized:.protobufkdb.serializeArrayFromDict[`MapExample; map];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToDict[`MapExample; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show map~deserialized
 
 -1 "\n+----------------------------------------+\n";

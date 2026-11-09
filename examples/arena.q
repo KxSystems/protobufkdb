@@ -1,5 +1,5 @@
 // arena.q
-// Examples of serializing from and deserializing to kdb+ data with Google arena
+// Examples of serializing from and deserializing to KDB-X data with Google arena
 //
 // Note:
 // The performance of Google Arenas with Protocol Buffers is highly architecture dependent.
@@ -12,7 +12,7 @@
 -1"\n+----------|| arena.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 // Prepare huge submessage data
 huge:submessage:((0i;0f;`str); (10000#enlist (`int$til 100; `float$til 100; 100#enlist "str")));
@@ -28,12 +28,12 @@ show serialized;
 show serialized;
 
 -1 "Time for deserialiation without arena";
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 \t deserialized:.protobufkdb.parseArrayToList[`SubMessageExample; serialized];
 show deserialized;
 
 -1 "Time for deserialiation with arena";
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 \t deserialized:.protobufkdb.parseArrayArenaToList[`SubMessageExample; serialized];
 show deserialized;
 

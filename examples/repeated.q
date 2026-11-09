@@ -1,10 +1,10 @@
 // repeated.q
-// Examples of serializing from and deserializing to repeated kdb+ data (simple list)
+// Examples of serializing from and deserializing to repeated KDB-X data (simple list)
 
 -1"\n+----------|| repeated.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 //-------------------------------------//
 // Example-1. Use compiled schema file //
@@ -20,11 +20,11 @@ repeated:(1 2i;10 -20f;("s1";"s2"));
 serialized:.protobufkdb.serializeArrayFromList[`RepeatedExample; repeated];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`RepeatedExample; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show repeated~deserialized
 
 //-------------------------------------------------//
@@ -50,11 +50,11 @@ repeated:(1 -2 -3i; 102.4 0.3971f; enlist "str");
 serialized:.protobufkdb.serializeArrayFromList[`RepeatedExampleDynamic; repeated];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`RepeatedExampleDynamic; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show repeated~deserialized
 
 -1 "\n+----------------------------------------+\n";

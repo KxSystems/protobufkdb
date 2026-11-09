@@ -1,10 +1,10 @@
 // scalar.q
-// Examples of serializing from and deserializing to scalar kdb+ data (atom)
+// Examples of serializing from and deserializing to scalar KDB-X data (atom)
 
 -1"\n+----------|| scalar.q ||----------+\n";
 
 // import the Protobuf library
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 
 //-------------------------------------//
 // Example-1. Use compiled schema file //
@@ -20,11 +20,11 @@ scalars:(12i;55f;"str");
 serialized:.protobufkdb.serializeArrayFromList[`ScalarExample; scalars];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`ScalarExample; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show scalars~deserialized
 
 //-------------------------------------------------//
@@ -50,11 +50,11 @@ scalars:(12i;55f;"str");
 serialized:.protobufkdb.serializeArrayFromList[`ScalarExampleDynamic; scalars];
 show serialized;
 
-// Deserialize char array into kdb+ data
+// Deserialize char array into KDB-X data
 deserialized:.protobufkdb.parseArrayToList[`ScalarExampleDynamic; serialized];
 show deserialized;
 
-// Compare the kdb+ objects
+// Compare the KDB-X objects
 show scalars~deserialized
 
 -1 "\n+----------------------------------------+\n";

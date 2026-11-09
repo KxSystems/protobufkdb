@@ -2,7 +2,7 @@
 // Test both compliled schema and dynamically imported schema
 -1 "\n+----------|| Load protobufkdb library ||----------+\n";
 
-$[5<=.z.K;.protobufkdb:use`kx.protobuf;system"l q/init.q"];
+.protobufkdb:use`kx.protobuf;
 \l tests_proto3/test_helper_function.q
 
 // Move to protobuf namespace

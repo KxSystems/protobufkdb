@@ -4,15 +4,15 @@
 
 
 
-This interface allows kdb+ users to parse data which has been encoded using Google Protocol Buffers [(protobuf)](https://github.com/protocolbuffers/protobuf) into kdb+ according to the proto schema and serialise it back to the encoded wire format. The interface utilises the `libprotobuf` descriptor and reflection C++ [APIs](https://developers.google.com/protocol-buffers/docs/reference/cpp#google.protobuf).
+This KDB-X module lets you parse data which has been encoded using Google Protocol Buffers [(protobuf)](https://github.com/protocolbuffers/protobuf) into KDB-X according to the proto schema and serialise it back to the encoded wire format. The interface utilises the `libprotobuf` descriptor and reflection C++ [APIs](https://developers.google.com/protocol-buffers/docs/reference/cpp#google.protobuf).
 
-This is part of the [*Fusion for kdb+*](http://code.kx.com/q/interfaces/#fusion-interfaces) interface collection.
+Note: This interface is a KDB-X module. If you use kdb+ v4.1 or lower, use the latest compatible release, [1.0.3](https://github.com/KxSystems/protobufkdb/releases/tag/1.0.3).
 
 
 
-## New to kdb+ ?
+## New to KDB-X ?
 
-Kdb+ is the world’s fastest timeseries database, optimized for ingesting, analyzing and storing massive amounts of structured data. To  get started with kdb+, visit https://code.kx.com/q/learn/ for downloads and developer information. For general information, visit https://kx.com/
+KDB-X is the world’s fastest timeseries database, optimized for ingesting, analyzing and storing massive amounts of structured data. To get started with KDB-X, please visit https://code.kx.com/ for downloads and developer information. For general information, visit https://kx.com/
 
 
 ## New to Protocol Buffers ?
@@ -61,12 +61,8 @@ If only dynamically imported message definitions are required then the packaged 
 
 ### Requirements
 
-If you are installing as a module using qmamba:
-- kdb-x (Linux/MacOS/Windows)
-- [qmamba](https://github.com/KxSystems/qmamba)
-
-If you are building from source or install from a release:
-- kdb+ ≥ 3.5 64-bit (Linux/macOS/Windows)
+- KDB-X 64-bit (Linux/macOS/Windows)
+- [qmamba](https://github.com/KxSystems/qmamba), if you are installing the module using qmamba
 - protobuf ≥ 3.21 (recommended [^1])
 - C++11 or later, or C++17 or later when building against protobuf ≥ 4.22 [^2] [^3]
 - CMake ≥ 3.5 [^2]
@@ -77,9 +73,9 @@ If you are building from source or install from a release:
 
 [^3]: protobuf v22.0 (released as libprotobuf 4.22) raised its own C++ standard floor to C++14, v30.0 (libprotobuf 6.30) raised it to C++17, and Abseil became a hard dependency at 4.22.  `src/CMakeLists.txt` detects the version of protobuf it finds and raises `CMAKE_CXX_STANDARD` to 17 for anything ≥ 4.22, so an explicit `-DCMAKE_CXX_STANDARD=11` is honoured only where protobuf supports it.
 
-# Install module with qmamba
+### Install module with qmamba
 
-qmamba is a package manager for kdb-x. It is currently available in a private preview capacity. You are welcome to try it and provide feedback.
+qmamba is a package manager for KDB-X. It is currently available in a public preview capacity. You are welcome to try it and provide feedback.
 Follow the install instructions for [qmamba](https://github.com/KxSystems/qmamba/blob/main/README.md#installation).
 
 ```q
@@ -91,23 +87,30 @@ proto:use`kx.protobuf
 ```
 
 
-# Installing a Release
+### Installing a release
 
-If you are not using qmamba it is recommended that a user install this module through a release. 
+If you are not using qmamba it is recommended that you install this module through a release.
 
-The protobufkdb releases are linked statically against libprotobuf to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf.  Therefore it is unnecessary to install protobuf separately when used a packaged release.
-A release package is prebuilt and statically linked against `libprotobuf`, so no separate Protocol Buffers runtime needs to be installed to use it.
+The releases are linked statically against `libprotobuf` to avoid potential C++ ABI [compatibility issues](https://github.com/protocolbuffers/protobuf/tree/master/src#binary-compatibility-warning) with different versions of libprotobuf, so no separate Protocol Buffers runtime needs to be installed to use them.
 
-1. [Download a release](https://github.com/KxSystems/protobufkdb/releases) and then unzip to your module directory. The following example assumes the default install location for KDB-X.
+1.  [Download a release](https://github.com/KxSystems/protobufkdb/releases) for your platform and unzip it to your module directory. The following example assumes the default install location for KDB-X:
 
-```
-unzip protobufkdb.zip -d ~/.kx/mod
-```
-
-1.  To use the KdbTypeSpecifier field option (described below) with dynamic messages then the directory containing `kdb_type_specifier.proto` must be specified to the interface as an import search location.  In the release package `kdb_type_specifier.proto` (and its dependencies) are found in the `proto` subdirectory.  Import paths can be relative or absolute.  For example, if the q session is started from the root of the release package run:
-
+    ```bash
+    unzip protobuf-l64.zip -d ~/.kx/mod
     ```
-    .protobufkdb.addProtoImportPath["proto"]
+
+    Any other directory on your `QPATH` works too, see [module search path](https://docs.kx.com/latest/kdb-x/integrations/module-management-qsg.htm#Search_path).
+
+2.  Load the module:
+
+    ```q
+    q).protobufkdb:use`kx.protobuf
+    ```
+
+3.  To use the KdbTypeSpecifier field option (described below) with dynamic messages then the directory containing `kdb_type_specifier.proto` must be specified to the interface as an import search location.  `kdb_type_specifier.proto` is found in the `proto` subdirectory of this repository, and it imports `google/protobuf/descriptor.proto` from a Protocol Buffers installation.  Import paths can be relative or absolute.  For example, if the q session is started from the root of this repository run:
+
+    ```q
+    q).protobufkdb.addProtoImportPath["proto"]
     ```
 
 ### Building and installing from source
@@ -233,11 +236,13 @@ Generate the build scripts,  specifying the protobuf buffers installation create
 
 ```bash
 ## Linux/MacOS
-cmake -DCMAKE_PREFIX_PATH=$PROTOBUF_INSTALL -DQMOD=ON ..
+cmake -DCMAKE_PREFIX_PATH=$PROTOBUF_INSTALL -DCMAKE_INSTALL_PREFIX=$HOME/.kx/mod/kx ..
 
 ## Windows
-cmake -DCMAKE_PREFIX_PATH=%PROTOBUF_INSTALL% -DQMOD=ON ..
+cmake -DCMAKE_PREFIX_PATH=%PROTOBUF_INSTALL% -DCMAKE_INSTALL_PREFIX=<module dir>\kx ..
 ```
+
+`CMAKE_INSTALL_PREFIX` must be a `kx` directory under your module directory so that ``use`kx.protobuf`` finds the module, e.g. `~/.kx/mod/kx` for the default KDB-X install location.  On Windows, replace `<module dir>` with a directory on your `QPATH`.
 
 Start the build:
 
@@ -245,7 +250,7 @@ Start the build:
 cmake --build . --config Release
 ```
 
-Create the install package and deploy:
+Install the module into `<CMAKE_INSTALL_PREFIX>/protobuf` as `init.q` and `clib.<platform>`:
 
 ```bash
 cmake --build . --config Release --target install
@@ -286,9 +291,9 @@ The solution, as described above, is to build the Protocol Buffers runtime from 
 
 #### Docker – Linux
 
-A sample Docker file is provided in the `docker_linux` directory to create a Ubuntu 18.04 LTS environment (including downloading and building the Protocol Buffers runtime from source) before building and installing the kdb+ `protobufkdb` interface.
+A sample Docker file is provided in the `docker_linux` directory to create a Ubuntu 18.04 LTS environment (including downloading and building the Protocol Buffers runtime from source) before building the module and installing it into the module directory mounted at `/mod`.
 
-For Docker Windows, the `PROTOBUFKDB_SOURCE` and `QHOME_LINUX` directories are specified at the top of `protobufkdb_build.bat`, which sets up the environment specified in `Dockerfile.build` and invokes `protobufkdb_build.sh` to build the interface.
+For Docker Windows, the `PROTOBUFKDB_SOURCE` and `MODULE_DIR` directories are specified at the top of `protobufkdb_build.bat`, which sets up the environment specified in `Dockerfile.build` and invokes `protobufkdb_build.sh` to build the interface.
 
 ## Conda package
 

@@ -1,5 +1,4 @@
-if[5>.z.K;system"d .protobufkdb"]
-clib:$[5<=.z.K;use`.clib;(`protobufkdb 2:(`kexport;1))[]]
+clib:use`.clib
 
 displayMessageSchema:{[x] -1 clib.getMessageSchema[x];};
 
@@ -26,5 +25,4 @@ parseArrayDebug:{[x;y] -1 clib.parseArrayDebug[x;y];};
 
 clib.init[]
 
-if[5<=.z.K;export:clib,`0clib`clib _ .z.m]
-if[5>.z.K;{set'[key x;value x]}clib]
+export:clib,`0clib`clib _ .z.m
